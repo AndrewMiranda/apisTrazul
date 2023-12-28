@@ -1,6 +1,7 @@
 // Configuración de las API's
 const { body } = require("express-validator");
 const config = require("./configApis");
+const fs = require('fs');
 
 // Librerias
 const pool = require("../../../config/dbConnections"+config.DBName);
@@ -145,14 +146,18 @@ controller.documentTypes = async(req, res) => {
 controller.update =[ async(req, res) => {
     try {
         // const file = req.file.apkUdate;
-        console.log(req.files);
-        console.log(req);
-        
+        // console.log(req.files);
         const version = req.body.versionApkUpdate;
+        const rutaArchivoDestino = './src/public/apks/trazul-' + version + '.apk';
         if (!req.files) {
             // console.log(file);
             res.status(400).json({error: 'El archivo APK es obligatorio'});
         } else {
+            // console.log(req.files.apkUdate);
+            
+            const archivo = req.files.apkUdate;
+            fs.writeFileSync(rutaArchivoDestino, archivo.data);
+            await pool.query('INSERT INTO `apkVersions`(`apkVersions_version`) VALUES (?)', [version])
             res.status(200).json({});
         }
     } catch (error) {

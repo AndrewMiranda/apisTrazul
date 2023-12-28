@@ -130,4 +130,5 @@ dist
 .pnp.*
 package-lock.json
 
-src/public
+src/public/apks
+src/public/content
