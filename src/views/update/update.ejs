@@ -121,7 +121,7 @@
         </div>
     </div>
     <script>
-        let apkPdate = document.getElementById(' ');
+        let apkUpdate = document.getElementById('form-content');
         let apkPdateFile = document.getElementById('apk-udate');
         var response;
         let versionApkUpdate = document.getElementById('version-apk-update');
@@ -171,7 +171,7 @@
             
         }
         
-        apkPdate.addEventListener('submit', (e) =>  {
+        apkUpdate.addEventListener('submit', (e) =>  {
             e.preventDefault();
             if (esValidoResponse == true && esValidoResponseApk == true) {                
                 console.log('Submit :D');
@@ -193,12 +193,11 @@
             document.body.appendChild(mensaje);
             console.log('se esta ejecutando lo que sigue');
 
-            let formdata = new FormData(apkPdate);
+            let formdata = new FormData(apkUpdate);
 
             fetch('http://localhost:3001/apis/dev/general/update', {
                 method: 'POST',
                 body: formdata,
-                // files: 
                 // headers: {
                 //     'Content-Type': 'multipart/form-data'
                 // }
