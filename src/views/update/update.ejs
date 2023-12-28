@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #div-content {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #div-content-content {
+            margin: 10px 0;
+            border-width: 1px;
+            border-color: #707070;
+            border-radius: 10px;
+            width: 92vw;
+            max-width: 488px;
+            margin: 0 auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-wrap: wrap;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);
+            -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        #form-content{
+            width: 100%;
+            max-width: 420px;
+        }
+        .formSection {
+            width: 100%;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 40px;
+            text-align: center;
+        }
+        p {
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 22px;
+        }
+
+        #containerLoad{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    top:0;
+    position: fixed;
+    z-index: 100000000;
+    background-color: #fff;
+}
+
+.loader {
+    border: 7px solid #f3f3f3; 
+    border-top: 7px solid #005FAE; 
+    border-radius: 50%;
+    height: 130px;
+    width: 130px;
+    animation: spin 2s linear infinite;
+}
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.title {
+    margin-top: -80px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Quicksand-regular';
+    color: #707070;
+}
+
+.logo{
+    height: 89px;
+    top: -110px;
+    position: relative;
+}
+        /* @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg);}
+        } */
+    </style>    
+</head>
+<body>
+    <div id="div-content">
+        <div  id="div-content-content">
+            <h1>Actualizacion del APK :D</h1>
+            <form id="form-content">
+                <p  for="apk-udate">Sube la actulizacion del APK</p>
+                <input class="formSection" type="file" name="apkUdate" id="apk-udate" accept=".apk" required>
+                
+                <p > ¿Cual es la version del apk?</p>
+                <input class="formSection" type="text" name="versionApkUpdate" id="version-apk-update" required>
+
+                <input class="formSection" type="submit" id="submitInput" disabled>
+            </form>
+        </div>
+    </div>
+    <script>
+        let apkPdate = document.getElementById(' ');
+        let apkPdateFile = document.getElementById('apk-udate');
+        var response;
+        let versionApkUpdate = document.getElementById('version-apk-update');
+        let esValidoResponseApk = false;
+        let esValidoResponse = false;
+
+        versionApkUpdate.addEventListener('keyup', () => {validarCadena(versionApkUpdate.value)});
+        apkPdateFile.addEventListener('change', () => {validarApk(apkPdateFile.value)});
+
+        function validarCadena(cadena) {
+            // Expresión regular que permite números y puntos consecutivos
+            var expresionRegular = /^(\d+\.)+\d+$/;
+
+            // Prueba la cadena con la expresión regular
+            var esValido = expresionRegular.test(cadena);
+            console.log(esValido);
+            if (esValido == false) {
+                document.getElementById('submitInput').setAttribute('disabled', '');
+            } else {
+                if (document.getElementById('apk-udate').value) {
+                    document.getElementById('submitInput').removeAttribute('disabled');
+                } else {
+                    document.getElementById('submitInput').setAttribute('disabled', '');
+                }
+            }
+            // Devuelve el resultado de la validación
+            esValidoResponse = esValido;
+        }
+
+        function validarApk(value) {
+            console.log(value);
+            
+            if (value == '') {
+                document.getElementById('submitInput').setAttribute('disabled', '');
+                
+                esValidoResponseApk = false;
+            } else {
+                if (esValidoResponse == true) {
+                    document.getElementById('submitInput').removeAttribute('disabled');
+                    esValidoResponseApk = true;
+                } else {
+                    document.getElementById('submitInput').setAttribute('disabled', '');
+                    esValidoResponseApk = true;
+                }
+            }
+
+            
+        }
+        
+        apkPdate.addEventListener('submit', (e) =>  {
+            e.preventDefault();
+            if (esValidoResponse == true && esValidoResponseApk == true) {                
+                console.log('Submit :D');
+                responseAsy();
+            } else {
+                console.log('No se puede enviar el formularion');
+                
+            }
+        });
+
+        function  responseAsy()  {
+            var mensaje = document.createElement("div");
+            mensaje.innerHTML = `
+            <div id="containerLoad">
+                <div class="loader"></div>
+                <img src="/IMAGES/logos/mipescaoLogo2.svg" alt="" class="logo">
+                <h1 class="title">Cargando...</h1>
+            </div>`;
+            document.body.appendChild(mensaje);
+            console.log('se esta ejecutando lo que sigue');
+
+            let formdata = new FormData(apkPdate);
+
+            fetch('http://localhost:3001/apis/dev/general/update', {
+                method: 'POST',
+                body: formdata,
+                // files: 
+                // headers: {
+                //     'Content-Type': 'multipart/form-data'
+                // }
+
+                // authorization: config.authRedAzul
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.log(err);
+                    mensaje.innerHTML = `
+                    <div id="containerLoad">
+                        <h1 class="title">Ocurrio un error inesperado</h1>
+                    </div>
+                    `;
+                    document.getElementById('version-apk-update').value = '';
+                    document.getElementById('apk-udate').value = '';
+                    document.getElementById('submitInput').setAttribute('disabled', '');
+                    esValidoResponseApk = false;
+                    esValidoResponse = false;
+                    setTimeout(() => {
+                        document.body.removeChild(mensaje);
+                        
+                    }, 3000);
+                } else {
+
+                    mensaje.innerHTML = `
+                    <div id="containerLoad">
+                        <h1 class="title">El APK se guardo correctamente</h1>
+                    </div>
+                    `;
+                    document.getElementById('version-apk-update').value = '';
+                    document.getElementById('apk-udate').value = '';
+                    document.getElementById('submitInput').setAttribute('disabled', '');
+                    esValidoResponseApk = false;
+                    esValidoResponse = false;
+                    setTimeout(() => {
+                        document.body.removeChild(mensaje);
+                        
+                    }, 6000);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                mensaje.innerHTML = `
+                <div id="containerLoad">
+                    <h1 class="title">Ocurrio un error inesperado</h1>
+                </div>
+                `;
+                document.getElementById('version-apk-update').value = '';
+                document.getElementById('apk-udate').value = '';
+                document.getElementById('submitInput').setAttribute('disabled', '');
+                esValidoResponseApk = false;
+                esValidoResponse = false;
+                setTimeout(() => {
+                    document.body.removeChild(mensaje);
+                    
+                }, 3000);
+
+            });
+
+        };
+    </script>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
 // Configuración de las API's
+const { body } = require("express-validator");
 const config = require("./configApis");
 
 // Librerias
@@ -141,6 +142,23 @@ controller.documentTypes = async(req, res) => {
     }  
 }
 
-
+controller.update =[ async(req, res) => {
+    try {
+        // const file = req.file.apkUdate;
+        console.log(req.files);
+        console.log(req);
+        
+        const version = req.body.versionApkUpdate;
+        if (!req.files) {
+            // console.log(file);
+            res.status(400).json({error: 'El archivo APK es obligatorio'});
+        } else {
+            res.status(200).json({});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
 
 module.exports = controller;

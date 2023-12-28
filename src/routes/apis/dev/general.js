@@ -21,5 +21,9 @@ router.get("/regions", controller.regions);
 // Ciudades
 router.get("/cities", controller.cities);
 
+// APK update
+
+router.post("/update", controller.update);
+
 //Se exporta el enrutador
 module.exports = router;
