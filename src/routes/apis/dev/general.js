@@ -21,5 +21,9 @@ router.get("/regions", controller.regions);
 // Ciudades
 router.get("/cities", controller.cities);
 
+// Origen de pescados
+router.get("/fishesOrigin", controller.fishesOrigin);
+
+
 //Se exporta el enrutador
 module.exports = router;

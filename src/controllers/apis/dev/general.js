@@ -141,6 +141,18 @@ controller.documentTypes = async(req, res) => {
     }  
 }
 
+// Origen de los pescados
+controller.fishesOrigin = async(req, res) => {
+    try {
+        let fishesOrigin = await pool.query('SELECT fishesOrigin_id AS id, fishesOrigin_name AS name FROM `fishesOrigin`');
+        fishesOrigin = JSON.parse(JSON.stringify(fishesOrigin));
+    
+        res.status(200).json({fishesOrigin});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}
 
 
 module.exports = controller;
