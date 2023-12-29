@@ -22,6 +22,10 @@ router.get("/app/update", (req, res) => {
     res.download(filePath);
 });
 
+router.get("/update", (req, res) => {
+   res.render("update/update.ejs") 
+});
+
 // Favicon
 router.get("/favicon.ico", (req, res) => { 
     res.sendFile("src/public/favicon/favicon.ico", { root: '.' })
