@@ -21,6 +21,10 @@ router.get("/regions", controller.regions);
 // Ciudades
 router.get("/cities", controller.cities);
 
+
+// Origen de pescados
+router.get("/fishesOrigin", controller.fishesOrigin);
+
 // APK update
 
 router.post("/update", controller.update);
