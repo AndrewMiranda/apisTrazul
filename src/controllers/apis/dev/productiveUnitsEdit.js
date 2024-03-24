@@ -573,7 +573,7 @@ controller.editInformacionBioseguridadAlevinera = [verifyToken(config), body("pr
 controller.biosecurityLinkAfter = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // ID de la unidad productiva
-        const productiveUnitId = req.query.productiveUnitId;
+        const productiveUnitId = req.body.productiveUnitId;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -1000,7 +1000,7 @@ controller.createFeed = [verifyToken(config), body("productiveUnitId").notEmpty(
         if (codeType.length < 1) throw "Tipo de codigo de referencia inválido";
         if (code.length < codeRule.min || code.length > codeRule.max) throw `El código ${code} no es un ${codeType[0].name} válido, min: ${codeRule.min} y max: ${codeRule.max}`;
 
-        await pool.query('INSERT INTO `productiveUnits_feed`(`productiveUnits_id`, `productiveUnits_feed_name`, `productiveUnits_feed_vendorName`, `productiveUnits_feed_codeType`, `productiveUnits_feed_code`, `productiveUnits_feed_batch`, `productiveUnits_feed_expDate`, `productiveUnits_feed_quantity`, `unit_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, feedName, vendorName, codeTypeId, code, batch, expDate, quantity, unitId ]);
+        await pool.query('INSERT INTO `productiveUnits_feed`(`productiveUnits_id`, `productiveUnits_feed_name`, `productiveUnits_feed_vendorName`, `productiveUnits_feed_codeType`, `productiveUnits_feed_code`, `productiveUnits_feed_batch`, `productiveUnits_feed_expDate`, `productiveUnits_feed_quantity`, `unit_id`, `productiveUnits_feed_quantityIterator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, feedName, vendorName, codeTypeId, code, batch, expDate, quantity, unitId, quantity ]);
 
         res.status(200).json({});
     } catch (error) {
@@ -1035,14 +1035,14 @@ controller.getFeeds = [verifyToken(config), query("productiveUnitId").notEmpty()
         });
         
         // Se obtienen los piensos activos
-        let feedsActive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 1', [ productiveUnitId ]);
+        let feedsActive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 1', [ productiveUnitId ]);
 
         feedsActive.forEach(element => {
             element.unit = unitsArray[element.unit];
         });
         
         // Se obtienen los piensos inactivos
-        let feedsInactive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 0', [ productiveUnitId ]);
+        let feedsInactive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 0', [ productiveUnitId ]);
 
         feedsInactive.forEach(element => {
             element.unit = unitsArray[element.unit];
