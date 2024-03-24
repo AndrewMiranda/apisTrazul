@@ -9,6 +9,7 @@ const { genRandomNumberCode, generateRandomHash } = require('../../../helpers/ra
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const { body, query, param } = require('express-validator');
 const { getUserId, getUserHash } = require('./common/users');
+const { getUserIp } = require('../../../helpers/ipsFunctions');
 
 // Controlador
 const controller = {};
@@ -358,7 +359,55 @@ controller.getUserDataWithEmail = [ verifyToken(config), query("email"), handleV
             res.status(400).json({error: error.error});
         }
     })
-}]
+}];
+
+controller.login = [ body("email").notEmpty().isEmail(), body('password').notEmpty().isLength({ min: 6 }), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene el email y la contraseña
+        const email = req.body.email;
+        const password = req.body.password;
+
+        await fetch(config.apisRouteRedAzul+"/users/login", {
+            method: "POST",
+            headers: { "Authorization": config.authRedAzul, "Content-Type": "application/json" },
+            body: JSON.stringify({email, password})
+        }).then(async response => {
+            if (response.ok) {
+                // Se obtiene el hash del usuario
+                let hash = await response.json();
+                hash = hash.hash;
+
+                // Se verifica si el usuario cuenta con usuario en trazul y se obtiene el ID del usuario
+                let userData = await pool.query('SELECT users_id AS id FROM `users` WHERE users_code = ?', [ hash ]);
+                userData = JSON.parse(JSON.stringify(userData));
+
+                if (!userData.length > 0) throw "El usuario no ha asociado su cuenta a Trazul";
+
+                userId = userData[0].id;
+
+                // Se crea un token para la nueva sesión
+                token = generateRandomHash(32);
+
+                // Se obtiene el IP del usuario
+                let sessionIp = getUserIp(req);
+
+                // Se crea una sesión nueva
+                await pool.query('INSERT INTO `users_sessions`(`users_id`, `users_sessions_code`, `users_sessions_ip`) VALUES (?, ?, ?)', [ userId, token, sessionIp ]);
+
+                res.status(200).json({session: token});
+            } else {
+                // Se obtiene el error
+                let error = await response.json();
+                error = error.error;
+
+                throw error
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
 
 controller.logout = [ verifyToken(config), async(req, res) => {
     try {
@@ -498,9 +547,6 @@ controller.hasStaffInvitations = [ verifyToken(config), handleValidationErrors, 
 // Aceptar invitación de trazabilidad desde la app
 controller.acceptStaffInvitations = [ verifyToken(config), query("invitationId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
-        // ID del usuario
-        const userId = await getUserId(req);
-
         // ID de la unidad productiva
         const invitationId = req.query.invitationId;
 
@@ -531,9 +577,6 @@ controller.acceptStaffInvitations = [ verifyToken(config), query("invitationId")
 // Rechazar invitación de trazabilidad desde la app
 controller.rejectStaffInvitations = [ verifyToken(config), query("invitationId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
-        // ID del usuario
-        const userId = await getUserId(req);
-
         // ID de la unidad productiva
         const invitationId = req.query.invitationId;
 

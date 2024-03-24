@@ -45,7 +45,13 @@ router.get('/otherData', controller.getOtherUserData);
 // Obtener datos de un usuario
 router.get('/dataWithEmail', controller.getUserDataWithEmail);
 
+// Logueo de usuario
+router.post('/login', controller.login);
+
 // Deslogueo de usuario
+router.get('/logout', controller.logout);
+
+// Petición de recuperación de contraseña
 router.get('/logout', controller.logout);
 
 // Revisar invitaciones de trazabilidad pendientes

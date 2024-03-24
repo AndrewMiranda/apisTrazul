@@ -569,6 +569,30 @@ controller.editInformacionBioseguridadAlevinera = [verifyToken(config), body("pr
     }
 }]
 
+// Registrar información de bioseguridad después
+controller.biosecurityLinkAfter = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        await pool.query('UPDATE `productiveUnits` SET `productiveUnits_body` = JSON_SET(`productiveUnits_body`, "$.profile.informacionBioseguridadAlevinera", true) WHERE `productiveUnits_id` = ?', [ productiveUnitId ]);
+        
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+            res.status(400).json({error});
+    }
+}];
+
 
 /*
 ----------------------

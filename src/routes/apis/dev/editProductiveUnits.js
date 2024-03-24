@@ -59,6 +59,9 @@ router.get('/informacionBioseguridadAlevinera', controller.getInformacionBiosegu
 // Cargar certificado de bioseguridad
 router.post('/informacionBioseguridadAlevinera', controller.editInformacionBioseguridadAlevinera);
 
+// Cargar certificado de bioseguridad
+router.post('/biosecurityLinkAfter', controller.biosecurityLinkAfter);
+
 
 /*
 ----------------------
