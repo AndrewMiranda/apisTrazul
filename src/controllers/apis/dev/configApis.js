@@ -2,8 +2,8 @@
 
 const appPort = process.env.PORT || 3001;
 let apisRouteConstruct = process.env.URLAPI || 'http://localhost:'+appPort;
-apisRouteConstruct += "/apis/";
-const apisRoute = apisRouteConstruct;
+apisRouteConstruct += "/apis";
+
 const urlWeb = process.env.URLWEB || 'http://localhost:'+appPort;
 
 // Código RedAzul
@@ -16,21 +16,31 @@ if (isDevConfig == true) {
     constructApisRouteRedAzul = process.env.URLAPIREDAZUL || 'http://localhost:3000/apis';
 
     constructApisRouteRedAzul+= "/dev";
+    apisRouteConstruct+= "/dev";
 
     // Nombre de BD
-    DBName = "Dev"; 
+    DBName = "Dev";
+
+    // DB sql name
+    DBSqlName = "dev"
 }else{
     // Ruta de API's Red Azul
     constructApisRouteRedAzul = process.env.URLAPIREDAZUL || 'http://localhost:3000/apis';
 
     constructApisRouteRedAzul+= "/v1";
+    apisRouteConstruct+= "/v1";
 
     // Nombre de BD
     DBName = ""; 
+
+    // DB sql name
+    DBSqlName = "dev"
 }
 
+// Definición de rutas de API's
 const apisRouteRedAzul = constructApisRouteRedAzul;
+const apisRoute = apisRouteConstruct;
 
 const trazulKey = "6229aa5938617a240792ef1c4359779d";
 
-module.exports = {appPort, apisRoute, DBName, authRedAzul, apisRouteRedAzul, trazulKey};
+module.exports = {appPort, apisRoute, DBName, authRedAzul, apisRouteRedAzul, trazulKey, DBSqlName, urlWeb};

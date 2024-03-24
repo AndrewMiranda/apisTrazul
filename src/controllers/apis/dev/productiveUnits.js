@@ -8,11 +8,94 @@ const verifyToken = require("./../../../helpers/auth");
 const { genRandomNumberCode, generateRandomHash } = require('../../../helpers/randomString');
 const validate = require('../../../helpers/validator/postValidator');
 const { body, query, validationResult } = require('express-validator');
+const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const {sendMail} = require("../../../helpers/emails/index");
+const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, getUserHash } = require('./common/productiveUnitsEdit.js');
 
 
 // Controlador
 const controller = {};
+
+// Tipo de unidades productivas
+controller.getProductiveUnits = [verifyToken(config), async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        let productiveUnits = await pool.query('SELECT productiveUnits_id AS id, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, "$.profile.informacionAlevinera")), "$.name")) AS name, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, "$.profile.informacionAlevinera")), "$.logo")) AS logo, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, "$.profile.informacionAlevinera")), "$.municipality")) AS municipality, productiveUnits_types_id AS type FROM `productiveUnits` WHERE users_id = ? AND productiveUnits_state = 1', [ userId ]);
+        productiveUnits = JSON.parse(JSON.stringify(productiveUnits));
+
+        for (let index = 0; index < productiveUnits.length; index++) {
+            const element = productiveUnits[index];
+
+            if (element.municipality != null) {        
+                // Se consulta el departamento según el id del municipio
+                let location = await fetch(config.apisRouteRedAzul+"/general/location?municipality="+element.municipality, {method: 'GET'})
+                .then(async response =>  {
+                    if (response.status === 200) {
+                        return await response.json();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw "Error en consulta de ubicación";
+                });
+
+                element.municipality = location.location;
+            }
+
+            element.perms = true;
+        }
+
+        // Se verifica a que granjas pertenece el usuario como personal de trazabilidad
+        let productiveUnitsStaff = await pool.query('SELECT b.productiveUnits_id AS id, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(b.productiveUnits_body, "$.profile.informacionAlevinera")), "$.name")) AS name, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(b.productiveUnits_body, "$.profile.informacionAlevinera")), "$.logo")) AS logo, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(b.productiveUnits_body, "$.profile.informacionAlevinera")), "$.municipality")) AS municipality, b.productiveUnits_types_id AS type, a.traceabilityStaff_perms AS perms FROM `traceabilityStaff` AS a LEFT JOIN productiveUnits AS b ON b.productiveUnits_id = a.productiveUnits_id WHERE a.users_id = ? AND a.traceabilityStaff_state = 1 AND b.productiveUnits_state = 1', [ userId ]);
+
+        productiveUnitsStaff = JSON.parse(JSON.stringify(productiveUnitsStaff));
+
+        for (let index = 0; index < productiveUnitsStaff.length; index++) {
+            const element = productiveUnitsStaff[index];
+
+            if (element.municipality != null) {   
+                // Se consulta el departamento según el id del municipio
+                let location = await fetch(config.apisRouteRedAzul+"/general/location?municipality="+element.municipality, {method: 'GET'})
+                .then(async response =>  {
+                    if (response.status === 200) {
+                        return await response.json();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw "Error en consulta de ubicación";
+                });
+
+                element.municipality = location.location;
+            }
+
+            // Se parsean los permisos
+            perms = JSON.parse(element.perms);
+
+            hasEditPerms = false;
+
+            for (let index = 0; index < perms.length; index++) {
+                let element = perms[index];
+
+                if (element == "all" || element == "modifyProductiveUnit") {
+                    hasEditPerms = true;
+                }
+            }
+
+            element.perms = hasEditPerms;
+        }
+
+        // Se combinan las consultas
+        productiveUnits = productiveUnits.concat(productiveUnitsStaff);
+
+        res.status(200).json({productiveUnits});
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({error});
+    }
+}];
 
 // Tipo de unidades productivas
 controller.productiveUnitsTypes = async(req, res) => {
@@ -44,20 +127,29 @@ controller.productiveUnitsTypes = async(req, res) => {
     }
 }
 
-// Crear unidad productiva
-controller.createProductiveUnit = [ verifyToken(config), body("productiveUnitType").isInt(), async(req, res) => {
-    // Manejar inputs
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-        const error = result.array().map(error => ({
-            field: error.path,
-            message: error.msg,
-            value: error.value
-        }));
+// Borrar unidad productiva
+controller.deleteProductiveUnits = [ verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS GET
+        const productiveUnitId = req.query.productiveUnitId;
 
-        console.log(error);
-        return res.status(400).json({ error });
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        await pool.query('UPDATE `productiveUnits` SET `productiveUnits_state`= 0 WHERE `productiveUnits_id` = ?', [ productiveUnitId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({error});
     }
+}];
+
+// Crear unidad productiva
+controller.createProductiveUnit = [ verifyToken(config), body("productiveUnitType").isInt(), handleValidationErrors, async(req, res) => {
 
     // Datos del POST
     let productiveUnitType = req.body.productiveUnitType;
@@ -71,7 +163,7 @@ controller.createProductiveUnit = [ verifyToken(config), body("productiveUnitTyp
         // ID del usuario
         const userId = userData[0].users_id;
 
-        let unitTypeValid = await pool.query('SELECT * FROM `productiveUnits_types` WHERE productiveUnits_types_state = ?', [ productiveUnitType ]);
+        let unitTypeValid = await pool.query('SELECT * FROM `productiveUnits_types` WHERE productiveUnits_types_id = ? AND productiveUnits_types_state = 1', [ productiveUnitType ]);
 
         if (unitTypeValid.length > 0) {
             await pool.query('INSERT INTO `productiveUnits`(`users_id`, `productiveUnits_types_id`) VALUES (?, ?)', [userId, productiveUnitType]);
@@ -317,6 +409,63 @@ controller.codeEmail = [ async(req, res) => {
         res.status(400).json({error});
     }
 }]
+
+// Obtener nombre de unidad productiva con el ID
+controller.nameWithId = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Datos GET
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        let productiveUnitData = await pool.query('SELECT JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, "$.profile.informacionAlevinera")), "$.name")) AS name FROM `productiveUnits` WHERE productiveUnits_id = ?', [ productiveUnitId ]); 
+        productiveUnitData = JSON.parse(JSON.stringify(productiveUnitData));
+        
+        res.status(200).json({"name": productiveUnitData[0].name});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Obtener nombre de unidad productiva con el ID
+controller.nameWithIdTrazul = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Datos GET
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // Se obtienen los datos de la unidad productiva
+        let productiveUnitData = await pool.query('SELECT JSON_EXTRACT(productiveUnits_body, "$.profile") AS body, productiveUnits_types_id AS type FROM `productiveUnits` WHERE productiveUnits_id = ?', [ productiveUnitId ]);
+        productiveUnitData = JSON.parse(JSON.stringify(productiveUnitData));
+
+        let productiveUnitName = "";
+        let type = productiveUnitData[0].type;
+
+        productiveUnitData = JSON.parse(productiveUnitData[0].body);
+
+        // Se itera el body dependiendo del type para obtener el nombre de la unidad productiva
+        switch (type) {
+            case 1:
+                productiveUnitName = JSON.parse(productiveUnitData.informacionAlevinera).name;
+                break;
+            case 2:
+                productiveUnitName = JSON.parse(productiveUnitData.informacionEngorde).name;
+                break;
+            default:
+                productiveUnitName = null;
+                break;
+        }
+        
+        res.status(200).json({"name": productiveUnitName, "type":type});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
 
 // TEST
 controller.test = [ async(req, res) => {

@@ -16,14 +16,11 @@ router.get("/", (req, res) => {
     res.send("Bienvenido a TRAZUL");
 });
 
-router.get("/app/update", (req, res) => {
-    const filePath = path.join(__dirname, '..', 'public', 'apks', 'app-release.apk');
-
-    res.download(filePath);
-});
-
+// Ruta para subir update de trazul (Temporal)
 router.get("/update", (req, res) => {
-   res.render("update/update.ejs") 
+    // Se obtiene la versión actual de las API's
+    const apisVersion = process.env.ACTUALAPIVERSION || "dev";
+    res.render("update/update.ejs", { apisVersion });
 });
 
 // Favicon

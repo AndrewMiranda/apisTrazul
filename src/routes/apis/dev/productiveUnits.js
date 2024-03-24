@@ -12,6 +12,12 @@ const pool = require("../../../config/dbConnections"+config.DBName);
 const controller = require("../../../controllers/apis/"+config.version+"/productiveUnits");
 
 
+// Obtener unidades productivas de un usuario
+router.get('/', controller.getProductiveUnits);
+
+// Borrar unidad productivas de un usuario (Desactivar )
+router.get('/delete', controller.deleteProductiveUnits);
+
 // Tipo de unidad productiva
 router.get('/types', controller.productiveUnitsTypes);
 
@@ -24,11 +30,21 @@ router.get('/typeStructure', controller.productiveUnitTypeStructure);
 // Estado de perfil de unidad productiva
 router.get('/profileState', controller.profileState);
 
-// Editar unidad productiva
-router.post('/editProductiveUnit', controller.editProductiveUnit);
-
 // Código de validación para Email
 router.post('/codeEmail', controller.codeEmail);
+
+// Editar unidad productiva
+router.use("/edit", require("./editProductiveUnits"));
+
+// LOTES DE UNIDADES PRODUCTIVAS
+router.use("/batches", require("./batches"));
+
+// Obtener nombre de unidad productiva con el ID
+router.get('/nameWithId', controller.nameWithId);
+
+// Obtener nombre de unidad productiva con el ID
+router.get('/nameWithIdTrazul', controller.nameWithIdTrazul);
+
 
 // TEST
 router.get('/test', controller.test);

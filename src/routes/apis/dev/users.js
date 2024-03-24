@@ -27,8 +27,42 @@ router.post('/permsAunap', controller.permsAunap);
 // Configurar perfil
 router.post('/createProfile', controller.createProfile);
 
+// Reenviar código de verificación
+router.get('/resendCodeVerification', controller.resendCodeVerification);
+
+// Editar perfil
+router.post('/editProfile', controller.editProfile);
+
 // Seleccionar tipo de usuario
 router.post('/selectProfile', controller.selectProfile);
+
+// Obtener datos de un usuario
+router.get('/data', controller.getUserData);
+
+// Obtener datos de un usuario
+router.get('/otherData', controller.getOtherUserData);
+
+// Obtener datos de un usuario
+router.get('/dataWithEmail', controller.getUserDataWithEmail);
+
+// Deslogueo de usuario
+router.get('/logout', controller.logout);
+
+// Revisar invitaciones de trazabilidad pendientes
+router.get('/hasStaffInvitations', controller.hasStaffInvitations);
+
+// Aceptar invitación de trazabilidad
+router.get('/acceptStaffInvitations', controller.acceptStaffInvitations);
+
+// Revisar invitación de trazabilidad
+router.get('/rejectStaffInvitations', controller.rejectStaffInvitations);
+
+// Aceptar invitación de Staff de trazabilidad
+router.get('/acceptStaffEmail', controller.acceptStaffEmail);
+
+// Rechazar invitación de Staff de trazabilidad
+router.get('/rejectStaffEmail', controller.rejectStaffEmail);
+
 
 //Se exporta el enrutador
 module.exports = router;
