@@ -12,6 +12,7 @@ const pool = require("../../../config/dbConnections"+config.DBName);
 const controller = require("../../../controllers/apis/"+config.version+"/batches");
 
 // Obtener lotes
+router.get('/', controller.getBatches);
 
 // Crear lote alevinera
 router.post('/alevinera', controller.createBatchAlevinera);
