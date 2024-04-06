@@ -33,17 +33,30 @@ router.get('/profileState', controller.profileState);
 // Código de validación para Email
 router.post('/codeEmail', controller.codeEmail);
 
+// Obtener nombre de unidad productiva con el ID
+router.get('/nameWithId', controller.nameWithId);
+
+// Obtener nombre de unidad productiva con el ID
+router.get('/nameWithIdTrazul', controller.nameWithIdTrazul);
+
+// Buscador de unidades productivas según nombre o documento
+router.get('/search', controller.nameWithIdTrazul);
+
+// Buscador de unidades productivas según nombre o documento
+router.get('/searcher', controller.searcher);
+
+// Obtener modulos de una unidades productivas según permisos del usuario
+router.get('/modules', controller.modules);
+
+// INICIO DE RUTAS EXTERNAS
+
 // Editar unidad productiva
 router.use("/edit", require("./editProductiveUnits"));
 
 // LOTES DE UNIDADES PRODUCTIVAS
 router.use("/batches", require("./batches"));
 
-// Obtener nombre de unidad productiva con el ID
-router.get('/nameWithId', controller.nameWithId);
-
-// Obtener nombre de unidad productiva con el ID
-router.get('/nameWithIdTrazul', controller.nameWithIdTrazul);
+// FIN DE RUTAS EXTERNAS
 
 
 // TEST

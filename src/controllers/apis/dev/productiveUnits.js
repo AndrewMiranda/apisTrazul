@@ -10,9 +10,8 @@ const validate = require('../../../helpers/validator/postValidator');
 const { body, query, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const {sendMail} = require("../../../helpers/emails/index");
-const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, getUserHash } = require('./common/productiveUnitsEdit.js');
-
-
+const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, productiveUnitActive, getUserHash } = require('./common/productiveUnitsEdit.js');
+ 
 // Controlador
 const controller = {};
 
@@ -420,7 +419,7 @@ controller.nameWithId = [verifyToken(config), query("productiveUnitId").notEmpty
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         let productiveUnitData = await pool.query('SELECT JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, "$.profile.informacionAlevinera")), "$.name")) AS name FROM `productiveUnits` WHERE productiveUnits_id = ?', [ productiveUnitId ]); 
         productiveUnitData = JSON.parse(JSON.stringify(productiveUnitData));
@@ -461,6 +460,160 @@ controller.nameWithIdTrazul = [verifyToken(config), query("productiveUnitId").no
         }
         
         res.status(200).json({"name": productiveUnitName, "type":type});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Buscar unidades productiva por nombre e identificación
+controller.searcher = [verifyToken(config), query("param").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // Parametro de busqueda
+        const param = req.query.param;
+
+        let searchName = await pool.query(`SELECT productiveUnits_id AS id, b.users_code AS code, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) AS name, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.logo")) AS logo FROM productiveUnits AS a LEFT JOIN users AS b ON b.users_id = a.users_id WHERE JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) LIKE ? LIMIT 5;`, [ `%${param}%` ]);
+        searchName = JSON.parse(JSON.stringify(searchName));
+
+        // Si tuvo resultados la consulta busca el numero de documento de las unidades productivas
+        for (let index = 0; index < searchName.length; index++) {
+            const element = searchName[index];
+            
+            let userData = await fetch(config.apisRouteRedAzul+"/users/data?userHash="+element.code,{
+                method: "GET",
+                headers: { "Authorization": config.authRedAzul }
+            }).then(async response => { 
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    return {};
+                }
+            })
+            
+            if (userData.hasOwnProperty("userData")) {
+                searchName[index].doc = userData.userData.documentNumber;
+            }else{
+                searchName[index].doc = null;
+            }
+
+            searchName[index].code = undefined;
+        }
+
+        let searhIdentification = await fetch(config.apisRouteRedAzul+"/users/search/document?docNumber="+param,{
+            method: "GET",
+            headers: { "Authorization": config.authRedAzul }
+        }).then(async response => { 
+            if (response.ok) {
+                return await response.json();
+            } else {
+                throw "Error con consulta por documento";
+            }
+        })
+
+        // Se obtiene el objeto puro
+        searhIdentification = searhIdentification.user;
+
+        let doblePU = [];
+
+        for (let index = 0; index < searhIdentification.length; index++) {
+            const element = searhIdentification[index];
+
+            if (element.hash == null) {
+                searhIdentification.splice(index, 1);
+
+            }else{
+                let produtiveUnitName = await pool.query(`SELECT productiveUnits_id AS id, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) AS name, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.logo")) AS logo FROM productiveUnits AS a LEFT JOIN users AS b ON b.users_id = a.users_id WHERE b.users_code = ?`, [ element.hash ]);
+                produtiveUnitName = JSON.parse(JSON.stringify(produtiveUnitName));
+
+                if (produtiveUnitName.length == 1) {
+                    searhIdentification[index].id = produtiveUnitName[0].id;
+                    searhIdentification[index].name = produtiveUnitName[0].name;
+                    searhIdentification[index].logo = produtiveUnitName[0].logo;
+                    searhIdentification[index].hash = undefined; 
+                }else if (produtiveUnitName.length > 1) {
+                    produtiveUnitName.forEach(element => {
+                        element.doc = searhIdentification[index].doc;
+                        doblePU.push(element);
+                    });
+                    
+                    searhIdentification.splice(index, 1);
+                }else{
+                    searhIdentification.splice(index, 1);
+                }
+            }
+        }
+        
+        searhIdentification = searhIdentification.concat(doblePU);
+
+        let search = searchName.concat(searhIdentification);
+
+        res.status(200).json({search});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Obtener modulos de una unidades productivas según permisos del usuario
+controller.modules = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene la unidad productiva
+        const productiveUnitId = req.query.productiveUnit;
+
+         // ID del usuario
+        const userId = await getUserId(req);
+
+         // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Se consultan los módulos disponibles para el tipo de unidad productiva
+        let modules = await pool.query('SELECT a.modules_name AS name, a.modules_nameMenu AS menuName, a.modules_images AS images, a.modules_redirections AS redirections, a.modules_perms AS perms FROM `modules` AS a LEFT JOIN productiveUnits AS b ON b.productiveUnits_types_id = a.productiveUnits_types_id WHERE b.productiveUnits_id = ?;', [ productiveUnitId ]);
+
+        // Se verifica si el usuario tiene permisos de personal de trazabilidad
+        let hasPerms = await pool.query('SELECT traceabilityStaff_perms AS perms FROM `traceabilityStaff` WHERE users_id = ? AND productiveUnits_id = ?', [userId, productiveUnitId]);
+        hasPerms = JSON.parse(JSON.stringify(hasPerms));
+
+        if (hasPerms.length > 0) {
+            // Se parsean los permisos
+            userPerms = JSON.parse(hasPerms[0].perms);
+        }else{
+            userPerms = [];
+        }
+
+        let allowedModules = [];
+
+        let owner = await pool.query('SELECT * FROM `productiveUnits` WHERE users_id = ? AND productiveUnits_id = ?', [userId, productiveUnitId]);
+        owner = JSON.parse(JSON.stringify(owner));
+
+        // Se verifica que modulos puede consultar el usuario y se construye el objeto con los modulos
+        for (let index = 0; index < modules.length; index++) {
+            const element = modules[index];
+
+            modulePerms = element.perms;
+            modulePerms = JSON.parse(modulePerms);
+
+            // Se parsean los JSON anidados
+            element.images = JSON.parse(element.images);
+            element.redirections = JSON.parse(element.redirections);
+
+
+            if (owner.length > 0 || userPerms.includes("all")) {
+                element.perms = undefined;
+                allowedModules.push(element);
+
+                continue;
+            }
+            
+            if (modulePerms.some(element => userPerms.includes(element))){
+                element.perms = undefined;
+                allowedModules.push(element);
+            } 
+        }
+
+        res.status(200).json({modules: allowedModules});
     } catch (error) {
         console.log(error);
         res.status(400).json({error});

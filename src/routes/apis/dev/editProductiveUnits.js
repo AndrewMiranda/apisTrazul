@@ -163,6 +163,44 @@ router.post('/editTraceabilityStaff', controller.editTraceabilityStaff);
 // // // // // // // // // // // ////
 
 
+// // // // // // // // // // // // ////
+// INICIO DE RUTAS PERFIL DE ENGORDE //
+// // // // // // // // // // // // //
+
+/*
+---------------------------
+| Información de alevinos |
+---------------------------
+*/
+
+// Crear alevinos en engorde
+router.post('/informacionFingerlingsEngorde', controller.createFingerlingsEngorde);
+
+// Crear alevinos en engorde con codigo
+router.post('/informacionFingerlingsEngordeToken', controller.createFingerlingsEngordeToken);
+
+// Obtener alevinos de Engorde
+router.get('/informacionFingerlingsEngorde', controller.informacionFingerlingsEngorde);
+
+// Editar alevinos de Engorde
+router.put('/editFingerlings', controller.editFingerlings);
+
+// Datos especificos de alevinos de Engorde
+router.get('/specificFingerling', controller.specificFingerling);
+
+// Datos especificos de alevinos de Engorde
+router.get('/checkFingerlignsDispatch', controller.checkFingerlignsDispatch);
+
+// Aceptar despacho de alevinos
+router.get('/accetpFingerlignsDispatch', controller.accetpFingerlignsDispatch);
+
+// Rechazar despacho de alevinos
+router.get('/rejectFingerlignsDispatch', controller.rejectFingerlignsDispatch);
+
+
+// // // // // // // // // // // ////
+// FIN DE RUTAS PERFIL DE ENGORDE //
+// // // // // // // // // // // //
 
 //Se exporta el enrutador
 module.exports = router;

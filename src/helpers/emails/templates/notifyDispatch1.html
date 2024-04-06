@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap');
+
+            *{
+                font-family: 'Quicksand', sans-serif;
+            }
+            .conten {
+                width: 80%;
+                max-width: 569px;
+                margin: 45px auto 50px;
+                background-color: #F0F4FB;
+                padding: 15px 30px;
+                border-radius: 15px;
+                border: 1px solid #13A8FF;
+                text-align: center;
+            }
+
+            .contenHead {
+                width: 90%;
+                margin: 0 auto 30px;
+                text-align: center;
+            }
+
+            .contenHead span {
+                font-size: 18px;
+                font-weight: bold;
+                color: #707070;
+            }
+
+            .caja {
+                background-color: #fff;
+                padding: 10px;
+                margin-bottom: 15px;
+                margin-top: 20px;
+                border-radius: 15px;
+            }
+
+            .cajaRow {
+                width: 100%;
+                margin-bottom: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+            }
+
+            .cajaTitle {
+                font-size: 20px;
+                font-weight: bold;
+                color: #62C2FE;
+            }
+
+            .cajaRowText {
+                width: 100%;
+                text-align: center;
+            }
+
+            .cajaRowText p{
+                font-size: 18px;
+                text-align: center;
+            }
+
+
+            .cajaRowText a{
+                cursor: pointer;
+                color: #FBB040;
+                /* border-bottom: 1px solid #    */
+                font-size: 18px;
+                /* text-transform: uppercase; */
+            }
+
+            #ref {
+                color: #FBB040;
+            }
+
+            #estateOrder {
+                padding: 0 10px;
+                text-align: center;
+                font-weight: bold;
+                color: #FBB040;
+                font-size: 18px;
+            }
+
+
+            h1{
+                font-size: 25px;
+                font-weight: bold;
+                color: #FBB040;
+                margin:px 15px 30px;
+                text-align: center;
+            }
+
+            p{
+                font-size:large;
+                color: #707070;
+            }
+
+            h2{
+                font-size: 18px;
+                font-weight: bold;
+                color: #62C2FE;
+            }
+
+            @media(max-width:480px){
+                .card{
+                    width: 80%;
+                    margin-bottom: 4.5vw;
+                }
+            }
+
+            @media(max-width:350px){
+                .card{
+                    width: 80%;
+                    margin-bottom: 4.5vw;
+                }
+            }
+        </style>
+    </head>
+    <body style='background-color: #F0F4FB'>
+            <div class='conten'>
+                <!-- <img class="imgLogo" src="https://dev.mipescao.com/IMAGES/logos/logo_miPescaoH.svg" alt="logo miPescao"> -->
+                <h1>¡Hola {{user}}!</h1>
+                <!-- Order Data -->
+                <div class='caja' style='box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);'>
+                    <div class='cajaRowText' id='direction'>
+                        <p>Se ha despachado correctamente tu lote.</p>
+                        <p>Lote: {{batchToken}}</p>
+                        <p>Despacho: {{dispatchToken}}</p>
+                    </div>
+                </div>
+            </div>
+    </body>
+</html>

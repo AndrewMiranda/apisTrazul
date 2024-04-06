@@ -36,7 +36,7 @@ controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -126,7 +126,7 @@ controller.getInformacionAlevinera = [verifyToken(config), query("productiveUnit
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -193,7 +193,7 @@ controller.informacionPadrotesAlevinera = [verifyToken(config), query("productiv
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -207,11 +207,9 @@ controller.informacionPadrotesAlevinera = [verifyToken(config), query("productiv
         broodstocksInactive = JSON.parse(JSON.stringify(broodstocksInactive));
 
         // Se obtien las especies para igualar los ID a los nombres de las especies
-        let species = await fetch(`${config.apisRouteRedAzul}/general/species?flag=*`,
-            {
+        let species = await fetch(`${config.apisRouteRedAzul}/general/species?flag=*`, {
                 method: "GET"
-            }
-        ).then(async response =>  {
+            }).then(async response =>  {
             if (response.status === 200) {
                 speciesJson = await response.json();
                 speciesJson = speciesJson.speciesTypes;
@@ -277,7 +275,7 @@ controller.specificBroodstock = [verifyToken(config), query("broodstockId").notE
     const productiveUnitId = broodstock[0].productiveUnitId;
 
     // se verifica que la unidad productiva pertenezca al usuario
-    if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+    if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
     // se verifica que la unidad productiva se encuentre activa
     if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -323,7 +321,7 @@ controller.createPadrotesAlevinera = [verifyToken(config), body("productiveUnitI
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -465,7 +463,7 @@ controller.editPadrotesAlevinera = [verifyToken(config), body("broodstockId").no
     const productiveUnitId = broodstock[0].productiveUnitId;
 
     // se verifica que la unidad productiva pertenezca al usuario
-    if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+    if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
     // se verifica que la unidad productiva se encuentre activa
     if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -492,7 +490,7 @@ controller.getInformacionBioseguridadAlevinera = [verifyToken(config), query("pr
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos", "modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -521,7 +519,7 @@ controller.editInformacionBioseguridadAlevinera = [verifyToken(config), body("pr
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -579,7 +577,7 @@ controller.biosecurityLinkAfter = [verifyToken(config), body("productiveUnitId")
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -610,7 +608,7 @@ controller.loteAlevineraSpecies = [verifyToken(config), query("productiveUnitId"
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -632,8 +630,6 @@ controller.loteAlevineraSpecies = [verifyToken(config), query("productiveUnitId"
                     throw await response.json();;
                 }
             })
-
-            console.log(specieData);
 
             element.name = specieData.specie.vulgarName;
         }
@@ -658,7 +654,7 @@ controller.loteAlevineraPadrotes = [verifyToken(config), query("productiveUnitId
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -699,7 +695,7 @@ controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos", "modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -741,7 +737,7 @@ controller.editPonds = [verifyToken(config), body("productiveUnitId").notEmpty()
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos", "modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -784,7 +780,7 @@ controller.deletePonds = [verifyToken(config), body("productiveUnitId").notEmpty
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos", "modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -835,7 +831,7 @@ controller.addMedicine = [verifyToken(config), body("productiveUnitId").notEmpty
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -863,7 +859,7 @@ controller.getMedicines = [verifyToken(config), query("productiveUnitId").notEmp
     const userId = await getUserId(req);
 
     // se verifica que la unidad productiva pertenezca al usuario
-    if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+    if (!await userOwnerProductiveUnit(productiveUnitId, userId,["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
     // se verifica que la unidad productiva se encuentre activa
     if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -898,7 +894,7 @@ controller.deleteMedicine = [verifyToken(config), body("medicineId").notEmpty().
         const productiveUnitId = medicineData[0].productiveUnitId;
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -928,7 +924,7 @@ controller.editMedicine = [verifyToken(config), body("medicineId").notEmpty().is
         const productiveUnitId = medicineData[0].productiveUnitId;
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -953,7 +949,7 @@ controller.feedLinkAfter = [verifyToken(config), body("productiveUnitId").notEmp
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos","modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -985,7 +981,7 @@ controller.createFeed = [verifyToken(config), body("productiveUnitId").notEmpty(
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1019,7 +1015,7 @@ controller.getFeeds = [verifyToken(config), query("productiveUnitId").notEmpty()
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos","lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1082,7 +1078,7 @@ controller.getEspecifiFeed = [verifyToken(config), query("feedId").notEmpty().is
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos","lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1113,7 +1109,7 @@ controller.deleteFeed = [verifyToken(config), query("feedId").notEmpty().isInt()
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1140,7 +1136,7 @@ controller.addPermit = [verifyToken(config), body("productiveUnitId").notEmpty()
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1200,7 +1196,7 @@ controller.editPermit = [verifyToken(config), body("permId").notEmpty().isInt(),
         const productiveUnitId = permData[0].productiveId;
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1245,7 +1241,7 @@ controller.getPermit = [verifyToken(config), query("productiveUnitId").notEmpty(
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1270,7 +1266,7 @@ controller.permitLinkAfter = [verifyToken(config), body("productiveUnitId").notE
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1294,7 +1290,7 @@ controller.getCertificates = [verifyToken(config), query("productiveUnitId").not
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1343,7 +1339,7 @@ controller.addCertificate = [verifyToken(config), body("productiveUnitId").notEm
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1400,7 +1396,7 @@ controller.certificatesLinkAfter = [verifyToken(config), body("productiveUnitId"
         const userId = await getUserId(req);
 
         // se verifica que la unidad productiva pertenezca al usuario
-        if (!await userOwnerProductiveUnit(productiveUnitId, userId)) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
@@ -1723,6 +1719,500 @@ controller.editTraceabilityStaff = [verifyToken(config), body("productiveUnitId"
         } else {
             throw "El usuario no pertenece a la unidad productiva";
         }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Crear alevino para engorde
+controller.createFingerlingsEngorde = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("specie").notEmpty().isInt(), body("harvestDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("quantity").notEmpty().isInt(), body("age").notEmpty().isInt(), body("ageUnit").notEmpty().isInt(), body("referenceCode").notEmpty(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos de los padrotes
+        const specie = req.body.specie;
+        const quantity = req.body.quantity;
+        const harvestDate  = req.body.harvestDate;
+        let age = req.body.age ?? "";
+        let ageUnit = req.body.ageUnit ?? "";
+        const referenceCode  = req.body.referenceCode;
+
+        // // Se verifica si el código de referencia es válido
+        // let codeType = await pool.query('SELECT referenceCodes_name  AS name, referenceCodes_rule AS rule FROM `referenceCodes` WHERE referenceCodes_id = ?', [ referenceCodeType ]);
+        // codeType = JSON.parse(JSON.stringify(codeType));
+
+        // Reglas del tipo de codigo
+        // codeRule = JSON.parse(codeType[0].rule);
+
+        // if (codeType.length < 1) throw "Tipo de codigo de referencia inválido";
+        // if (referenceCode.length < codeRule.min || referenceCode.length > codeRule.max) throw `El código ${referenceCode} no es un ${codeType[0].name} válido, min: ${codeRule.min} y max: ${codeRule.max}`;
+
+        // Se verifica si es la primera vez que se registra un alevino
+        let prevFingerlings = await pool.query('SELECT * FROM `productiveUnits_fingerlings` WHERE productiveUnits_id = ?', [ productiveUnitId ]);
+        prevFingerlings = JSON.parse(JSON.stringify(prevFingerlings));
+
+        if (prevFingerlings.length < 1) {
+            await pool.query('UPDATE `productiveUnits` SET `productiveUnits_body` = JSON_SET(`productiveUnits_body`, "$.profile.informacionAlevinos", true) WHERE `productiveUnits_id` = ?', [ productiveUnitId ]);
+        }
+
+        const fingerlingsBody = {
+            quantity,
+            harvestDate,
+            age,
+            ageUnit,
+            referenceCode
+        }
+
+        await pool.query('INSERT INTO `productiveUnits_fingerlings`(`productiveUnits_id`, `specie_id`, `productiveUnits_fingerlings_body`) VALUES (?, ?, ?)', [ productiveUnitId, specie, JSON.stringify(fingerlingsBody) ]);
+    
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Obtener alevinos de engorde
+controller.informacionFingerlingsEngorde = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Obtener alevineros activos
+        let fingerlingsActive = await pool.query(`SELECT productiveUnits_fingerlings_id AS id, specie_id AS specie, productiveUnits_fingerlings_date AS date FROM productiveUnits_fingerlings WHERE productiveUnits_id = ? AND productiveUnits_fingerlings_state = 1`, [ productiveUnitId ]);
+        fingerlingsActive = JSON.parse(JSON.stringify(fingerlingsActive));
+
+        // Obtener alevineros inactivos
+        let fingerlingsInactive = await pool.query(`SELECT productiveUnits_fingerlings_id AS id, specie_id AS specie, productiveUnits_fingerlings_date AS date FROM productiveUnits_fingerlings WHERE productiveUnits_id = ? AND productiveUnits_fingerlings_state = 0`, [ productiveUnitId ]);
+        fingerlingsInactive = JSON.parse(JSON.stringify(fingerlingsInactive));
+
+        // Se obtien las especies para igualar los ID a los nombres de las especies
+        let species = await fetch(`${config.apisRouteRedAzul}/general/species?flag=*`, {    
+            method: "GET"
+        }).then(async response =>  {
+            if (response.status === 200) {
+                speciesJson = await response.json();
+                speciesJson = speciesJson.speciesTypes;
+                speciesParsed = {};
+
+                for (let index = 0; index < speciesJson.length; index++) {
+                    const element = speciesJson[index];
+                    
+                    speciesParsed[element.id] = element.vulgarName;
+                }
+
+                return speciesParsed;
+            }else{
+                res.status(response.status).json(await response.json());
+            }
+        });
+
+        // Se hace la traducción de ID a nombre en caso de que hayan registros de padrotes
+        if (fingerlingsActive.length > 0) {
+            for (let index = 0; index < fingerlingsActive.length; index++) {
+                const element = fingerlingsActive[index];
+                element.specie = species[element.specie] ?? null;
+            }
+        }
+
+        if (fingerlingsInactive.length > 0) {
+            for (let index = 0; index < fingerlingsInactive.length; index++) {
+                const element = fingerlingsInactive[index];
+                element.specie = species[element.specie] ?? null;
+            }
+        }
+
+        fingerlings = {
+            "active": fingerlingsActive,
+            "inactive": fingerlingsInactive
+        }
+
+        res.status(200).json({fingerlings});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Descontinuar alevinos de engorde
+controller.editFingerlings = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("fingerlings").notEmpty().isInt(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Obtener id de alevino
+        const fingerlings = req.body.fingerlings;
+
+        let existFingerlings = await pool.query('SELECT * FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerlings ]);
+        existFingerlings = JSON.parse(JSON.stringify(existFingerlings));
+
+        if(existFingerlings.length < 1) throw "El alevino no existe";
+
+        await pool.query('UPDATE `productiveUnits_fingerlings` SET `productiveUnits_fingerlings_state`= 0 WHERE `productiveUnits_fingerlings_id` = ?', [ fingerlings ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Información especifica de alevino de engorde
+controller.specificFingerling = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("fingerlings").notEmpty().isInt(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Obtener id de alevino
+        const fingerlings = req.query.fingerlings;
+
+        let existFingerlings = await pool.query('SELECT specie_id AS specie, productiveUnits_fingerlings_body AS body, productiveUnits_fingerlings_date AS date FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerlings ]);
+        existFingerlings = JSON.parse(JSON.stringify(existFingerlings));
+
+        if(existFingerlings.length < 1) throw "El alevino no existe";
+
+        let body = JSON.parse(existFingerlings[0].body);
+
+        // Se consulta el tipo de unidad de edad
+        let unitAge = await pool.query('SELECT ageUnits_singularName AS singular, ageUnits_pluralName AS plural FROM `ageUnits` WHERE ageUnits_id = ?', [ body.ageUnit ]);
+        unitAge = JSON.parse(JSON.stringify(unitAge));
+
+        if (body.age == 1) {
+            unitAge = unitAge[0].singular;
+        } else {
+            unitAge = unitAge[0].plural;
+        }
+
+        existFingerlings[0].quantity = body.quantity;
+        existFingerlings[0].harvestDate = body.harvestDate;
+        existFingerlings[0].age = body.age;
+        existFingerlings[0].ageUnit = unitAge;
+        existFingerlings[0].referenceCode = body.referenceCode;
+
+        // Se traduce el ID de la especie a nombre vulgar
+        let specieData = await fetch(config.apisRouteRedAzul+"/general/species?flag="+existFingerlings[0].specie,{
+            method: "GET",
+            headers: { "Authorization": config.authRedAzul }
+        }).then(async response => { 
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return {};
+            }
+        })
+
+        existFingerlings[0].specie = specieData.speciesTypes[0].vulgarName;
+
+        // Se elimina el body
+        existFingerlings[0].body = undefined;
+
+        res.status(200).json({data: existFingerlings});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Información especifica de alevino de engorde
+controller.createFingerlingsEngordeToken = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("token").notEmpty(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Token de alevinos
+        let dispatch = await pool.query('SELECT dispatch_id AS id, batches_token AS batchToken, dispatch_body AS body,dispatch_state AS state FROM `dispatch` WHERE dispatch_token = ?', [ req.body.token ]);
+        dispatch = JSON.parse(JSON.stringify(dispatch));
+
+        if (dispatch.length < 1) throw `El token ${req.body.token} no existe.`;
+
+        if (dispatch[0].state == 1) throw `El token ${req.body.token} ya fue utilizado.`;
+
+        // Se extrae y se parsea el body del despacho
+        dispatchBody = JSON.parse(dispatch[0].body);
+
+        // Se obtiene la cantidad de individuos
+        let quantity = dispatchBody.quantityFish;
+
+        // Se obtienen los datos del lote
+        let batch = await pool.query('SELECT batches_body AS body, batches_prevToken AS prevToken, batchesTypes_id AS type FROM `batches` WHERE batches_token = ?', [ dispatch[0].batchToken ]);
+        batch = JSON.parse(JSON.stringify(batch));
+
+        // Se extrae y se parsea el body del despacho
+        batchBody = JSON.parse(batch[0].body);
+
+        let serial = batchBody.serial;
+
+        // Se verifica si el lote es derivado o mixto
+        if(batch[0].type == 2 || batch[0].type == 3){
+            let prevBatch = JSON.parse(batch[0].prevToken);
+
+            let fatherBatch = await pool.query('SELECT batches_body AS body FROM `batches` WHERE batches_token = ?', [ prevBatch[0] ]);
+            fatherBatch = JSON.parse(JSON.stringify(fatherBatch));
+
+            batchBody = JSON.parse(fatherBatch[0].body);
+        }
+
+        // Se obtiene la especie
+        let specie = batchBody.specie;
+
+        // Se obtiene la edad y la unidad
+        let age = batchBody.age;
+        let ageUnit = batchBody.ageUnit;
+
+        // Se obtiene la fecha de cosecha
+        let harvestDate = batchBody.harvestDate;
+
+        // Se contruye el body del alevino
+        let fingerlingsBody = {
+            quantity,
+            harvestDate,
+            age,
+            ageUnit,
+            referenceCode: serial,
+        }
+
+        // Se registra el alevino
+        await pool.query('INSERT INTO `productiveUnits_fingerlings`(`productiveUnits_id`, `batches_token`, `specie_id`, `productiveUnits_fingerlings_body`) VALUES (?, ?, ?, ?)', [ productiveUnitId, dispatch[0].batchToken, specie, JSON.stringify(fingerlingsBody) ]);
+
+        // Se actualiza el estado del despacho
+        await pool.query('UPDATE `dispatch` SET `dispatch_state`= 1, dispatch_updateDate = now() WHERE dispatch_id = ?', [ dispatch[0].id ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Despachos especifica de alevino de engorde
+controller.checkFingerlignsDispatch = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        //if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        let ownerCode = await pool.query('SELECT b.users_code AS code FROM `productiveUnits` AS a LEFT JOIN users AS b ON a.users_id = b.users_id WHERE productiveUnits_id = ?', [ productiveUnitId ]);
+        ownerCode = JSON.parse(JSON.stringify(ownerCode));
+
+        let userData = await fetch(config.apisRouteRedAzul+"/users/data?userHash="+ownerCode[0].code,{
+            method: "GET",
+            headers: { "Authorization": config.authRedAzul }
+        }).then(async response => { 
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return {};
+            }
+        })
+
+        let onwerEmail = userData.userData.email;
+
+        let dispatchsPending = await pool.query('SELECT dispatch_token AS token, batches_token AS batchToken, dispatch_body AS body FROM `dispatch` WHERE JSON_EXTRACT(dispatch_body, "$.client.email") = ? AND dispatch_state = 0', [ onwerEmail ]);
+        dispatchsPending = JSON.parse(JSON.stringify(dispatchsPending));
+
+        for (let index = 0; index < dispatchsPending.length; index++) {
+            const element = dispatchsPending[index];
+
+            // Se obtiene y se parsea el body del despacho
+            dispatchBody = JSON.parse(element.body);
+
+            // Se elimina el body del despacho
+            element.body = undefined;
+
+            // Se agregan la cantidad de individuos
+            element.quantity = dispatchBody.quantityFish + " Alevinos";
+
+            // Se obtienen los datos del lote
+            let batch = await pool.query('SELECT batches_body AS body, batches_prevToken AS prevToken, batchesTypes_id AS type, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT("$.profile." ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) AS name FROM `batches` AS a LEFT JOIN productiveUnits AS b ON b.productiveUnits_id = a.batches_productiveUnit WHERE batches_token = ?', [ element.batchToken ]);
+            batch = JSON.parse(JSON.stringify(batch));
+
+            if(batch[0].type == 4 || batch[0].type == 5 || batch[0].type == 6){
+                dispatchsPending[index] = undefined;
+                continue;
+            }
+
+            // Se agrega el nombre de la unidad productiva que generó el despacho
+            element.productiveUnitName = batch[0].name;
+
+            let batchBody = JSON.parse(batch[0].body);
+
+            // Se verifica si el lote es derivado o mixto
+            if(batch[0].type == 2 || batch[0].type == 3){
+                let prevBatch = JSON.parse(batch[0].prevToken);
+
+                let fatherBatch = await pool.query('SELECT batches_body AS body FROM `batches` WHERE batches_token = ?', [ prevBatch[0] ]);
+                fatherBatch = JSON.parse(JSON.stringify(fatherBatch));
+
+                batchBody = JSON.parse(fatherBatch[0].body);
+            }
+
+            // Se traduce el ID de la especie a nombre vulgar
+            let specieData = await fetch(config.apisRouteRedAzul+"/general/species?flag="+batchBody.specie,{
+                method: "GET",
+                headers: { "Authorization": config.authRedAzul }
+            }).then(async response => { 
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    return {};
+                }
+            })
+
+            element.specie = specieData.speciesTypes[0].vulgarName ?? "";
+
+            element.batchToken = undefined;
+
+            dispatchsPending[index] = element
+        }
+
+        res.status(200).json({dispatchsPending});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Aceptar despacho de alevinos
+controller.accetpFingerlignsDispatch = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("token").notEmpty(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // Auth de usuario
+        let auth = getUserAuth(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        const token = req.query.token;
+
+        await fetch(config.apisRoute+"/productiveUnits/edit/informacionFingerlingsEngordeToken",{
+            method: "POST",
+            headers: { "Authorization": auth, "Content-Type": "application/json" },
+            body: JSON.stringify({ productiveUnitId, token })
+        }).then(async response => { 
+            if (response.ok) {
+                res.status(200).json({});
+            } else {
+                return {};
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Rechazar despacho de alevinos
+controller.rejectFingerlignsDispatch = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("token").notEmpty(), handleValidationErrors, async(req, res) => { 
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        const token = req.query.token;
+
+        // Se obtienen los datos del usuario propietario del despacho
+        let ownerDispatch = await pool.query('SELECT d.users_code AS code, a.dispatch_state AS state, dispatch_date AS date FROM `dispatch` AS a LEFT JOIN batches AS b ON b.batches_token = a.batches_token LEFT JOIN productiveUnits AS c ON c.productiveUnits_id = b.batches_productiveUnit LEFT JOIN users AS d ON d.users_id = c.users_id WHERE a.dispatch_token = ?', [ token ]);
+        ownerDispatch = JSON.parse(JSON.stringify(ownerDispatch));
+
+        if(ownerDispatch[0].state != 0) throw `El token ${token} ya fue utilizado`;
+
+        // Se actualiza el despacho como rechazado
+        await pool.query('UPDATE `dispatch` SET `dispatch_state`= 2, dispatch_updateDate = now() WHERE dispatch_token = ?', [ token ]);
+
+        let userData = await fetch(config.apisRouteRedAzul+"/users/data?userHash="+ownerDispatch[0].code,{
+            method: "GET",
+            headers: { "Authorization": config.authRedAzul }
+        }).then(async response => { 
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return {};
+            }
+        })
+
+        let onwerEmail = userData.userData.email;
+
+        let date = ownerDispatch[0].date;
+
+        date = new Date(date);
+
+        let formatedDate = date.toISOString().replace("T", " ").replace(/\.\d+Z/, "");
+
+        // Correo para propietario del despacho
+        await sendMail(onwerEmail, `El despacho de tu lote: ${token} ha sido rechazado`, {user: onwerEmail, token, date: formatedDate}, "notifyDispatchRejected");
+
+        res.status(200).json({});
     } catch (error) {
         console.log(error);
         res.status(400).json({error});
