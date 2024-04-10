@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acuacode</title>
+    <link rel="stylesheet" href="css/acuacode.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body onload="checkCode()"> 
+    <!-- LOADER -->
+    <div id="overlay" class="overlay"></div>
+    <div id="loader" class="loader"></div>
+
+    <!-- CONTENT -->
+    <div id="container" class="container">
+        <h1 id="title">Consulta de Trazabilidad de Lote</h1>
+        <form id="trazabilidadForm">
+            <h2>Código del lote</h2>
+            <div id="batchInputs">
+                <input type="text" id="batchCodeSection1" name="codigoLote" placeholder="TB" value="TB" required>
+                <span id="inputsSeparator"> - </span>
+                <input type="text" id="batchCodeSection2" name="codigoLote" placeholder="4" required>
+                <span id="inputsSeparator"> - </span>
+                <input type="text" id="batchCodeSection3" name="codigoLote" placeholder="4" required>
+                <span id="inputsSeparator"> - </span>
+                <input type="text" id="batchCodeSection4" name="codigoLote" placeholder="XNeoJ7" required>
+                <span id="inputsSeparator"> - </span>
+                <input type="text" id="batchCodeSection5" name="codigoLote" placeholder="2404061724" required>
+            </div>
+            <div id="containerFormButton">
+                <input type="button" id="formButton" value="Consultar" onclick="getTraceability()">
+            </div>
+        </form>
+        <div id="map" class="data-hidden"></div>
+        <ul id="datosTrazabilidad" class="data-hidden"></ul>
+    </div>
+    <script>
+        const urlApi = "<%= urlApi %>";
+        const codeGet = "<%= code %>";
+    </script>
+    <script src="js/acuacode.js"></script>
+</body>
+</html>

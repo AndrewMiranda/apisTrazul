@@ -858,6 +858,22 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
             // Se parse el perfil del usuario
             userData = userData.userData;
 
+            // Se el usuario no tiene departamento se extrae el departamento según la ciudad
+            if (!userData.department) {
+                let city = await fetch(config.apisRouteRedAzul+"/general/cities?id="+userData.city,{
+                    method: "GET",
+                    headers: { "Authorization": config.authRedAzul }
+                }).then(async response => { 
+                    if (response.ok) {
+                        return await response.json();
+                    } else {
+                        return {};
+                    }
+                })
+
+                userData.department = city.cities[0].regions_id;
+            }
+
             // Se extrae el país del usuario
             let country = await fetch(config.apisRouteRedAzul+"/general/regions?id="+userData.department,{
                 method: "GET",
@@ -1020,6 +1036,8 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
                 return {};
             }
         })
+        
+        console.log(specieData);
 
         // Se envían los correos
         // Correo para dueño de la unidad productiva
@@ -1029,7 +1047,7 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
         sendMail(client.email, `Has recibido un lote por parte de "${userProductiveId[0].name}"`, {user: client.email, productiveUnitName: userProductiveId[0].name, token, quantity: quantityFish, unit: "Individuos", specieName: specieData.speciesTypes.vulgarName}, "notifyDispatch2");
 
         // Correo transportador
-        sendMail(shipper.email, `${userProductiveId[0].name} te ha agregado como transportador de un lote`, {user: client.email}, "notifyDispatch3");
+        sendMail(shipper.email, `${userProductiveId[0].name} te ha agregado como transportador de un lote`, {user: client.email, productiveUnitName: userProductiveId[0].name}, "notifyDispatch3");
 
         res.status(200).json({tokenTrazability: token, tokenDispatch: dispatchToken});
     } catch (error) {
@@ -1126,19 +1144,23 @@ controller.specificDispatch = [verifyToken(config), query("productiveUnit").notE
 }];
 
 // Trazabilidad de un lote
-controller.traceability = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("token").notEmpty(), handleValidationErrors, async(req, res) => {
+controller.traceability = [verifyToken(config), query("productiveUnit").optional().isInt(), query("token").notEmpty(), handleValidationErrors, async(req, res) => {
     try {
         // ID de la unidad productiva
-        const productiveUnitId = req.query.productiveUnit;
+        const productiveUnitId = req.query.productiveUnit ?? "";
 
-        // ID del usuario
-        const userId = await getUserId(req);
+        console.log(productiveUnitId);
 
-        // se verifica que la unidad productiva pertenezca al usuario
-       // if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["trazabilidad"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+        if (productiveUnitId != "") {
+             // ID del usuario
+            const userId = await getUserId(req);
 
-        // se verifica que la unidad productiva se encuentre activa
-        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+            // se verifica que la unidad productiva pertenezca al usuario
+            // if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["trazabilidad"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+            // se verifica que la unidad productiva se encuentre activa
+            if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+        }
 
         // Array para construir la trazabilidad
         let traceability = [];
@@ -1147,12 +1169,23 @@ controller.traceability = [verifyToken(config), query("productiveUnit").notEmpty
         const mainToken = req.query.token;
 
         // Se obtienen los datos del token principal
-        let mainBatch = await pool.query('SELECT batches_id AS id, batchesTypes_id AS type, batches_prevToken AS prevToken, batches_body AS body, batches_packOff AS packOff, batches_date AS date FROM `batches` WHERE batches_token = ?', [ mainToken ]);
+        let mainBatch = await pool.query('SELECT batches_id AS id, batchesTypes_id AS type, batches_prevToken AS prevToken, batches_body AS body, batches_packOff AS packOff, batches_date AS date, batches_productiveUnit AS productiveUnit FROM `batches` WHERE batches_token = ?', [ mainToken ]);
         mainBatch = JSON.parse(JSON.stringify(mainBatch));
 
         if (mainBatch.length < 1) throw `El lote ${mainToken} no existe o no es de esta unidad productiva.`;
 
         let batchData = await constructTraceability(mainToken, mainBatch[0].type, mainBatch[0].body, mainBatch[0].prevToken);
+
+        // Se obtiene la ubicación de la granja
+        let productiveUnitData = await pool.query(`SELECT JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.coords")) AS coords FROM productiveUnits WHERE productiveUnits_id = ?`, [ mainBatch[0].productiveUnit ]);
+        productiveUnitData = JSON.parse(JSON.stringify(productiveUnitData));
+
+        if (productiveUnitData.length > 0) {
+            batchData.coords = productiveUnitData[0].coords;
+        }else{
+            batchData.coords = null;
+        }
+        
 
         // TRAZABILIDAD PARA LOTE DE ALEVINERA BÁSICO
         if (mainBatch[0].type == 1) {
@@ -1173,14 +1206,14 @@ controller.traceability = [verifyToken(config), query("productiveUnit").notEmpty
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
             };
 
             // Se iteran los despachos de los lotes hijos
-            for (const element of childLots) {
+            for (element of childLots) {
                 // Se obtienen los despachos y los transportadores
                 let dispatches = await pool.query('SELECT dispatch_token AS token, dispatch_body AS body FROM `dispatch` WHERE batches_token = ?', [element.token]);
                 dispatches = JSON.parse(JSON.stringify(dispatches));

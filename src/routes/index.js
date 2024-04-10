@@ -23,6 +23,22 @@ router.get("/update", (req, res) => {
     res.render("update/update.ejs", { apisVersion });
 });
 
+// Ruta para consultar trazabilidad
+router.get("/acuacode", (req, res) => {
+    // Se obtiene la versión actual de las API's
+    const apisVersion = req.query.v || process.env.ACTUALAPIVERSION || "dev";
+
+    // Se obtiene el host
+    const host = process.env.URLAPI || "http://localhost:3001";
+
+    const urlApi = host+"/apis/"+apisVersion;
+
+    // Se obtiene el código en caso de que sea una redirección
+    const code = req.query.c ?? "";
+
+    res.render("update/acuacode.ejs", { urlApi, code });
+});
+
 // Favicon
 router.get("/favicon.ico", (req, res) => { 
     res.sendFile("src/public/favicon/favicon.ico", { root: '.' })

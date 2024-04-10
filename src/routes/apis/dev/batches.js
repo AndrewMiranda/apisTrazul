@@ -60,8 +60,7 @@ router.get('/dispatch', controller.specificDispatch);
 router.get('/traceability', controller.traceability);
 
 // Obtener despacho especifico
-router.get('/aquacode', controller.aquacode);
-
+router.get('/acuacode', controller.aquacode);
 
 
 //Se exporta el enrutador

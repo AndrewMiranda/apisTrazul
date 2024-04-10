@@ -2060,7 +2060,7 @@ controller.checkFingerlignsDispatch = [verifyToken(config), query("productiveUni
             }
         })
 
-        let onwerEmail = userData.userData.email;
+        let onwerEmail = userData.userData.email ?? "";
 
         let dispatchsPending = await pool.query('SELECT dispatch_token AS token, batches_token AS batchToken, dispatch_body AS body FROM `dispatch` WHERE JSON_EXTRACT(dispatch_body, "$.client.email") = ? AND dispatch_state = 0', [ onwerEmail ]);
         dispatchsPending = JSON.parse(JSON.stringify(dispatchsPending));
