@@ -934,6 +934,8 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
 
         if (!validPackaging.length > 0) throw `El metodo de embalaje no existe o no está permitido para esta unidad productiva.`;
 
+        let packagingName = validPackaging[0].packaging_name;
+
         // Se construye el objeto dispatch
         let dispatch = {
             client,
@@ -997,7 +999,7 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
         }
         
         // Se obtiene el ID de la unidad productiva que despacha
-        let userProductiveId = await pool.query(`SELECT users_id AS id, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) AS name FROM productiveUnits WHERE productiveUnits_id = ?`, [ productiveUnitId ]);
+        let userProductiveId = await pool.query(`SELECT users_id AS id, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.name")) AS name, JSON_UNQUOTE(JSON_EXTRACT(JSON_UNQUOTE(JSON_EXTRACT(productiveUnits_body, CONCAT('$.profile.' ,JSON_UNQUOTE(JSON_EXTRACT(JSON_KEYS(JSON_EXTRACT(productiveUnits_body, "$.profile"), "$[0]"), "$[0]"))))), "$.phone")) AS phone FROM productiveUnits WHERE productiveUnits_id = ?`, [ productiveUnitId ]);
         userProductiveId = JSON.parse(JSON.stringify(userProductiveId));
 
         let userDataProductive = await fetch(config.apisRoute+"/users/otherData?user="+userProductiveId[0].id,{
@@ -1037,7 +1039,15 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
             }
         })
         
-        console.log(specieData);
+        // Se obtiene la fecha actual
+        let now = new Date();
+
+        // Se obtiene día, mes y año
+        var day = now.getDate();
+        var month = now.getMonth() + 1; // Se suma 1 porque los meses van de 0 a 11
+        var year = now.getFullYear();
+
+        now = day + '/' + month + '/' + year;
 
         // Se envían los correos
         // Correo para dueño de la unidad productiva
@@ -1047,7 +1057,7 @@ controller.dispatch = [verifyToken(config), body("productiveUnit").notEmpty().is
         sendMail(client.email, `Has recibido un lote por parte de "${userProductiveId[0].name}"`, {user: client.email, productiveUnitName: userProductiveId[0].name, token, quantity: quantityFish, unit: "Individuos", specieName: specieData.speciesTypes.vulgarName}, "notifyDispatch2");
 
         // Correo transportador
-        sendMail(shipper.email, `${userProductiveId[0].name} te ha agregado como transportador de un lote`, {user: client.email, productiveUnitName: userProductiveId[0].name}, "notifyDispatch3");
+        sendMail(shipper.email, `${userProductiveId[0].name} te ha agregado como transportador de un lote`, {user: shipper.email, productiveUnitName: userProductiveId[0].name, productiveUnitPhone: userProductiveId[0].phone, packaging: packagingName, dispatchDate: now}, "notifyDispatch3");
 
         res.status(200).json({tokenTrazability: token, tokenDispatch: dispatchToken});
     } catch (error) {
@@ -1149,8 +1159,6 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
         // ID de la unidad productiva
         const productiveUnitId = req.query.productiveUnit ?? "";
 
-        console.log(productiveUnitId);
-
         if (productiveUnitId != "") {
              // ID del usuario
             const userId = await getUserId(req);
@@ -1160,7 +1168,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
 
             // se verifica que la unidad productiva se encuentre activa
             if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
-        }
+        }   
 
         // Array para construir la trazabilidad
         let traceability = [];
@@ -1306,16 +1314,20 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 let dispatches = await pool.query('SELECT dispatch_token AS token, dispatch_body AS body FROM `dispatch` WHERE batches_token = ?', [element.token]);
                 dispatches = JSON.parse(JSON.stringify(dispatches));
         
-                for (element of dispatches) {
-                    element = JSON.parse(element.body);
+                for (elementB of dispatches) {
+                    elementB = JSON.parse(elementB.body);
     
                     // Se traducen los valores ID a nombre
-                    element.client.country = await getCountryName(element.client.country);
+                    elementB.client.country = await getCountryName(elementB.client.country);
+
+                    if (elementB.client.documentType == undefined) {
+                        elementB.client.documentType = 9;
+                    }
     
-                    element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                    elementB.client.documentType = await getDocumentTypeName(elementB.client.documentType);
     
-                    await dispatchesParsed.push(element.client);
-                    await shippers.push(element.shipper);
+                    await dispatchesParsed.push(elementB.client);
+                    await shippers.push(elementB.shipper);
                 };
             }
 
@@ -1446,16 +1458,20 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 let dispatches = await pool.query('SELECT dispatch_token AS token, dispatch_body AS body FROM `dispatch` WHERE batches_token = ?', [element.token]);
                 dispatches = JSON.parse(JSON.stringify(dispatches));
         
-                for (element of dispatches) {
-                    element = JSON.parse(element.body);
+                for (elementB of dispatches) {
+                    elementB = JSON.parse(elementB.body);
     
                     // Se traducen los valores ID a nombre
-                    element.client.country = await getCountryName(element.client.country);
+                    elementB.client.country = await getCountryName(elementB.client.country);
+
+                    if (elementB.client.documentType == undefined) {
+                        elementB.client.documentType = 9;
+                    }
     
-                    element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                    elementB.client.documentType = await getDocumentTypeName(elementB.client.documentType);
     
-                    await dispatchesParsed.push(element.client);
-                    await shippers.push(element.shipper);
+                    await dispatchesParsed.push(elementB.client);
+                    await shippers.push(elementB.shipper);
                 };
             }
 
@@ -1490,7 +1506,17 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
 // Trazabilidad de un lote
 controller.aquacode = [verifyToken(config), query("token").notEmpty(), handleValidationErrors, async(req, res) => {
     try {
+        // Se obtiene el token
+        let token = req.query.token;
 
+        let mainBatch = await pool.query('SELECT * FROM `batches` WHERE batches_token = ?', [ token ]);
+        mainBatch = JSON.parse(JSON.stringify(mainBatch));
+
+        if (!mainBatch.length > 0) `El lote ${token} no existe`;
+        
+        if (mainBatch.batchesTypes_id == 1) {
+            
+        }
 
         res.status(200).json({traceability});
     } catch (error) {
