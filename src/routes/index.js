@@ -10,11 +10,9 @@ const path = require('path');
 
 //Llamado a rutas
 router.use('/apis', require('./apis/apis.js'));
+router.use('/', require('./web/web.js'));
 
-// WEB
-router.get("/", (req, res) => {
-    res.send("Bienvenido a TRAZUL");
-});
+
 
 // Ruta para subir update de trazul (Temporal)
 router.get("/update", (req, res) => {
