@@ -11,7 +11,6 @@ router.get("/aceptInvitationStaff", (req, res) => {
     res.render("redirectEmails/aceptInvitationStaff");
 });
 
-
 router.get("/rejectedInvitationStaff", (req, res) => {
     res.render("redirectEmails/rejectedInvitationStaff");
 });

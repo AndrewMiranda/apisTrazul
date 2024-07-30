@@ -10,6 +10,7 @@ const { body, query } = require('express-validator');
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const {sendMail} = require("../../../helpers/emails/index");
 const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, getUserHash, productiveUnitActive, constructTraceability, getCountryName, getDocumentTypeName } = require('./common/batches');
+const { spececieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData } = require("./common/batchesAux");
 const { generaterRandomSerial, generaterBatchToken, generaterDispatchToken } = require('../../../helpers/serialTrazul');
 
 // Controlador base
@@ -682,12 +683,120 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         // Lotes que no han sido despachados
-        let batchesWhitout = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 0', [ productiveUnitId ]);
+        let batchesWhitout = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 0', [ productiveUnitId ]);
         batchesWhitout = JSON.parse(JSON.stringify(batchesWhitout));
 
+        for (const iterator of batchesWhitout) {
+            if (iterator.type == 1 || iterator.type == 4) {
+                let body = JSON.parse(iterator.body);
+
+                if (iterator.type == 4) {
+                    let fingerling = body.fingerlings;
+
+                    let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                    fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                    
+                    body.specie = fingerlingData[0].specie;
+                }
+
+                iterator.specie = await spececieName(body.specie) ?? "";
+                iterator.serial = body.serial;
+
+                iterator.type = undefined;
+                iterator.body = undefined;
+                iterator.prevToken = undefined;
+            }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
+                let prevTokenBatch = JSON.parse(iterator.prevToken);
+
+                while (true) {
+                    let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
+                    batch = JSON.parse(JSON.stringify(batch));
+
+                    if (batch[0].type == 1 || batch[0].type == 4) {
+                        let body = JSON.parse(batch[0].body);
+
+                        if (batch[0].type == 4) {
+                            let fingerling = body.fingerlings;
+        
+                            let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                            fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                            
+                            body.specie = fingerlingData[0].specie;
+                        }
+                        
+                        iterator.specie = await spececieName(body.specie) ?? "";
+                        iterator.serial = body.serial;
+
+                        iterator.type = undefined;
+                        iterator.body = undefined;
+                        iterator.prevToken = undefined;
+
+                        break
+                    }else{
+                        prevTokenBatch = iterator.prevToken;
+                        continue;
+                    }
+                }
+            }   
+        }
+
         // Lotes que han sido parcialmente despachados
-        let batchesPartial = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 1', [ productiveUnitId ]);
+        let batchesPartial = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 1', [ productiveUnitId ]);
         batchesPartial = JSON.parse(JSON.stringify(batchesPartial));
+
+        for (const iterator of batchesPartial) {
+            if (iterator.type == 1 || iterator.type == 4) {
+                let body = JSON.parse(iterator.body);
+
+                if (iterator.type == 4) {
+                    let fingerling = body.fingerlings;
+
+                    let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                    fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                    
+                    body.specie = fingerlingData[0].specie;
+                }
+
+                iterator.specie = await spececieName(body.specie) ?? "";
+                iterator.serial = body.serial;
+
+                iterator.type = undefined;
+                iterator.body = undefined;
+                iterator.prevToken = undefined;
+            }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
+                let prevTokenBatch = JSON.parse(iterator.prevToken);
+
+                while (true) {
+                    let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
+                    batch = JSON.parse(JSON.stringify(batch));
+
+                    if (batch[0].type == 1 || batch[0].type == 4) {
+                        let body = JSON.parse(batch[0].body);
+
+                        if (batch[0].type == 4) {
+                            let fingerling = body.fingerlings;
+        
+                            let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                            fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                            
+                            body.specie = fingerlingData[0].specie;
+                        }
+                        
+                        iterator.specie = await spececieName(body.specie) ?? "";
+                        iterator.serial = body.serial;
+
+                        iterator.type = undefined;
+                        iterator.body = undefined;
+                        iterator.prevToken = undefined;
+
+                        break
+                    }else{
+                        prevTokenBatch = iterator.prevToken;
+                        continue;
+                    }
+                }
+            }   
+        }
 
         // Se agrupan los lotes
         let batches = {
@@ -698,8 +807,62 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
         // Se verifica si se mandó el parametro opcional
         if (!req.query.available) {
             // Lotes que han sido parcialmente despachados
-            let batchesPackOff = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 2', [ productiveUnitId ]);
+            let batchesPackOff = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 2', [ productiveUnitId ]);
             batchesPackOff = JSON.parse(JSON.stringify(batchesPackOff));
+
+            for (const iterator of batchesPackOff) {
+                if (iterator.type == 1 || iterator.type == 4) {
+                    let body = JSON.parse(iterator.body);
+    
+                    if (iterator.type == 4) {
+                        let fingerling = body.fingerlings;
+    
+                        let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                        fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                        
+                        body.specie = fingerlingData[0].specie;
+                    }
+    
+                    iterator.specie = await spececieName(body.specie) ?? "";
+                    iterator.serial = body.serial;
+    
+                    iterator.type = undefined;
+                    iterator.body = undefined;
+                    iterator.prevToken = undefined;
+                }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
+                    let prevTokenBatch = JSON.parse(iterator.prevToken);
+    
+                    while (true) {
+                        let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
+                        batch = JSON.parse(JSON.stringify(batch));
+    
+                        if (batch[0].type == 1 || batch[0].type == 4) {
+                            let body = JSON.parse(batch[0].body);
+    
+                            if (batch[0].type == 4) {
+                                let fingerling = body.fingerlings;
+            
+                                let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
+                                fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
+                                
+                                body.specie = fingerlingData[0].specie;
+                            }
+                            
+                            iterator.specie = await spececieName(body.specie) ?? "";
+                            iterator.serial = body.serial;
+    
+                            iterator.type = undefined;
+                            iterator.body = undefined;
+                            iterator.prevToken = undefined;
+    
+                            break
+                        }else{
+                            prevTokenBatch = iterator.prevToken;
+                            continue;
+                        }
+                    }
+                }   
+            }
 
             // Se agrega al objeto de lotes
             batches.batchesPackOff = batchesPackOff;
@@ -1081,7 +1244,7 @@ controller.dispatches = [verifyToken(config), query("productiveUnit").notEmpty()
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
-        let dispatches = await pool.query('SELECT a.dispatch_id AS id, a.dispatch_token AS tokenDispatch, JSON_EXTRACT(dispatch_body, "$.client.name") AS name FROM `dispatch` AS a LEFT JOIN batches AS b ON b.batches_token = a.batches_token WHERE b.batches_productiveUnit = ?', [ productiveUnitId ]);
+        let dispatches = await pool.query('SELECT a.dispatch_id AS id, a.dispatch_token AS tokenDispatch, JSON_EXTRACT(dispatch_body, "$.client.name") AS name, dispatch_date AS date FROM `dispatch` AS a LEFT JOIN batches AS b ON b.batches_token = a.batches_token WHERE b.batches_productiveUnit = ?', [ productiveUnitId ]);
         dispatches = JSON.parse(JSON.stringify(dispatches));
 
         res.status(200).json({dispatches});
@@ -1120,8 +1283,10 @@ controller.specificDispatch = [verifyToken(config), query("productiveUnit").notE
 
         dispatch[0].body.packaging = packaging[0].name;
 
+        let idDoc = dispatch[0].body.client.documentType ?? 9;
+
         // Se traduce el tipo de documento del cliente
-        let document = await fetch(config.apisRoute+"/general/documentTypes?flag="+dispatch[0].body.client.documentType,{
+        let document = await fetch(config.apisRoute+"/general/documentTypes?flag="+idDoc,{
             method: "GET"
         }).then(async response => {
             if (response.ok) {
@@ -1232,7 +1397,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                     // Se traducen los valores ID a nombre
                     element.client.country = await getCountryName(element.client.country);
     
-                    element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                    element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
     
                     await dispatchesParsed.push(element.client);
                     await shippers.push(element.shipper);
@@ -1270,7 +1435,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
@@ -1302,7 +1467,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
@@ -1355,7 +1520,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
@@ -1402,7 +1567,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
@@ -1446,7 +1611,7 @@ controller.traceability = [verifyToken(config), query("productiveUnit").optional
                 // Se traducen los valores ID a nombre
                 element.client.country = await getCountryName(element.client.country);
 
-                element.client.documentType = await getDocumentTypeName(element.client.documentType);
+                element.client.documentType = await getDocumentTypeName(element.client.documentType ?? 9);
 
                 await dispatchesParsed.push(element.client);
                 await shippers.push(element.shipper);
@@ -1509,13 +1674,61 @@ controller.aquacode = [verifyToken(config), query("token").notEmpty(), handleVal
         // Se obtiene el token
         let token = req.query.token;
 
-        let mainBatch = await pool.query('SELECT * FROM `batches` WHERE batches_token = ?', [ token ]);
+        let mainBatch = await pool.query('SELECT batches_productiveUnit AS punit, batchesTypes_id AS type FROM `batches` WHERE batches_token = ?', [ token ]);
         mainBatch = JSON.parse(JSON.stringify(mainBatch));
 
         if (!mainBatch.length > 0) `El lote ${token} no existe`;
+
+        // Objeto de trazabilidad
+        let traceability = [];
+
+        await fetch(config.apisRoute+"/productiveUnits/batches/traceability?token="+token, {
+            method: "GET",
+            headers: { "Authorization": config.trazulKey }
+        }).then(async response => { 
+            if (response.ok) {
+                let data = await response.json();
+
+                data = data.traceability;
+
+                traceability.push({ type: mainBatch[0].type, data});
+            } else {
+                throw await response.json();
+            }
+        }).catch(err => {
+            console.log(err);
+            throw err;
+        })
         
-        if (mainBatch.batchesTypes_id == 1) {
-            
+        // Lote de alevinera principal
+        if (mainBatch[0].type == 4 || mainBatch[0].type == 5 || mainBatch[0].type == 6) {
+            let fingerlings = traceability[0].data[0].body.fingerlings ?? [];
+
+            if (fingerlings.length > 0) {
+                let token = fingerlings[0].token ?? undefined;
+
+                let iteratorBatch = await pool.query('SELECT batches_productiveUnit AS punit, batchesTypes_id AS type FROM `batches` WHERE batches_token = ?', [ token ]);
+                iteratorBatch = JSON.parse(JSON.stringify(iteratorBatch));
+
+                await fetch(config.apisRoute+"/productiveUnits/batches/traceability?token="+token, {
+                    method: "GET",
+                    headers: { "Authorization": config.trazulKey }
+                }).then(async response => { 
+                    if (response.ok) {
+                        let data = await response.json();
+        
+                        data = data.traceability;
+        
+                        traceability.unshift({ type: iteratorBatch[0].type, data });
+                    } else {
+                        throw await response.json();
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    throw err;
+                })
+            }
+
         }
 
         res.status(200).json({traceability});

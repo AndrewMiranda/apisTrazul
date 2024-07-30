@@ -119,24 +119,37 @@
     </head>
     <body style='background-color: #F0F4FB'>
         <div class='conten'>
-            <h1>Tazul</h1>
+            <h1>Trazul</h1>
 
             <!-- <div id='estateOrder'></div> -->
 
 
             <!-- Order Data -->
             <div class='caja borderRadius' style='box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);'>
-                <div class='cajaRow'>
-                    <div class='cajaTitle'>¡Invitación aceptada!</div>
-                </div>
-                <div class='cajaRowText' id='direction'>
-                    <p>Has aceptado la invitación para ser parte del personal de trazabilidad .</p>
-                    <!-- <p>}.</p> -->
-
-                    <p>Abre la Aplicación de <b>Trazul</b> para poder comenzar a interactura con la granja.</p>
-
-                    <p>Si no la tienes <a href="https://trazul.redazul.co/apis/dev/general/downloadUpdate">Descargala aqui</a>.</p>
-                </div>
+                <% if ( verify == true) { %>
+                    <div class='cajaRow'>
+                        <div class='cajaTitle'>¡Invitación aceptada!</div>
+                    </div>
+                    <div class='cajaRowText' id='direction'>
+                        <p>Has aceptado la invitación para ser parte del personal de trazabilidad.</p>
+                        <!-- <p>}.</p> -->
+    
+                        <p>Abre la Aplicación de <b>Trazul</b> para poder comenzar a interactuar con la granja.</p>
+    
+                        <p>Si no la tienes, <a href="https://trazul.redazul.co/apis/dev/general/downloadUpdate">Descárgala aquí</a>.</p>
+                    </div>
+                <% } else { %>
+                    <div class='cajaRow'>
+                        <div class='cajaTitle'>¡Error!</div>
+                    </div>
+                    <div class='cajaRowText' id='direction'>
+                        <p><%= error %>.</p>
+    
+                        <p>Si aún no tienes la aplicación, descárgala aquí: <a href="https://trazul.redazul.co/apis/dev/general/downloadUpdate">Descárgala aquí</a>.</p>
+                        
+                        <p>Si crees que esto es un error, contáctate con nosotros 😟</p>
+                    </div>
+                <% } %>
             </div>
             <br><br>
         </div>

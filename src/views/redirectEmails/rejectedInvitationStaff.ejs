@@ -119,10 +119,11 @@
     </head>
     <body style='background-color: #F0F4FB'>
         <div class='conten'>
-            <h1>Tazul</h1>
+            <h1>Trazul</h1>
 
             <!-- <div id='estateOrder'></div> -->
 
+            <% if ( verify == true) { %>
 
             <!-- Order Data -->
             <div class='caja borderRadius' style='box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);'>
@@ -130,12 +131,27 @@
                     <div class='cajaTitle'>¡Invitación rechazada!</div>
                 </div>
                 <div class='cajaRowText' id='direction'>
-                    <p>Has rechazado ser parte del personal de trazabilidad de la finca: <b>Granja lismar</b>.</p>
+                    <p>Has rechazado la invitación de personal de trazabilidad.</p>
                     <!-- <p>}.</p> -->
 
                     <!-- <p><a href="dashboard.mipescao.com/investors">Ir a la Aplicación</a></p> -->
                 </div>
             </div>
+
+            <% } else { %>
+
+                <div class='caja borderRadius' style='box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.37);'>
+                    <div class='cajaRow'>
+                        <div class='cajaTitle'>¡Invitación rechazada!</div>
+                    </div>
+                    <div class='cajaRowText' id='direction'>
+                        <p><%= error %>.</p>
+    
+                        <!-- <p><a href="dashboard.mipescao.com/investors">Ir a la Aplicación</a></p> -->
+                    </div>
+                </div>
+
+            <% } %>
             <br><br>
         </div>
     </body>

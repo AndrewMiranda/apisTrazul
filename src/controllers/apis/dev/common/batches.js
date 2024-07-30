@@ -192,12 +192,21 @@ async function mixedHatchery(body, prevToken) {
     for (let index = 0; index < prevToken.length; index++) {
         element = prevToken[index];
 
-        let prevBatch = await pool.query('SELECT batches_body AS body FROM `batches` WHERE batches_token = ?', [ element ]);
+        let prevBatch = await pool.query('SELECT batches_body AS body, batchesTypes_id AS type, batches_prevToken prev FROM `batches` WHERE batches_token = ?', [ element ]);
         prevBatch = JSON.parse(JSON.stringify(prevBatch));
 
         bodyPrevBatch = JSON.parse(prevBatch[0].body);
 
-        let mainBatch = await basicHatchery(bodyPrevBatch);
+
+        let mainBatch;
+
+        if (prevBatch[0].type == 1) {
+            mainBatch = await basicHatchery(bodyPrevBatch);
+        }else if(prevBatch[0].type == 2){
+            mainBatch = await derivedHatchery(bodyPrevBatch, prevBatch[0].prev);
+        }else{
+            throw "Error con lote padre: "+element;
+        }
 
         specie = mainBatch.specie;
 

@@ -39,6 +39,9 @@ router.get("/referenceCodes", controller.referenceCodes);
 // Unidades de peso
 router.get("/units", controller.units);
 
+// Unidades de tipos de costos
+router.get("/expensesTypes", controller.expensesTypes);
+
 
 // APP UPDATE AND UPDATE ENDPOINTS
 //

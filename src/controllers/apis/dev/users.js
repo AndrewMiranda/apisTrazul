@@ -441,12 +441,12 @@ controller.acceptStaffEmail = [ query("u").notEmpty().isInt(), query("p").notEmp
 
             // Se verifica si se editó correctamente la invitación
             if (editInvitation.affectedRows > 0) {
-                res.send("Invitación aceptada");
+                res.render("redirectEmails/aceptInvitationStaff", { verify: true });
             } else {
-                throw "Error al aceptar invitación, intente nuevamente";
+                res.render("redirectEmails/aceptInvitationStaff", { verify: false, error: "Error al aceptar invitación" });
             }
         }else{
-            res.send("Esta invitación no es válida");
+            res.render("redirectEmails/aceptInvitationStaff", { verify: false, error: "La invitación no existe o ya caducó, intenta nuevamente o pídele al dueño de la unidad productiva que te invite nuevamente. 😉" });
         }
     } catch (error) {
         console.log(error);
@@ -472,12 +472,12 @@ controller.rejectStaffEmail = [ query("u").notEmpty().isInt(), query("p").notEmp
 
             // Se verifica si se editó correctamente la invitación
             if (editInvitation.affectedRows > 0) {
-                res.send("Invitación rechazada");
+                res.render("redirectEmails/rejectedInvitationStaff", { verify: true });
             } else {
-                throw "Error al rechazar invitación, intente nuevamente";
+                res.render("redirectEmails/rejectedInvitationStaff", { verify: true, error: "Error al rechazar la invitación, intente nuevamente" });
             }
         }else{
-            res.send("Esta invitación no es válida");
+            res.render("redirectEmails/rejectedInvitationStaff", { verify: true, error: "La invitación no existe o ya caducó." });
         }
     } catch (error) {
         console.log(error);

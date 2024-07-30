@@ -278,6 +278,28 @@ controller.units = [ query("id").optional().isInt(), async(req, res) => {
     }
 }];
 
+// Unidades de tipos de costos
+controller.expensesTypes = [ query("category").optional().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad
+        const category = req.query.category;
+
+        if (category) {
+            let expensesTypes = await pool.query('SELECT expensesTypes_id AS id, expensesTypes_name AS name FROM `expensesTypes` WHERE expensesTypes_category = ?;', [ category ]);
+            expensesTypes = JSON.parse(JSON.stringify(expensesTypes));
+
+            res.status(200).json({expensesTypes});
+        } else {
+            let expensesTypes = await pool.query('SELECT expensesTypes_id AS id, expensesTypes_name AS name FROM `expensesTypes`');
+            expensesTypes = JSON.parse(JSON.stringify(expensesTypes));
+
+            res.status(200).json({expensesTypes});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
 
   /////////////////////////////////////
  // APP UPDATE AND UPDATE ENDPOINTS //

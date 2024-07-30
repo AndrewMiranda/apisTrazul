@@ -84,6 +84,9 @@ button:hover {
 ul {
     list-style-type: none;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 li {
@@ -155,4 +158,34 @@ li {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+li{
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none; /* Evita la selección de texto */
+    -moz-user-select: none; /* Evita la selección en navegadores Firefox */
+    -webkit-user-select: none; /* Evita la selección en navegadores Safari y Chrome */
+    -ms-user-select: none; /* Evita la selección en navegadores Edge */
+}
+
+li img{
+    width: 10%;
+}
+
+.itemTitle{
+    margin-left: 3%;
+    font-weight: bold;
+}
+
+.mainDiv{
+    display: flex;
+    row-gap: 20px;
+    align-items: center;
+}
+
+.arrowNext{
+    width: 6%;
+    margin-bottom: 10px;
 }

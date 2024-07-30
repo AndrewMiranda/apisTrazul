@@ -396,7 +396,7 @@ controller.codeEmail = [ async(req, res) => {
 
                 verificationCode = config.apisRoute+verificationCode;
 
-                sendMail(email, "Código de verificación de unidad productiva - Trazul", {email: email, verifyCode: verificationCode}, "verifyCodeProductiveUnit");
+                sendMail(email, "Código de verificación de correo electrónico de unidad productiva - Trazul", {email: email, verifyCode: verificationCode}, "verifyCodeProductiveUnit");
 
                 res.status(200).json({});
             } else {
@@ -570,7 +570,7 @@ controller.modules = [verifyToken(config), query("productiveUnit").notEmpty().is
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         // Se consultan los módulos disponibles para el tipo de unidad productiva
-        let modules = await pool.query('SELECT a.modules_name AS name, a.modules_nameMenu AS menuName, a.modules_images AS images, a.modules_redirections AS redirections, a.modules_perms AS perms FROM `modules` AS a LEFT JOIN productiveUnits AS b ON b.productiveUnits_types_id = a.productiveUnits_types_id WHERE b.productiveUnits_id = ?;', [ productiveUnitId ]);
+        let modules = await pool.query('SELECT a.modules_name AS name, a.modules_nameMenu AS menuName, a.modules_images AS images, a.modules_redirections AS redirections, a.modules_perms AS perms FROM `modules` AS a LEFT JOIN productiveUnits AS b ON b.productiveUnits_types_id = a.productiveUnits_types_id WHERE b.productiveUnits_id = ? AND a.modules_state = 1;', [ productiveUnitId ]);
 
         // Se verifica si el usuario tiene permisos de personal de trazabilidad
         let hasPerms = await pool.query('SELECT traceabilityStaff_perms AS perms FROM `traceabilityStaff` WHERE users_id = ? AND productiveUnits_id = ?', [userId, productiveUnitId]);
