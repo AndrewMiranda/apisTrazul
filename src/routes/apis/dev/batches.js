@@ -62,6 +62,15 @@ router.get('/traceability', controller.traceability);
 // Obtener despacho especifico
 router.get('/acuacode', controller.aquacode);
 
+// Asociar ingreso a lote
+router.post('/incomes', controller.associateIncomes);
+
+router.get('/incomes', controller.incomes);
+
+
+// Asociar egreso a lote
+// router.post('/expenses', controller.aquacode);
+
 
 //Se exporta el enrutador
 module.exports = router;

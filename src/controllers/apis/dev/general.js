@@ -278,7 +278,7 @@ controller.units = [ query("id").optional().isInt(), async(req, res) => {
     }
 }];
 
-// Unidades de tipos de costos
+// Tipos de costos
 controller.expensesTypes = [ query("category").optional().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // ID de la unidad
@@ -295,6 +295,32 @@ controller.expensesTypes = [ query("category").optional().isInt(), handleValidat
 
             res.status(200).json({expensesTypes});
         }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Tipos de ingresos
+controller.incomesTypes = [ handleValidationErrors, async(req, res) => {
+    try {
+        let incomesTypes = await pool.query('SELECT incomesTypes_id AS id, incomesTypes_name AS name, incomesTypes_description AS description FROM `incomesTypes`;');
+        incomesTypes = JSON.parse(JSON.stringify(incomesTypes));
+
+        res.status(200).json({incomesTypes});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Unidades de tipos de costos
+controller.expensesTypesUnits = [ query("category").optional().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        let expensesTypesUnits = await pool.query('SELECT expensesTypes_units_id AS id, expensesTypes_units_name AS name, expensesTypes_units_abbreviation AS abbreviation FROM `expensesTypes_units`;');
+        expensesTypesUnits = JSON.parse(JSON.stringify(expensesTypesUnits));
+
+        res.status(200).json({expensesTypesUnits});
     } catch (error) {
         console.log(error);
         res.status(400).json({error});

@@ -48,6 +48,18 @@ router.get('/searcher', controller.searcher);
 // Obtener modulos de una unidades productivas según permisos del usuario
 router.get('/modules', controller.modules);
 
+// RUTA DE COSTOS
+router.get('/expenses', controller.expenses);
+
+router.post('/expenses', controller.addExpenses);
+
+// RUTA DE INGRESOS
+router.get('/incomes', controller.incomes);
+
+router.post('/incomes', controller.addIncomes);
+
+
+
 // INICIO DE RUTAS EXTERNAS
 
 // Editar unidad productiva

@@ -1738,4 +1738,77 @@ controller.aquacode = [verifyToken(config), query("token").notEmpty(), handleVal
     }
 }];
 
+// Asociar ingreso a lote
+controller.associateIncomes = [verifyToken(config), body("batch").notEmpty(), body("income").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let income = req.body.income;
+        let batch = req.body.batch
+
+        let incomeInfo = await pool.query('SELECT productiveUnits_id AS productiveUnit FROM `productiveUnits_incomes` WHERE productiveUnits_incomes_id = ?;', [ income ]);
+        incomeInfo = JSON.parse(JSON.stringify(incomeInfo));
+
+        if(!incomeInfo.length > 0) throw "El ingreso no existe";
+
+        let batchInfo = await pool.query('SELECT batches_productiveUnit AS productiveUnit, batches_id AS id FROM `batches` WHERE batches_token = ?;', [ batch ]);
+        batchInfo = JSON.parse(JSON.stringify(batchInfo));
+
+        if(!batchInfo.length > 0) throw "El lote no existe";
+
+        if (incomeInfo[0].productiveUnits_id == incomeInfo[0].productiveUnits_id) {
+            await pool.query('UPDATE `productiveUnits_incomes` SET `batches_id`= ? WHERE `productiveUnits_incomes_id` = ?', [ batchInfo[0].id, income ]);
+
+            res.status(200).json({});
+        }else{
+            throw "El lote no pertenece a la unidad productiva del ingreso"
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Asociar ingreso a lote
+controller.incomes = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("batch").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let batch = req.query.batch;
+
+        let batchInfo = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ?', [ batch ]);
+        batchInfo = JSON.parse(JSON.stringify(batchInfo));
+
+        let incomes = await pool.query('SELECT productiveUnits_incomes_id AS id, productiveUnits_incomes_name AS name, productiveUnits_incomes_value AS value, productiveUnits_incomes_description AS description, productiveUnits_incomes_date AS date FROM `productiveUnits_incomes` WHERE batches_id = ?', [ batchInfo[0].id ]);
+        incomes = JSON.parse(JSON.stringify(incomes));
+
+        res.status(200).json({incomes});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
 module.exports = controller;

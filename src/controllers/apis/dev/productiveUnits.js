@@ -11,7 +11,7 @@ const { body, query, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const {sendMail} = require("../../../helpers/emails/index");
 const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, productiveUnitActive, getUserHash } = require('./common/productiveUnitsEdit.js');
- 
+
 // Controlador
 const controller = {};
 
@@ -619,6 +619,180 @@ controller.modules = [verifyToken(config), query("productiveUnit").notEmpty().is
         res.status(400).json({error});
     }
 }];
+
+// Obtener gastos
+controller.expenses = [ verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("category").optional().isInt(), body("date").optional().isISO8601("yyyy-mm-dd").toDate(), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene la unidad productiva
+        const productiveUnitId = req.query.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST de filtro
+        let category = req.query.category ?? "1,2,3";
+        let date = req.query.date ?? null;
+        let endDate = null;
+
+        // Se obtiene la fecha actual en caso de que el valor sea null
+        if (date == null) {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based
+            date = `${year}-${month}-01`;
+            endDate = `${year}-${month}-31 23:59:59`;
+
+        }else{
+            year = date.split("-")[0];
+            month = date.split("-")[1];
+
+            if (month == 12) {
+                year++; 
+                month = "01";
+                day = "01";
+
+                endDate = year+"-"+month+"-"+day;
+            }else{
+                endDate = year+"-"+month+"-31 23:59:59";
+            }
+            
+            date = date+"-01";
+        }
+        
+        let expenses = await pool.query(`SELECT productiveUnits_expenses_id AS id, productiveUnits_expenses_name AS name, et.expensesTypes_name AS type, productiveUnits_expenses_category AS category, eu.expensesTypes_units_name AS unit, productiveUnits_expenses_quantity AS quantity, productiveUnits_expenses_price AS price, productiveUnits_expenses_initDate AS initDate, productiveUnits_expenses_endDate AS endDate, productiveUnits_expenses_description AS description FROM productiveUnits_expenses AS pe LEFT JOIN expensesTypes_units AS eu ON pe.productiveUnits_expenses_unit = eu.expensesTypes_units_id LEFT JOIN expensesTypes AS et ON et.expensesTypes_id = pe.productiveUnits_expenses_type WHERE productiveUnits_id = ? AND productiveUnits_expenses_category IN (${category}) AND productiveUnits_expenses_date BETWEEN ? AND ?;`, [ productiveUnitId, date, endDate ]);
+        expenses = JSON.parse(JSON.stringify(expenses));
+
+        res.status(200).json({expenses});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Agegar gasto
+controller.addExpenses = [verifyToken(config), body("productiveUnit").notEmpty().isInt(), body("type").notEmpty().isInt(), body("unit").optional().isInt(), body("quantity").optional().isInt(), body("value").notEmpty().isInt(), body("initDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("endDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("name").notEmpty(), body("category").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene la unidad productiva
+        const productiveUnitId = req.body.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let name = req.body.name;
+        let type = req.body.type;
+        let category = req.body.category;
+        let unit = req.body.unit;
+        let quantity = req.body.quantity ?? null;
+        let value = req.body.value;
+        let initDate = req.body.initDate ?? null;
+        let endDate = req.body.endDate ?? null;
+        let description = req.body.description ?? null;
+
+        let result = await pool.query('INSERT INTO `productiveUnits_expenses`(`productiveUnits_id`, `productiveUnits_expenses_name`, `productiveUnits_expenses_type`, `productiveUnits_expenses_category`, `productiveUnits_expenses_unit`, `productiveUnits_expenses_quantity`, `productiveUnits_expenses_price`, `productiveUnits_expenses_initDate`, `productiveUnits_expenses_endDate`, `productiveUnits_expenses_description`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, name, type, category, unit, quantity, value, initDate, endDate, description  ]);
+        
+        res.status(200).json({id: result.insertId});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Obtener gastos
+controller.incomes = [ verifyToken(config), query("productiveUnit").notEmpty().isInt(), body("date").optional().isISO8601("yyyy-mm-dd").toDate(), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene la unidad productiva
+        const productiveUnitId = req.query.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST de filtro
+        let date = req.query.date ?? null;
+        let endDate = null;
+
+        // Se obtiene la fecha actual en caso de que el valor sea null
+        if (date == null) {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based
+            date = `${year}-${month}-01`;
+            endDate = `${year}-${month}-31 23:59:59`;
+
+        }else{
+            year = date.split("-")[0];
+            month = date.split("-")[1];
+
+            if (month == 12) {
+                year++; 
+                month = "01";
+                day = "01";
+
+                endDate = year+"-"+month+"-"+day;
+            }else{
+                endDate = year+"-"+month+"-31 23:59:59";
+            }
+            
+            date = date+"-01";
+        }
+
+        let incomes = await pool.query(`SELECT productiveUnits_incomes_id AS id, productiveUnits_incomes_name AS name, it.incomesTypes_name AS type, productiveUnits_incomes_value AS value, productiveUnits_incomes_date AS date, productiveUnits_incomes_description AS description FROM productiveUnits_incomes LEFT JOIN incomesTypes as it ON it.incomesTypes_id = productiveUnits_incomes_type WHERE productiveUnits_id = ? AND productiveUnits_incomes_date BETWEEN ? AND ?;`, [ productiveUnitId, date, endDate ]);
+        incomes = JSON.parse(JSON.stringify(incomes));
+
+        res.status(200).json({incomes});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Agegar gasto
+controller.addIncomes = [verifyToken(config), body("productiveUnit").notEmpty().isInt(), body("type").notEmpty().isInt(), body("name").notEmpty(), body("value").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Se obtiene la unidad productiva
+        const productiveUnitId = req.body.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let name = req.body.name;
+        let type = req.body.type;
+        let value = req.body.value;
+        let description = req.body.description ?? null;
+
+        let result = await pool.query('INSERT INTO `productiveUnits_incomes`(`productiveUnits_id`, productiveUnits_incomes_name, `productiveUnits_incomes_type`, `productiveUnits_incomes_value`, `productiveUnits_incomes_description`) VALUES (?, ?, ?, ?, ?)', [ productiveUnitId, name, type, value, description ]);
+
+        res.status(200).json({id: result.insertId});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
 
 // TEST
 controller.test = [ async(req, res) => {

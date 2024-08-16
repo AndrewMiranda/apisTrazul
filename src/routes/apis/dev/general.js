@@ -42,6 +42,12 @@ router.get("/units", controller.units);
 // Unidades de tipos de costos
 router.get("/expensesTypes", controller.expensesTypes);
 
+// Unidades de tipos de costos
+router.get("/expensesTypesUnits", controller.expensesTypesUnits);
+
+// Unidades de tipos de ingresos
+router.get("/incomesTypes", controller.incomesTypes);
+
 
 // APP UPDATE AND UPDATE ENDPOINTS
 //
