@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+require('dotenv').config();
 
 //Initializations
 const app = express();
@@ -11,7 +12,7 @@ const app = express();
 const envDeploy = process.env.NODE_ENV || "dev";
 
 //Settings
-app.set('port', process.env.PORT || 3001);
+app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

@@ -161,7 +161,7 @@ controller.getInformacionAlevinera = [verifyToken(config), query("productiveUnit
         data.region = dataCity.cities[0].regions_id;
 
         // Se obtienen y se registan los estanques
-        let pondsData = await pool.query('SELECT productiveUnits_ponds_id AS id, productiveUnits_ponds_name AS name, productiveUnits_ponds_location AS location FROM `productiveUnits_ponds` WHERE productiveUnits_id = ? AND productiveUnits_ponds_state = 1', [productiveUnitId]);
+        let pondsData = await pool.query('SELECT productiveUnits_ponds_id AS id, productiveUnits_ponds_name AS name, productiveUnits_ponds_location AS location, productiveUnits_ponds_area AS area, productiveUnits_ponds_volume AS volume, productiveUnits_ponds_additionalInfo AS additionalInfo FROM `productiveUnits_ponds` WHERE productiveUnits_id = ? AND productiveUnits_ponds_state = 1', [productiveUnitId]);
         pondsData = JSON.parse(JSON.stringify(pondsData));
 
         data.ponds = pondsData;
@@ -335,6 +335,9 @@ controller.createPadrotesAlevinera = [verifyToken(config), body("productiveUnitI
         let vendorDV = req.body.vendorDV ?? "";
         const referenceCodeType = req.body.referenceCodeType;
         const referenceCode  = req.body.referenceCode;
+        const authorizationGeneticMaterial = req.body.authorizationGeneticMaterial ?? false;
+        const countryGeneticMaterial = req.body.countryGeneticMaterial ?? null;
+        const watershedGeneticMaterial = req.body.countryGeneticMaterial ?? null;
 
         // Se verifica si el código de referencia es válido
         let codeType = await pool.query('SELECT referenceCodes_name  AS name, referenceCodes_rule AS rule FROM `referenceCodes` WHERE referenceCodes_id = ?', [ referenceCodeType ]);
@@ -393,13 +396,16 @@ controller.createPadrotesAlevinera = [verifyToken(config), body("productiveUnitI
                 referenceCodeType,
                 referenceCode,
                 broodstockAuthorization,
-                receptionDate
+                receptionDate,
+                authorizationGeneticMaterial,
+                countryGeneticMaterial,
+                watershedGeneticMaterial
             };
 
             await pool.query('INSERT INTO `productiveUnits_broodstock`(`productiveUnits_id`, `specie_id`, `productiveUnits_broodstock_body`) VALUES (?, ?, ?)', [ productiveUnitId, specie, JSON.stringify(broodstockBody) ]);
         
             res.status(200).json({});
-        }else{
+        }else if(origin == 2){
             // Se obtiene el hash de redAzul y la key para hacer consulta
             const userHash = await getUserHash(userId);
             const authorizationKey = "pub_2faf2c9769ca1c5e7db0557a5de5108e2593f05b759a566068cf4667cee63f45";
@@ -422,7 +428,10 @@ controller.createPadrotesAlevinera = [verifyToken(config), body("productiveUnitI
                         referenceCodeType,
                         referenceCode,
                         broodstockAuthorization,
-                        receptionDate
+                        receptionDate,
+                        authorizationGeneticMaterial,
+                        countryGeneticMaterial,
+                        watershedGeneticMaterial
                     };
         
                     await pool.query('INSERT INTO `productiveUnits_broodstock`(`productiveUnits_id`, `specie_id`, `productiveUnits_broodstock_body`) VALUES (?, ?, ?)', [ productiveUnitId, specie, JSON.stringify(broodstockBody) ]);
@@ -436,9 +445,18 @@ controller.createPadrotesAlevinera = [verifyToken(config), body("productiveUnitI
             .catch(err => {
                 console.log(err);
                 res.status(500).json({error: err});
-            });
+            });   
+        }else{
+            const broodstockBody = {
+                origin,
+                referenceCodeType,
+                referenceCode,
+                receptionDate
+            };
 
-            
+            await pool.query('INSERT INTO `productiveUnits_broodstock`(`productiveUnits_id`, `specie_id`, `productiveUnits_broodstock_body`) VALUES (?, ?, ?)', [ productiveUnitId, specie, JSON.stringify(broodstockBody) ]);
+        
+            res.status(200).json({});
         }
     } catch (error) {
         console.log(error);
@@ -684,12 +702,18 @@ controller.loteAlevineraPadrotes = [verifyToken(config), query("productiveUnitId
 
 // CONTROLADORES DE ESTANQUES/
 // Agregar estanques
-controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("pondName").notEmpty().isString(), body("pondLocation").optional().isString(), handleValidationErrors, async(req, res) => {
-    try {
+controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("pondName").notEmpty().isString(), body("pondLocation").optional().isString(), body("pondArea").notEmpty().isFloat(), body("pondVolume").notEmpty().isFloat(), body("pondAdditionalInfo").optional().isString(), handleValidationErrors, async(req, res) => {
+    try {   
         // DATOS POST
         const productiveUnitId = req.body.productiveUnitId;
         const pondName = req.body.pondName;
         const pondLocation = req.body.pondLocation ?? null;
+        const pondArea = req.body.pondArea;
+        const pondVolume = req.body.pondVolume;
+        const pondAdditionalInfo = req.body.pondAdditionalInfo ?? null;
+        const pondType = req.body.pondType ?? 1;
+        const pondRAS = req.body.pondRAS ?? false;
+        const pondIPBRS = req.body.pondIPBRS ?? false;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -709,14 +733,9 @@ controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().
             throw  `El estanque ${pondName} ya está registrado`;
         } else {
             // Se registra el estanque
-            await pool.query('INSERT INTO `productiveUnits_ponds`(`productiveUnits_id`, `productiveUnits_ponds_name`, `productiveUnits_ponds_location`) VALUES (?, ?, ?)', [ productiveUnitId, pondName, pondLocation ]);
+            let insertPond = await pool.query('INSERT INTO `productiveUnits_ponds`(`productiveUnits_id`, `productiveUnits_ponds_name`, `productiveUnits_ponds_location`, `productiveUnits_ponds_area`, `productiveUnits_ponds_volume`, `productiveUnits_ponds_additionalInfo`, `productiveUnits_ponds_type`, `productiveUnits_ponds_RAS`, `productiveUnits_ponds_IPBRS`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, pondName, pondLocation, pondArea, pondVolume, pondAdditionalInfo, pondType, pondRAS, pondIPBRS ]);
 
-            let pondId = await pool.query('SELECT productiveUnits_ponds_id AS id FROM `productiveUnits_ponds` WHERE productiveUnits_id = ? AND productiveUnits_ponds_name = ?', [ productiveUnitId, pondName ]);
-            pondId = JSON.parse(JSON.stringify(pondId));
-
-            pondId = pondId[0].id;
-
-            res.status(200).json({pondId});
+            res.status(200).json({pondId: insertPond.insertId});
         }
     } catch (error) {
         console.log(error);
@@ -725,13 +744,19 @@ controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().
 }];
 
 // Editar estanques
-controller.editPonds = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("pondId").notEmpty().isInt(), body("pondName").notEmpty().isString(), body("pondLocation").optional().isString(), handleValidationErrors, async(req, res) => {
+controller.editPonds = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("pondId").notEmpty().isInt(), body("pondName").notEmpty().isString(), body("pondLocation").optional().isString(), body("pondArea").notEmpty().isFloat(), body("pondVolume").notEmpty().isFloat(), body("pondAdditionalInfo").optional().isString(), handleValidationErrors, async(req, res) => {
     try {
         // DATOS POST
         const productiveUnitId = req.body.productiveUnitId;
         const pondId = req.body.pondId;
         const pondName = req.body.pondName;
         const pondLocation = req.body.pondLocation ?? null;
+        const pondArea = req.body.pondArea;
+        const pondVolume = req.body.pondVolume;
+        const pondAdditionalInfo = req.body.pondAdditionalInfo ?? null;
+        const pondType = req.body.pondType ?? 1;
+        const pondRAS = req.body.pondRAS ?? false;
+        const pondIPBRS = req.body.pondIPBRS ?? false;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -743,18 +768,16 @@ controller.editPonds = [verifyToken(config), body("productiveUnitId").notEmpty()
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         // Se verifica existencia del estanque
-        let existPond = await pool.query('SELECT * FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ pondId ]);
-        existPond = JSON.parse(JSON.stringify(existPond));
+        let pondDate = await pool.query('SELECT * FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ pondId ]);
+        pondDate = JSON.parse(JSON.stringify(pondDate));
 
-        if (existPond.length < 1) throw `El estanque ${pondId} no existe`;
+        if (pondDate.length < 1) throw `El estanque ${pondId} no existe`;
 
         // Se verifica si el estanque pertenece a la unidad productiva
-        let pondIsFromPUnit = await pool.query('SELECT * FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ pondId, productiveUnitId ]);
-        pondIsFromPUnit = JSON.parse(JSON.stringify(pondIsFromPUnit));
+        if (pondDate[0].productiveUnits_id != productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
 
-        if (pondIsFromPUnit.length < 1) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
-
-        const result = await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_name`= ?,`productiveUnits_ponds_location`= ?,`productiveUnits_ponds_updateDate`= now() WHERE `productiveUnits_ponds_id` = ?', [ pondName, pondLocation, pondId ]);
+        // Se edita el estanque
+        const result = await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_name`= ?,`productiveUnits_ponds_location`= ?,`productiveUnits_ponds_updateDate`= now(), `productiveUnits_ponds_area`= ?, `productiveUnits_ponds_volume`= ?, `productiveUnits_ponds_additionalInfo`= ?, `productiveUnits_ponds_type`= ?, `productiveUnits_ponds_RAS`= ?, `productiveUnits_ponds_IPBRS`= ? WHERE `productiveUnits_ponds_id` = ?', [ pondName, pondLocation, pondArea, pondVolume, pondAdditionalInfo, pondType, pondRAS, pondIPBRS, pondId ]);
 
         // Se verifica si se editó correctamente el estanque
         if (result.affectedRows > 0) {
@@ -786,16 +809,16 @@ controller.deletePonds = [verifyToken(config), body("productiveUnitId").notEmpty
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         // Se verifica existencia del estanque
-        let existPond = await pool.query('SELECT * FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ pondId ]);
+        let existPond = await pool.query('SELECT productiveUnits_id AS productiveUnit, productiveUnits_ponds_used AS used FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ pondId ]);
         existPond = JSON.parse(JSON.stringify(existPond));
 
         if (existPond.length < 1) throw `El estanque ${pondId} no existe`;
 
         // Se verifica si el estanque pertenece a la unidad productiva
-        let pondIsFromPUnit = await pool.query('SELECT * FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ pondId, productiveUnitId ]);
-        pondIsFromPUnit = JSON.parse(JSON.stringify(pondIsFromPUnit));
+        if (existPond[0].productiveUnit == productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
 
-        if (pondIsFromPUnit.length < 1) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
+        // Se verifica que el estanque no esté en uso
+        if (existPond[0].used == 1) throw `El estanque ${pondId} está en uso    `;
 
         const result = await pool.query('DELETE FROM `productiveUnits_ponds` WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
 
@@ -1551,7 +1574,7 @@ controller.addTraceabilityStaff = [verifyToken(config), body("productiveUnitId")
         for (let index = 0; index < perms.length; index++) {
             let element = perms[index];
 
-            if (element != "all" && element != "lotes" && element != "insumos" && element != "despachos" && element != "trazabilidad" && element != "modifyProductiveUnit") {
+            if (element != "all" && element != "lotes" && element != "insumos" && element != "despachos" && element != "trazabilidad" && element != "modifyProductiveUnit" && element != "contabilidad") {
                 perms.splice(index, 1);
             }
         }

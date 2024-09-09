@@ -65,6 +65,9 @@ router.post('/incomes', controller.addIncomes);
 // Editar unidad productiva
 router.use("/edit", require("./editProductiveUnits"));
 
+// ESTANQUES DE UNIDAD PRODUCTIVA
+router.use("/ponds", require("./ponds"));
+
 // LOTES DE UNIDADES PRODUCTIVAS
 router.use("/batches", require("./batches"));
 
