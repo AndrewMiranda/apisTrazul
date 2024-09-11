@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="/css/web/home.css">
+    <link rel="stylesheet" href="/css/web/globalStyles.css">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <%- include('../partials/metas.ejs') %>
+    <title>Home - TRAZUL</title>
+</head> 
+<body>
+    <!-- Los estilos compartidos con los demas archvios en el archivo global.css -->
+    <header>
+        <div class="containerOptionsHeader generalShadow" id="containerHeader">
+            <a href="/" class="logoRedAzul"> <img class="logoRedAzul" src="/images/logo-TrazAzul.png" alt=""></a>
+            <a href="#" class="noneMobile" ><p class="textOption">Inicio</p></a>
+            <a href="#sectores" class="noneMobile"><p class="textOption">Sectores</p></a>
+            <a href="#servicios1" class="noneMobile"><p class="textOption">Productos y servicios</p></a>
+            <img id="imageMenu" src="/images/menuBlue.svg" alt="" onclick="hamburgermenufunction()">
+            <div id="hamburgerMenu">
+                <a href="#" onclick="hamburgermenufunction()"><p class="textOptionWhite">Inicio</p></a>
+                <a href="#sectores" onclick="hamburgermenufunction()"><p class="textOptionWhite">Sectores</p></a>
+                <a href="#servicios1" onclick="hamburgermenufunction()"><p class="textOptionWhite">Productos y servicios</p></a>
+            </div>
+        </div>
+        <div class="marginHeader"></div>
+    </header>
+    <div class="heroSection">
+        <div class="overlay">
+            <div class="infoHero container">
+                <div class="leftSection">
+                    <h1 class="titleHero">“Traza el camino de tu producción al éxito”</h1>
+                    <p class="descriptionHero">Trazul es la aplicación de trazabilidad especializada en el sector acuícola Colombiano, Facil, Seguro y adaptado a las exigencias de la normatividad nacional e internacional.</p>
+                    <div class="downloadButton">
+                        <img src="/images/apk_install_24.svg" alt="">
+                        <p>Descargar</p>
+                    </div>
+                </div>
+                <div class="rightSection">
+                    <img src="/images/heroe.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sectionTrazul container">
+        <h2>Como Trazul le entrega valor a tu negocio</h2>
+        <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
+
+        <div class="containerInfoTrazul">
+            <div class="leftContent">
+                <div class="optionInfo">
+                    <p class="right"><span>Trazabilidad</span> <b>Interna y externa,</b> pensada para la <b>interoperabilidad</b> y para cumplir con el <b>mercado europeo y estadounidense.</b></p>
+                    <div class="contentImg">
+                        <img  src="/images/TrAzul-ICOs-AquaCode.png" alt="">
+                    </div>
+                    
+                </div>
+                <div class="optionInfo">
+                    <p class="right"><span>Registro contable</span> orientado a la estimación de la <b>utilidad por lote.</b></p>
+                    <div class="contentImg">
+                        <img  src="/images/contable-TrAzul-ICO.png" alt="">
+                    </div>
+                    
+                </div>
+                <div class="optionInfo">
+                    <p class="right"><span>Registro de procesos de la producción</span> que son claves para evaluar el rendimiento y para vender ofrecimiendo un mayor valor percibido. </p>
+                    <div class="contentImg">
+                        <img  src="/images/productTrazadoTrAzul-ICO.png" alt="">
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="centerContent">
+                <img src="/images/trazulApp.png" alt="">
+            </div>
+            <div class="rightContent">
+                <div class="optionInfo reverseMobile">
+                    <div class="contentImg">
+                        <img src="/images/policultivoTrAzul-ICO.png" alt="">
+                    </div>
+                    <p class="left"><span>Cultivo de múltiples especies</span> pueden ser trazados, gestionado y vendidos </p>
+                </div>
+                <div class="optionInfo reverseMobile">
+                    <div class="contentImg">
+                        <img src="/images/permisos1.png" alt="">
+                    </div>
+                    <p class="left"><span>Adaptada a los requerimientos nacionales</span> sin dejar de cunplir con estándares internacionales (GDST) </p>
+                </div>
+                <div class="optionInfo reverseMobile">
+                    <div class="contentImg">
+                        <img src="/images/personalTraza2.png" alt="">
+                    </div>
+                    <p class="left"><span>Usuarios con diversos roles</span> por unidad productiva y organización </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="/js/web/home.js"></script>

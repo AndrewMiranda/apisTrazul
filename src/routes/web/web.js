@@ -4,7 +4,7 @@ const path = require('path');
 
 
 router.get("/", (req, res) => {
-    res.send("Bienvenido a TRAZUL");
+    res.render("web/home");
 });
 
 router.get("/aceptInvitationStaff", (req, res) => {
