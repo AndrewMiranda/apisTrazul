@@ -23,7 +23,7 @@ const controller = {};
 // // // // // // // // // // // // // // // ////
 
 // Crear y editar información de Alevinera
-controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().isString(), body("email").optional().notEmpty().isEmail(), body("phone").notEmpty().isMobilePhone(), body("webPage").optional().notEmpty().isURL(), body("municipality").notEmpty().isInt(), body("address").notEmpty().isString(), body("coords").notEmpty().isLatLong(), body("ponds").optional().notEmpty().toArray().isArray(), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().isString(), body("email").optional().notEmpty().isEmail(), body("phone").notEmpty().isMobilePhone(), body("webPage").optional().notEmpty().isURL(), body("municipality").notEmpty().isInt(), body("address").notEmpty().isString(), body("coords").notEmpty().isLatLong(), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // ID de la unidad productiva
         const productiveUnitId = req.body.productiveUnitId;
@@ -40,30 +40,6 @@ controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
-
-        // Estanques de la granja
-        let ponds = req.body.ponds ?? "{}";
-        ponds = JSON.parse(ponds);
-
-        // Se verifica si vienen estanques
-        if (ponds.length > 0) {
-            // Se contruye la query dinámica y se verifican que no estén repetidos
-            let valuesPonds = [];
-            
-            pondsQuery = "";
-            for (const iterator of ponds) {
-                const name = iterator[0];
-                const location = iterator[1];
-                if (!valuesPonds.includes(name)) {
-                    pondsQuery+= `(${productiveUnitId}, "${name}", "${location}"),`;
-                    valuesPonds.push(name);
-                }
-            }
-
-            pondsQuery = pondsQuery.slice(0, -1);
-        
-            await pool.query('INSERT INTO `productiveUnits_ponds`(`productiveUnits_id`, `productiveUnits_ponds_name`, `productiveUnits_ponds_location`) VALUES '+pondsQuery);
-        }
 
         // Objeto con valores
         let data = {
@@ -159,12 +135,6 @@ controller.getInformacionAlevinera = [verifyToken(config), query("productiveUnit
         });
 
         data.region = dataCity.cities[0].regions_id;
-
-        // Se obtienen y se registan los estanques
-        let pondsData = await pool.query('SELECT productiveUnits_ponds_id AS id, productiveUnits_ponds_name AS name, productiveUnits_ponds_location AS location, productiveUnits_ponds_area AS area, productiveUnits_ponds_volume AS volume, productiveUnits_ponds_additionalInfo AS additionalInfo FROM `productiveUnits_ponds` WHERE productiveUnits_id = ? AND productiveUnits_ponds_state = 1', [productiveUnitId]);
-        pondsData = JSON.parse(JSON.stringify(pondsData));
-
-        data.ponds = pondsData;
 
         res.status(200).json({data});
     } catch (error) {
@@ -712,8 +682,8 @@ controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().
         const pondVolume = req.body.pondVolume;
         const pondAdditionalInfo = req.body.pondAdditionalInfo ?? null;
         const pondType = req.body.pondType ?? 1;
-        const pondRAS = req.body.pondRAS ?? false;
-        const pondIPBRS = req.body.pondIPBRS ?? false;
+        const pondRAS = req.body.pondRAS ?? 0;
+        const pondIPBRS = req.body.pondIPBRS ?? 0;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -815,12 +785,12 @@ controller.deletePonds = [verifyToken(config), body("productiveUnitId").notEmpty
         if (existPond.length < 1) throw `El estanque ${pondId} no existe`;
 
         // Se verifica si el estanque pertenece a la unidad productiva
-        if (existPond[0].productiveUnit == productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
+        if (existPond[0].productiveUnit != productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
 
         // Se verifica que el estanque no esté en uso
-        if (existPond[0].used == 1) throw `El estanque ${pondId} está en uso    `;
+        if (existPond[0].used == 1) throw `El estanque ${pondId} está en uso`;
 
-        const result = await pool.query('DELETE FROM `productiveUnits_ponds` WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
+        const result = await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_state`= 0 WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
 
         // Se verifica si se editó correctamente el estanque
         if (result.affectedRows > 0) {

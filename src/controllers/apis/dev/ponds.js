@@ -35,9 +35,6 @@ controller.getPonds = [verifyToken(config), query("productiveUnitId").notEmpty()
 
         let query ='';
 
-        console.log(all)
-        console.log(used)
-
         if (all == "false") {
             query += ` AND productiveUnits_ponds_used = ?`;
             
@@ -47,8 +44,6 @@ controller.getPonds = [verifyToken(config), query("productiveUnitId").notEmpty()
                 used = 0;
             }
         }
-
-        console.log("Used:"+ used)
 
         let ponds = await pool.query('SELECT productiveUnits_ponds_id AS id, productiveUnits_ponds_name AS name, b.ponds_types_name AS type, productiveUnits_ponds_used AS used, productiveUnits_ponds_location AS location, productiveUnits_ponds_area AS area, productiveUnits_ponds_volume AS volume, productiveUnits_ponds_additionalInfo AS additionalInfo, productiveUnits_ponds_RAS AS RAS, productiveUnits_ponds_IPBRS AS IPBRS FROM `productiveUnits_ponds` AS a LEFT JOIN ponds_types AS b ON b.ponds_types_id = a.productiveUnits_ponds_type WHERE productiveUnits_id = ? AND productiveUnits_ponds_state = 1'+query, [productiveUnitId, used]);
         ponds = JSON.parse(JSON.stringify(ponds));
