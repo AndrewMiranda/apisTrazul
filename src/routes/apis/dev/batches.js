@@ -17,6 +17,9 @@ router.get('/', controller.getBatches);
 // Obtener lote especifico
 router.get('/specific', controller.getBatch);
 
+// Obtener Tipos de estados iniciales
+router.get('/initialStates', controller.initialStates);
+
 // Crear lote alevinera
 router.post('/alevinera', controller.createBatchAlevinera);
 

@@ -16,17 +16,36 @@ const { generaterRandomSerial, generaterBatchToken, generaterDispatchToken } = r
 // Controlador base
 const controller = {};
 
+// Obtener tipos de estados iniciales de un lote
+controller.initialStates = [verifyToken(config), async(req, res) => {
+    try {
+        let initialStates = await pool.query('SELECT batchesInitialStates_id AS id, batchesInitialStates_name AS name FROM `batchesInitialStates`; ');
+        initialStates = JSON.parse(JSON.stringify(initialStates));
+
+        res.status(200).json({initialStates});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+
 // Crear lote alevinera
-controller.createBatchAlevinera = [verifyToken(config), body("specie").notEmpty().isInt(), body("harvestDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("quantityFish").notEmpty().isFloat(), body("age").notEmpty().isInt(), body("ageUnit").notEmpty().isInt(), body("broodstock").notEmpty().isInt(), body("serial").notEmpty(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.createBatchAlevinera = [verifyToken(config), body("initialState").notEmpty().isInt(), body("specie").notEmpty().isInt(), body("broodstock").notEmpty().isInt(), body("quantityFish").notEmpty().isInt(), body("sowingDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("minimumSize").optional().isFloat(), body("maximumSize").optional(), body("estimatedInitialHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("estimatedIFinalHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("harvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("age").notEmpty().isInt(), body("ageUnit").notEmpty().isInt(), body("serial").notEmpty(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // DATOS POST
         const productiveUnitId = req.body.productiveUnit;
+        const initialState = req.body.initialState;
         const specie = req.body.specie;
-        const harvestDate = req.body.harvestDate;
+        const broodstock = req.body.broodstock;
         const quantityFish = req.body.quantityFish;
+        const minimumSize = req.body.minimumSize ?? null;
+        const maximumSize = req.body.maximumSize ?? null;
+        const estimatedInitialHarvestDate = req.body.estimatedInitialHarvestDate ?? null;
+        const estimatedIFinalHarvestDate = req.body.estimatedIFinalHarvestDate ?? null;
+        const harvestDate = req.body.harvestDate ?? null;
         const age = req.body.age;
         const ageUnit = req.body.ageUnit;
-        const broodstock = req.body.broodstock;
         const serial = req.body.serial;
         const description = req.body.description ?? "";
         let feed = req.body.feed;
@@ -51,16 +70,22 @@ controller.createBatchAlevinera = [verifyToken(config), body("specie").notEmpty(
         // Se parsean los estanques
         ponds = JSON.parse(ponds);
 
-        // Se verifica que los estanques sean válidos
+        // Se verifica que haya vinculado más de un estanque
+        if (ponds.length < 1) throw "Es obligatorio asociar un estanque";
+
+        // Se verifica que los estanques sean válidos y que el último no esté en uso
         for (let index = 0; index < ponds.length; index++) {
             const element = ponds[index];
             
-            let validPond = await pool.query('SELECT productiveUnits_ponds_state AS state FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ element, productiveUnitId ]); 
+            let validPond = await pool.query('SELECT productiveUnits_ponds_name AS name, productiveUnits_ponds_state AS state, productiveUnits_ponds_used AS used FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ element[0], productiveUnitId ]); 
             validPond = JSON.parse(JSON.stringify(validPond));
 
-            if (!validPond.length > 0) throw `El estanque '${element}' no existe o no le pertenece a la granja`;
+            if (!validPond.length > 0) throw `El estanque '${element[0]}' no existe o no le pertenece a la granja`;
 
-            if (validPond[0].state == 0) throw `El estanque '${element}' se encuentra desactivado`;
+            if (validPond[0].state == 0) throw `El estanque '${element[0]}' se encuentra desactivado`;
+
+            // Se verifica si el último estanque ya se encuentra en uso
+            if (index === ponds.length - 1 || validPond[0].used == 1) throw `El estanque '${validPond[0].name}' ya se encuentra en uso`;
         }
 
         // Se parsean los medicamentos
@@ -98,16 +123,21 @@ controller.createBatchAlevinera = [verifyToken(config), body("specie").notEmpty(
             if (feedQuantity > validFeed[0].quantity) throw `El pienso '${feedId}' no cuenta con la cantidad suficiente (${feedQuantity})`;
         }
 
-        // Se construye el JSON del body
+        // Se construye el JSON del body dependiento del estado inicial de lote
         let body = {
             productiveUnitId,
+            initialState,
             specie,
-            harvestDate,
+            broodstock,
             quantityFish,
             quantityFishIterator: quantityFish,
+            minimumSize,
+            maximumSize,
+            estimatedInitialHarvestDate,
+            estimatedIFinalHarvestDate,
+            harvestDate,
             age,
             ageUnit,
-            broodstock,
             serial,
             description,
             medicines,
@@ -119,7 +149,11 @@ controller.createBatchAlevinera = [verifyToken(config), body("specie").notEmpty(
         const token = generaterBatchToken(productiveUnitId, 1);
 
         // Se registra el lote
-        await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`) VALUES (?, ?, ?, ?)', [ token, productiveUnitId, 1, JSON.stringify(body) ]);
+        await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`, `batches_state`) VALUES (?, ?, ?, ?)', [ token, productiveUnitId, 1, JSON.stringify(body), initialState ]);
+
+        // Se registra en uso el último estanque asociado
+        let lastPond = ponds[ponds.length - 1][0];
+        await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_used`= 1 WHERE `productiveUnits_ponds_id` = ?', [ lastPond ]);
 
         res.status(200).json({token});
     } catch (error) {
