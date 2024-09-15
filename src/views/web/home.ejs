@@ -9,28 +9,14 @@
     <title>Home - TRAZUL</title>
 </head> 
 <body>
-    <!-- Los estilos compartidos con los demas archvios en el archivo global.css -->
-    <header>
-        <div class="containerOptionsHeader generalShadow" id="containerHeader">
-            <a href="/" class="logoRedAzul"> <img class="logoRedAzul" src="/images/logo-TrazAzul.png" alt=""></a>
-            <a href="#" class="noneMobile" ><p class="textOption">Inicio</p></a>
-            <a href="#sectores" class="noneMobile"><p class="textOption">Trazul</p></a>
-            <a href="#servicios1" class="noneMobile"><p class="textOption">Productos y servicios</p></a>
-            <img id="imageMenu" src="/images/menuBlue.svg" alt="" onclick="hamburgermenufunction()">
-            <div id="hamburgerMenu">
-                <a href="#" onclick="hamburgermenufunction()"><p class="textOptionWhite">Inicio</p></a>
-                <a href="#sectores" onclick="hamburgermenufunction()"><p class="textOptionWhite">Sectores</p></a>
-                <a href="#servicios1" onclick="hamburgermenufunction()"><p class="textOptionWhite">Productos y servicios</p></a>
-            </div>
-        </div>
-    </header>
+    <%- include('../partials/headerTrazul.ejs') %>
     <div class="heroSection">
         <div class="overlay">
             <div class="infoHero">
                 <div class="leftSection">
                     <h1 class="titleHero">“Traza el camino de tu producción al éxito”</h1>
                     <p class="descriptionHero">Trazul es la aplicación de trazabilidad y gestión especializada en el sector acuícola Colombiano, facil, seguro, adaptado a las exigencias de la normatividad nacional e internacional y te permite vender en linea.</p>
-                    <a class="downloadButton" href="#">
+                    <a class="downloadButton" href="/downloadTrazul">
                         <img src="/images/apk_install_24.svg" alt="">
                         <p>Descargala y usala gratis</p>
                     </a>
@@ -134,6 +120,84 @@
             </div>
         </div>
     </div>
+
+    <div class="container sectionPlans">
+        <h2 class="titleSection">Nuestros planes</h2>
+        <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p>
+
+        <div class="containerCards">
+            <div class="cardPlan generalShadow">
+                <img src="/images/stacks_24.svg" alt="">
+                <div class="titleCard">Plan principal</div>
+                <div class="priceCard">$12.000 mensual</div>
+                <ul class="descriptionPlan">
+                    <li>2 estanques</li>
+                    <li>Vender lotes</li>
+                    <li>compra de lotes</li>
+                </ul>
+                <div class="buttonContact generalShadow"> Contactanos </div>
+            </div>
+            <div class="cardPlan generalShadow">
+                <img src="/images/stacks_24.svg" alt="">
+                <div class="titleCard">Plan principal</div>
+                <div class="priceCard">$12.000 mensual</div>
+                <ul class="descriptionPlan">
+                    <li>2 estanques</li>
+                    <li>Vender lotes</li>
+                    <li>compra de lotes</li>
+                </ul>
+                <div class="buttonContact generalShadow"> Contactanos </div>
+            </div>
+            <div class="cardPlan generalShadow">
+                <img src="/images/stacks_24.svg" alt="">
+                <div class="titleCard">Plan principal</div>
+                <div class="priceCard">$12.000 mensual</div>
+                <ul class="descriptionPlan">
+                    <li>2 estanques</li>
+                    <li>Vender lotes</li>
+                    <li>compra de lotes</li>
+                </ul>
+                <div class="buttonContact"> Contactanos </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" style="width: 100vw; background-color: #FFFFFF;">
+        <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
+        <div class="container contactSection ">
+            <div class="infoSection">                
+                <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit est dolorem ab inventore labore consequatur esse, voluptatum magnam officia delectus?</p> -->
+            </div>
+            <form class="containerFormSection">
+                <select name="" id="">
+                    <option disabled selected>¿Cual es tu rol?</option>
+                    <option value="1">Acuicultor</option>
+                    <option value="2">Comprador mayorista</option>
+                </select>
+                <input type="text" name="nameUser" class="" placeholder="Nombre completo">
+                <input type="email" name="email" class="" placeholder="Correo electronico">
+                <input type="number" name="numberPhone" class="" placeholder="Numero celular">
+                <textarea name="" id="" placeholder="Escribe un mensaje" cols="20" rows="7"></textarea>
+                <input type="submit" value="Contactarnos" class="buttomSubmit">
+            </form>
+        </div>
+    </div>
+    <!-- <div class="container sectionAppScreenshots">
+        <h2 class="titleSection">Capturas de la aplicación</h2>
+
+        <div class="contentApp">
+            <img class="imgSlider" src="images/Screenshot1.png" alt="">
+            <img class="imgSlider" src="images/Screenshot2.png" alt="">
+            <img class="imgSlider" src="images/Screenshot3.png" alt="">
+            <img class="imgSlider" src="images/Screenshot4.png" alt="">
+            <img class="imgSlider" src="images/Screenshot1.png" alt="">
+            <img class="imgSlider" src="images/Screenshot2.png" alt="">
+            <img class="imgSlider" src="images/Screenshot3.png" alt="">
+            <img class="imgSlider" src="images/Screenshot4.png" alt="">
+        </div>
+    </div> -->
+
+    <%- include('../partials/footerTrazul.ejs') %>
 </body>
 </html>
 <script src="/js/web/home.js"></script>

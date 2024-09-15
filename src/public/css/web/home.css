@@ -1,95 +1,3 @@
-header{
-    width: 100vw;
-}
-.containerOptionsHeader{
-    width: 100%;
-    height: 70px;
-    padding: 5px 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100000;
-    background-color:#FFFFFF;
-}
-
-.generalShadow {
-    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-}
-
-.logoRedAzul{
-    height: 100%;
-    /* max-width: 150px; */
-    object-fit: contain;
-}
-
-.optionsHeader{
-    width: 100%;
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.textOption{
-    font-size: 20px;
-    font-weight: bold;
-    font-family: "Quicksand-bold";
-    color: #3194d2 ;
-}
-
-#imageMenu{
-    display: none;
-
-}
-
-#hamburgerMenu{
-    /* display: none; */
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top: 70px;
-    background-color: var(--blue3);
-    width: 100%;
-    right: 0;
-    justify-content: center;
-    align-items: center;
-    row-gap: 20px;
-    padding: 20px 0;
-    margin-right: -115%;
-    transition: margin-right 1s ease, width 0.5s ease;
-}
-
-.textOptionWhite{
-    font-size: 20px;
-    /* font-weight: bold; */
-    font-family: "Quicksand-bold";
-    color: var(--white);
-}
-
-.marginHeader{
-    height:70px;
-}
-
-@media screen and (max-width: 680px){
-    .containerOptionsHeader{
-        -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-        -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-        box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-        transition: none; 
-    }
-
-    .noneMobile{
-        display: none;
-    }
-
-    #imageMenu{
-        display: flex;
-        cursor: pointer;
-    }
-}
 
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------- */
@@ -125,7 +33,7 @@ header{
 
 .overlay{
     position: relative;
-    padding: 100px 0 30px;
+    padding: 10px 0 30px;
 } 
 
 .infoHero{
@@ -174,6 +82,7 @@ header{
     column-gap: 3vh;
     color: #FFF;
     cursor: pointer;
+    border-radius: 10px;
 
     p{
         color: #FFFFFF;
@@ -245,6 +154,8 @@ header{
         height: auto;
     }
 }
+
+
 
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------- */
@@ -457,6 +368,8 @@ header{
     }
 }
 
+
+
 /* ---------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------- */
@@ -464,13 +377,14 @@ header{
 
 .sectionSolution{
     padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .containerSolution{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 40px 0;
+    padding: 5px 0;
 }
 
 .leftcontentSolution{
@@ -486,7 +400,7 @@ header{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    row-gap: 15px;
+    row-gap: 20px;
 }
 
 
@@ -557,7 +471,7 @@ header{
         width: 100%;
     }
     .containerSolution{
-        padding: 10px 0 40px;
+        padding: 10px 0 0;
     }
 
     .optionInfoSolution{
@@ -571,3 +485,196 @@ header{
         }
     }
 }
+
+
+
+/*------------------------------------------------------------------*/
+/*------------------------------------------------------------------*/
+/*------------------------------------------------------------------*/
+/* Planes */
+
+.sectionPlans{
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+.containerCards{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.cardPlan{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    width: 320px;
+    max-width: 32%;
+
+    img{
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.titleCard{
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.descriptionPlan{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.priceCard{
+    color: #707070;
+    font-size: 20px;
+}
+
+ul{
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+    li{
+        text-align: center;
+    }
+}
+
+.buttonContact{
+    background-color: #3194d2;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+@media screen and (max-width: 700px){
+    .titleCard{
+        color: #000000;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .priceCard{
+        color: #707070;
+        font-size: 16px;
+    }
+
+    .cardPlan{
+        max-width: 45%;
+    }
+    
+}
+
+
+@media screen and (max-width: 500px){
+    .cardPlan{
+        max-width: 100%;
+    }
+}
+
+/* ------------------------------------ */
+/* ------------------------------------ */
+/* Sección de contacto */
+
+.contactSection{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px !important;
+
+}
+
+.infoSection{
+    width: 50%;
+    padding: 5px 5% 20px;
+}
+
+.containerFormSection{
+    width: 50%;
+    padding: 5px 5% 20px;
+}
+
+.titleContact{
+    padding-top: 30px;
+}
+
+.containerFormSection{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    margin: auto;
+}
+
+.containerFormSection input, 
+.containerFormSection textarea,
+.containerFormSection select{
+    width: 90%;
+    background-color: #FFFFFF;
+    height: 42px;
+    padding: 0 5%;
+    outline: none;
+    font-size: 18px;
+    width: 100%;
+    border: 1px solid #ddd ;
+    border-radius: 10px;
+}
+
+.containerFormSection textarea{
+    padding-top: 10px;
+}
+
+.buttomSubmit{
+    width: max-content !important;
+    background-color: #3194d2 !important;
+    border: 0 !important;
+    color: #FFFFFF;
+    padding:10px 20px !important;
+}
+
+
+/* ------------------------------------ */
+/* ------------------------------------ */
+/* ScreenShots app */
+
+
+.sectionAppScreenshots{
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+}
+
+.contentApp{
+    display: flex;
+    justify-content: start;
+    overflow: auto;
+    column-gap: 1vw;
+    scrollbar-width: none; 
+}
+
+.contentApp::--webkit-scrollbar{
+    display: none;
+}
+
+.imgSlider{
+    width: 23vw;
+    max-width: 280px;
+}
+

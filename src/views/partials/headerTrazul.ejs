@@ -1,0 +1,136 @@
+<style>
+    header{
+        width: 100vw;
+        background-color:#FFFFFF;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100000;
+    }
+    .containerOptionsHeader{
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+        height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .heightHeader{
+        height: 70px;
+    }
+
+    .generalShadow {
+        -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+        -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+        box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .logoRedAzul{
+        height: 90%;
+        /* max-width: 150px; */
+        object-fit: contain;
+    }
+
+    .optionsHeader{
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+    }
+
+    .textOption{
+        font-size: 20px;
+        font-weight: bold;
+        font-family: "Quicksand-bold";
+        color: #3194d2 ;
+    }
+
+    #imageMenu{
+        display: none;
+
+    }
+
+    #hamburgerMenu{
+        /* display: none; */
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        top: 70px;
+        background-color: var(--blue3);
+        width: 100%;
+        right: 0;
+        justify-content: center;
+        align-items: center;
+        row-gap: 20px;
+        padding: 20px 0;
+        margin-right: -115%;
+        transition: margin-right 1s ease, width 0.5s ease;
+    }
+
+    .textOptionWhite{
+        font-size: 20px;
+        /* font-weight: bold; */
+        font-family: "Quicksand-bold";
+        color: var(--white);
+    }
+
+    .marginHeader{
+        height:70px;
+    }
+
+    @media screen and (max-width: 680px){
+        .containerOptionsHeader{
+            -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            transition: none; 
+        }
+
+        .noneMobile{
+            display: none;
+        }
+
+        #imageMenu{
+            display: flex;
+            cursor: pointer;
+        }
+    }
+
+</style>
+
+<!-- Los estilos compartidos con los demas archvios en el archivo global.css -->
+<header class="generalShadow">
+    <div class="containerOptionsHeader" id="containerHeader">
+        <a href="/" class="logoRedAzul"> <img class="logoRedAzul" src="/images/logo-TrazAzul.png" alt=""></a>
+        <a href="#" class="noneMobile" ><p class="textOption">Inicio</p></a>
+        <a href="#sectores" class="noneMobile"><p class="textOption">Trazul</p></a>
+        <a href="#servicios1" class="noneMobile"><p class="textOption">Productos y servicios</p></a>
+        <img id="imageMenu" src="/images/menuBlue.svg" alt="" onclick="hamburgermenufunction()">
+        <div id="hamburgerMenu">
+            <a href="#" onclick="hamburgermenufunction()"><p class="textOptionWhite">Inicio</p></a>
+            <a href="#sectores" onclick="hamburgermenufunction()"><p class="textOptionWhite">Sectores</p></a>
+            <a href="#servicios1" onclick="hamburgermenufunction()"><p class="textOptionWhite">Productos y servicios</p></a>
+        </div>
+    </div>
+</header>
+<div class="heightHeader"></div>
+
+<script>
+    let statusMenu = 0;
+    function hamburgermenufunction(){
+        let menu = document.getElementById('imageMenu');
+        let containerMenu = document.getElementById('hamburgerMenu');
+
+        if(statusMenu == 0){
+            menu.src = '/images/menuOpenBlue.svg'
+            containerMenu.style.marginRight =  '0'
+            statusMenu = 1;
+        }else{
+            menu.src = '/images/menuBlue.svg'
+            containerMenu.style.marginRight =  '-115%'
+            statusMenu = 0;
+        }
+    }
+
+</script>

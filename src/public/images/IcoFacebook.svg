@@ -1,0 +1,15 @@
+<svg id="Layer_4" data-name="Layer 4" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #005fae;
+      }
+
+      .cls-1 {
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <rect id="Rectángulo_85" data-name="Rectángulo 85" class="cls-1" width="35" height="35"/>
+  <path id="Trazado_214" data-name="Trazado 214" class="cls-2" d="M16.59,2.009a14.583,14.583,0,0,0-2.537,28.948V20.413H10.3v-4.3h3.748V12.48a5.119,5.119,0,0,1,5.119-5.1H21.14a7.92,7.92,0,0,1,1.735.117V11.4H19.959a1.619,1.619,0,0,0-1.59,1.648v3.063h4.273l-.569,4.3H18.428V31.176A14.612,14.612,0,1,0,16.59,2.009Z" transform="translate(0.91 0.907)"/>
+</svg>
