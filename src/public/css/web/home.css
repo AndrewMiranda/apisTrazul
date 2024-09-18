@@ -650,31 +650,16 @@ ul{
     padding:10px 20px !important;
 }
 
+@media screen and (max-width: 800px){
+    .contactSection{
+        flex-direction: column;
+    }
 
-/* ------------------------------------ */
-/* ------------------------------------ */
-/* ScreenShots app */
+    .infoSection{
+        width: 100%;
+    }
 
-
-.sectionAppScreenshots{
-    padding-top: 40px !important;
-    padding-bottom: 40px !important;
+    .containerFormSection{
+        width: 100%;
+    }
 }
-
-.contentApp{
-    display: flex;
-    justify-content: start;
-    overflow: auto;
-    column-gap: 1vw;
-    scrollbar-width: none; 
-}
-
-.contentApp::--webkit-scrollbar{
-    display: none;
-}
-
-.imgSlider{
-    width: 23vw;
-    max-width: 280px;
-}
-

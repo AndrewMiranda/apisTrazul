@@ -84,8 +84,8 @@
 
     <div class="" style="width: 100vw; background-color: #FFFFFF;">
         <div class="sectionSolution container">
-            <h2 class="titleSection">Lorem ipsum dolor sit amet,</h2>
-            <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p>
+            <h2 class="titleSection">Beneficios de usar TRAZUL en tu unidad productiva</h2>
+            <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
 
             <div class="containerSolution">
                 <div class="leftcontentSolution">
@@ -123,7 +123,7 @@
 
     <div class="container sectionPlans">
         <h2 class="titleSection">Nuestros planes</h2>
-        <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p>
+            <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
 
         <div class="containerCards">
             <div class="cardPlan generalShadow">
@@ -135,7 +135,7 @@
                     <li>Vender lotes</li>
                     <li>compra de lotes</li>
                 </ul>
-                <div class="buttonContact generalShadow"> Contactanos </div>
+                <a href="#contactForm" class="buttonContact generalShadow"> Contactanos </a>
             </div>
             <div class="cardPlan generalShadow">
                 <img src="/images/stacks_24.svg" alt="">
@@ -146,7 +146,7 @@
                     <li>Vender lotes</li>
                     <li>compra de lotes</li>
                 </ul>
-                <div class="buttonContact generalShadow"> Contactanos </div>
+                <a href="#contactForm" class="buttonContact generalShadow"> Contactanos </a>
             </div>
             <div class="cardPlan generalShadow">
                 <img src="/images/stacks_24.svg" alt="">
@@ -157,47 +157,36 @@
                     <li>Vender lotes</li>
                     <li>compra de lotes</li>
                 </ul>
-                <div class="buttonContact"> Contactanos </div>
+                <a href="#contactForm" class="buttonContact"> Contactanos </a>
             </div>
         </div>
     </div>
 
-    <div class="" style="width: 100vw; background-color: #FFFFFF;">
+    <div class="" id="contactForm" style="width: 100vw; background-color: #FFFFFF;">
         <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
         <div class="container contactSection ">
             <div class="infoSection">                
                 <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit est dolorem ab inventore labore consequatur esse, voluptatum magnam officia delectus?</p> -->
             </div>
             <form class="containerFormSection">
-                <select name="" id="">
-                    <option disabled selected>¿Cual es tu rol?</option>
-                    <option value="1">Acuicultor</option>
-                    <option value="2">Comprador mayorista</option>
+                <select name="rolUSer" class="rolUser" id="" onchange="verifyInputs()">
+                    <option disabled selected value="">¿Cual es tu rol?</option>
+                    <option value="Acuicultor">Acuicultor</option>
+                    <option value="Comprador mayorista">Comprador mayorista</option>
                 </select>
-                <input type="text" name="nameUser" class="" placeholder="Nombre completo">
-                <input type="email" name="email" class="" placeholder="Correo electronico">
-                <input type="number" name="numberPhone" class="" placeholder="Numero celular">
-                <textarea name="" id="" placeholder="Escribe un mensaje" cols="20" rows="7"></textarea>
+                <input type="text" name="nameUser" class="nameUser" placeholder="Nombre completo" onkeydown="verifyInputs()">
+                <input type="email" name="userEmail" class="userEmail" placeholder="Correo electronico" onkeydown="verifyInputs()">
+                <input type="number" name="numberPhone" class="numberPhone" placeholder="Numero celular" onkeydown="verifyInputs()">
+                <textarea name="message" class="message" id="" placeholder="Escribe un mensaje" cols="20" rows="7" onkeydown="verifyInputs()"></textarea>
                 <input type="submit" value="Contactarnos" class="buttomSubmit">
             </form>
         </div>
     </div>
-    <!-- <div class="container sectionAppScreenshots">
-        <h2 class="titleSection">Capturas de la aplicación</h2>
-
-        <div class="contentApp">
-            <img class="imgSlider" src="images/Screenshot1.png" alt="">
-            <img class="imgSlider" src="images/Screenshot2.png" alt="">
-            <img class="imgSlider" src="images/Screenshot3.png" alt="">
-            <img class="imgSlider" src="images/Screenshot4.png" alt="">
-            <img class="imgSlider" src="images/Screenshot1.png" alt="">
-            <img class="imgSlider" src="images/Screenshot2.png" alt="">
-            <img class="imgSlider" src="images/Screenshot3.png" alt="">
-            <img class="imgSlider" src="images/Screenshot4.png" alt="">
-        </div>
-    </div> -->
 
     <%- include('../partials/footerTrazul.ejs') %>
+
+
+    <%- include('../partials/loader.ejs') %>
 </body>
 </html>
 <script src="/js/web/home.js"></script>

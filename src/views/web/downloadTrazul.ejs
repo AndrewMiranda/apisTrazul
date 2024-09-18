@@ -10,8 +10,65 @@
 </head>
 <body>
     <%- include('../partials/headerTrazul.ejs') %>
-    <div class="container">
-        <h2 class="titleSection">dsfdsf</h2>
+    <div class="container containerDownload">
+        <div class="leftContent">
+            <h2 class="titleSectionDownload">Lorem ipsum dolor sit amet consectetur</h2>
+            <p class="textSectionDownload">
+                Un sistema integral que facilita el seguimiento y control de la producción tanto a nivel interno como externo, conectando a tu negocio con la cadena de suministro de tu industria.
+            </p>
+
+            <a href="#downloadApp" class="button generalShadow">
+                Continuar como acuicultor.
+                <img src="/images/arrow_24.svg" alt="">
+            </a>
+        </div>
+        <div class="rightContent">
+            <img src="/images/trazulApp.png" alt="">
+        </div>
     </div>
+
+
+    <div class="backgroundColorBlue">
+        <div class="container sectionAppScreenshots">
+            <h2 class="titleSection colorTitleWhite">Capturas de la aplicación</h2>
+            <div class="contentApp">
+                <img class="imgSlider" src="images/Screenshot1.png" alt="">
+                <img class="imgSlider" src="images/Screenshot2.png" alt="">
+                <img class="imgSlider" src="images/Screenshot3.png" alt="">
+                <img class="imgSlider" src="images/Screenshot4.png" alt="">
+                <img class="imgSlider" src="images/Screenshot1.png" alt="">
+                <img class="imgSlider" src="images/Screenshot2.png" alt="">
+                <img class="imgSlider" src="images/Screenshot3.png" alt="">
+                <img class="imgSlider" src="images/Screenshot4.png" alt="">
+            </div>
+        </div>
+    </div>
+    
+    <div class="" id="downloadApp" style="width: 100vw; background-color: #FFFFFF;">
+        <h2 class="titleSection titleContact">Registrate para descargar nuestra aplicación</h2>
+        <div class="container contactSection ">
+            <div class="infoSection">                
+                <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit est dolorem ab inventore labore consequatur esse, voluptatum magnam officia delectus?</p> -->
+            </div>
+            <form class="containerFormSection">
+                <select name="" id="" required>
+                    <option disabled selected>¿Cual es tu rol?</option>
+                    <option value="1">Acuicultor</option>
+                    <option value="2">Comprador mayorista</option>
+                </select>
+                <input type="text" name="nameUser" class="userName" placeholder="Nombre completo" onkeyup="validateDates()" required>
+                <input type="email" name="userEmail" class="userEmail" placeholder="Correo electronico" onkeyup="validateDates()" required>
+                <input type="number" name="numberPhone" class="numberPhone" placeholder="Numero celular" onkeyup="validateDates()" required>
+                <textarea name="message" class="message" placeholder="Escribe un mensaje" cols="20" rows="7" onkeyup="validateDates()"></textarea>
+                <input type="submit" value="Descargar aplicación" class="disabledButton  buttomSubmit">
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/footerTrazul.ejs') %>
+
+    <!-- Pantalla de carga -->
+    <%- include('../partials/loader.ejs') %>
 </body>
 </html>
+<script src="/js/web/downloadSection.js"></script>
