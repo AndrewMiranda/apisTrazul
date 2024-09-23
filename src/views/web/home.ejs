@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="stylesheet" href="/css/web/home.css">
     <link rel="stylesheet" href="/css/web/globalStyles.css">
+    <link rel="stylesheet" href="/css/web/home.css">
     <meta name="description" content="">
     <meta name="keywords" content="">
     <%- include('../partials/metas.ejs') %>
@@ -11,6 +11,10 @@
 <body>
     <%- include('../partials/headerTrazul.ejs') %>
     <div class="heroSection">
+        <video class="sourceVideo" autoplay muted loop>
+            <source  src="/images/background2.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
         <div class="overlay">
             <div class="infoHero">
                 <div class="leftSection">
@@ -22,7 +26,7 @@
                     </a>
                 </div>
                 <div class="rightSection">
-                    <img src="/images/heroe.jpg" alt="">
+                    <img src="/images/heroe.jpg" alt="">                     
                 </div>
             </div>
         </div>
@@ -51,7 +55,7 @@
                 <div class="optionInfo">
                     <p class="right"><span>Registro de procesos de la producción</span> que son claves para evaluar el rendimiento y para vender ofrecimiendo un mayor valor percibido. </p>
                     <div class="contentImg">
-                        <img  src="/images/productTrazadoTrAzul-ICO.png" alt="">
+                        <img  src="/images/process.svg" alt="">
                     </div>
                     
                 </div>
@@ -82,7 +86,7 @@
         </div>
     </div>
 
-    <div class="" style="width: 100vw; background-color: #FFFFFF;">
+    <div class="" style="width: 100%; background-color: #FFFFFF;">
         <div class="sectionSolution container">
             <h2 class="titleSection">Beneficios de usar TRAZUL en tu unidad productiva</h2>
             <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
@@ -162,10 +166,11 @@
         </div>
     </div>
 
-    <div class="" id="contactForm" style="width: 100vw; background-color: #FFFFFF;">
+    <div class="" id="contactForm" style="width: 100%; background-color: #FFFFFF;">
         <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
         <div class="container contactSection ">
-            <div class="infoSection">                
+            <div class="infoSection">      
+                <img class="imgFormSection" src="/images/heroe-1.jpg" alt="">          
                 <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit est dolorem ab inventore labore consequatur esse, voluptatum magnam officia delectus?</p> -->
             </div>
             <form class="containerFormSection">
@@ -173,12 +178,15 @@
                     <option disabled selected value="">¿Cual es tu rol?</option>
                     <option value="Acuicultor">Acuicultor</option>
                     <option value="Comprador mayorista">Comprador mayorista</option>
+                    <option value="Transportador">Transportador</option>
+                    <option value="Otro">Otro</option>
                 </select>
+                <input type="text" name="otherRol" style="display: none;" class="otherRol" placeholder="¿Cual es?" onkeydown="verifyInputs()">
                 <input type="text" name="nameUser" class="nameUser" placeholder="Nombre completo" onkeydown="verifyInputs()">
                 <input type="email" name="userEmail" class="userEmail" placeholder="Correo electronico" onkeydown="verifyInputs()">
                 <input type="number" name="numberPhone" class="numberPhone" placeholder="Numero celular" onkeydown="verifyInputs()">
                 <textarea name="message" class="message" id="" placeholder="Escribe un mensaje" cols="20" rows="7" onkeydown="verifyInputs()"></textarea>
-                <input type="submit" value="Contactarnos" class="buttomSubmit">
+                <input type="submit" value="Contactarnos" class="buttomSubmit" onclick="sendform()">
             </form>
         </div>
     </div>
