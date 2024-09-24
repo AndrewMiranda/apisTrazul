@@ -2,6 +2,34 @@
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------- */
+
+/* All sections */
+.downloadButtonOtherSection{
+    margin: 70px  auto;
+    width: max-content;
+    max-width: 90%;
+    border: 0.5vh solid #3194d2;
+    padding: 2vh 4vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 3vh;
+    color: #3194d2;
+    cursor: pointer;
+    border-radius: 10px;
+
+    p{
+        color: #3192d2;
+        font-size: clamp(18px, 3vh, 30px);
+        font-weight: bold;
+    }
+
+    img{
+        width: 32px;
+    }
+}
+
+
 /* Heroe */
 .heroSection{
     position: relative;
@@ -28,7 +56,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color:rgba(0, 0, 255, 0.1);
+    background-color:rgba(0, 0, 255, 0.4);
     /* background-color: rgb(69, 40, 220, 0.6); */
 }
 
@@ -130,19 +158,22 @@
         text-align: center;
     }
 
-    .downloadButton{
-        padding: 10px 20px;
-        border: 2px solid #FFFFFF;
-        margin: 0 auto;
+    .downloadButton,
+    .downloadButtonOtherSection{
+        margin-left:auto !important;
+        margin-right: auto !important;
         p{
             font-size: 18px;
+            text-align: center;
         }
     
         img{
             width: 24px;
         }
     }
-
+    .downloadButtonOtherSection{
+        border-radius: 1px solid #3194d2;
+    }
 }
 
 @media screen and (max-width: 800px){
@@ -165,6 +196,12 @@
 
     .overlay{
         height: auto;
+    }
+
+    .downloadButtonOtherSection{
+        p{
+            font-size: 16px;
+        }
     }
 }
 
