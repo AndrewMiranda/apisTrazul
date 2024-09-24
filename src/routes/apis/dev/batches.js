@@ -17,6 +17,9 @@ router.get('/', controller.getBatches);
 // Obtener lote especifico
 router.get('/specific', controller.getBatch);
 
+// Obtener Tipos de estados iniciales
+router.get('/initialStates', controller.initialStates);
+
 // Crear lote alevinera
 router.post('/alevinera', controller.createBatchAlevinera);
 
@@ -37,6 +40,24 @@ router.post('/engordeMixed', controller.engordeMixed);
 
 // Generar serial para lote
 router.get('/generateSerial', controller.generateSerial);
+
+// Asociar estanque a un lote
+router.post('/:id/pond', controller.associatePond);
+
+// Asociar pienso a un lote
+router.post('/:id/feed', controller.associateFeed);
+
+// Asociar medicamento a un lote
+router.post('/:id/medicine', controller.associateMedicine);
+
+// Asociar insumo a un lote
+router.post('/:id/supply', controller.associateSupply);
+
+// Obtener registro de mortalidad de un lote
+router.post('/:id/mortality', controller.addMortality);
+
+// Asociar insumo a un lote
+router.post('/:id/biomass', controller.addBiomass);
 
 // Obtener embalajes
 router.get('/packaging', controller.packaging);

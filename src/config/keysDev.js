@@ -7,6 +7,7 @@ module.exports = {
         host:  '191.101.233.119',
         user: 'devtrazul',
         password: 'Lc45Trd[*-okhvuU',
-        database: 'dev_trazul'
+        database: 'dev_trazul',
+        timezone: 'Z'
     }
 };

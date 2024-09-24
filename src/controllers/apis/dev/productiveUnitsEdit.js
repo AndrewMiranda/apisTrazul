@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const verifyToken = require("./../../../helpers/auth");
 const { genRandomNumberCode, genRandomString } = require('../../../helpers/randomString');
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
-const { body, query } = require('express-validator');
+const { body, query, param } = require('express-validator');
 const sharp = require('sharp');
 const fs = require('fs');
 const {sendMail} = require("../../../helpers/emails/index");
@@ -23,7 +23,7 @@ const controller = {};
 // // // // // // // // // // // // // // // ////
 
 // Crear y editar información de Alevinera
-controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().isString(), body("email").optional().notEmpty().isEmail(), body("phone").notEmpty().isMobilePhone(), body("webPage").optional().notEmpty().isURL(), body("municipality").notEmpty().isInt(), body("address").notEmpty().isString(), body("coords").notEmpty().isLatLong(), body("ponds").optional().notEmpty().toArray().isArray(), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().isString(), body("email").optional().notEmpty().isEmail(), body("phone").notEmpty().isMobilePhone(), body("webPage").optional().notEmpty().isURL(), body("municipality").notEmpty().isInt(), body("address").notEmpty().isString(), body("coords").notEmpty().isLatLong(), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // ID de la unidad productiva
         const productiveUnitId = req.body.productiveUnitId;
@@ -40,30 +40,6 @@ controller.informacionAlevinera = [verifyToken(config), body("name").notEmpty().
 
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
-
-        // Estanques de la granja
-        let ponds = req.body.ponds ?? "{}";
-        ponds = JSON.parse(ponds);
-
-        // Se verifica si vienen estanques
-        if (ponds.length > 0) {
-            // Se contruye la query dinámica y se verifican que no estén repetidos
-            let valuesPonds = [];
-            
-            pondsQuery = "";
-            for (const iterator of ponds) {
-                const name = iterator[0];
-                const location = iterator[1];
-                if (!valuesPonds.includes(name)) {
-                    pondsQuery+= `(${productiveUnitId}, "${name}", "${location}"),`;
-                    valuesPonds.push(name);
-                }
-            }
-
-            pondsQuery = pondsQuery.slice(0, -1);
-        
-            await pool.query('INSERT INTO `productiveUnits_ponds`(`productiveUnits_id`, `productiveUnits_ponds_name`, `productiveUnits_ponds_location`) VALUES '+pondsQuery);
-        }
 
         // Objeto con valores
         let data = {
@@ -159,12 +135,6 @@ controller.getInformacionAlevinera = [verifyToken(config), query("productiveUnit
         });
 
         data.region = dataCity.cities[0].regions_id;
-
-        // Se obtienen y se registan los estanques
-        let pondsData = await pool.query('SELECT productiveUnits_ponds_id AS id, productiveUnits_ponds_name AS name, productiveUnits_ponds_location AS location, productiveUnits_ponds_area AS area, productiveUnits_ponds_volume AS volume, productiveUnits_ponds_additionalInfo AS additionalInfo FROM `productiveUnits_ponds` WHERE productiveUnits_id = ? AND productiveUnits_ponds_state = 1', [productiveUnitId]);
-        pondsData = JSON.parse(JSON.stringify(pondsData));
-
-        data.ponds = pondsData;
 
         res.status(200).json({data});
     } catch (error) {
@@ -712,8 +682,8 @@ controller.addPonds = [verifyToken(config), body("productiveUnitId").notEmpty().
         const pondVolume = req.body.pondVolume;
         const pondAdditionalInfo = req.body.pondAdditionalInfo ?? null;
         const pondType = req.body.pondType ?? 1;
-        const pondRAS = req.body.pondRAS ?? false;
-        const pondIPBRS = req.body.pondIPBRS ?? false;
+        const pondRAS = req.body.pondRAS ?? 0;
+        const pondIPBRS = req.body.pondIPBRS ?? 0;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -815,12 +785,12 @@ controller.deletePonds = [verifyToken(config), body("productiveUnitId").notEmpty
         if (existPond.length < 1) throw `El estanque ${pondId} no existe`;
 
         // Se verifica si el estanque pertenece a la unidad productiva
-        if (existPond[0].productiveUnit == productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
+        if (existPond[0].productiveUnit != productiveUnitId) throw `El estanque ${pondId} no pertenece a la unidad productiva`;
 
         // Se verifica que el estanque no esté en uso
-        if (existPond[0].used == 1) throw `El estanque ${pondId} está en uso    `;
+        if (existPond[0].used == 1) throw `El estanque ${pondId} está en uso`;
 
-        const result = await pool.query('DELETE FROM `productiveUnits_ponds` WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
+        const result = await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_state`= 0 WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
 
         // Se verifica si se editó correctamente el estanque
         if (result.affectedRows > 0) {
@@ -839,7 +809,7 @@ controller.deletePonds = [verifyToken(config), body("productiveUnitId").notEmpty
 
 // INICIO DE CONTROLADORES DE MEDICINA
 // Agregar medicina
-controller.addMedicine = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("medicineName").notEmpty(), body("medicineGtin").notEmpty(), body("medicineBatch").notEmpty(), body("medicineExpDate").notEmpty(), body("medicineVendorNit").notEmpty(), body("medicineVendorDv").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.addMedicine = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("medicineName").notEmpty(), body("medicineGtin").notEmpty(), body("medicineBatch").notEmpty(), body("medicineExpDate").notEmpty(), body("medicineVendorNit").notEmpty(), body("medicineVendorDv").notEmpty().isInt(), body("medicineQuantity").notEmpty().isFloat(), body("unitId").notEmpty().isInt(), body("medicinePrice").optional().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // DATOS POST
         const productiveUnitId = req.body.productiveUnitId;
@@ -849,6 +819,10 @@ controller.addMedicine = [verifyToken(config), body("productiveUnitId").notEmpty
         const medicineExpDate = req.body.medicineExpDate;
         const medicineVendorNit = req.body.medicineVendorNit;
         const medicineVendorDv = req.body.medicineVendorDv;
+        const medicineQuantity = req.body.medicineQuantity;
+        const medicineQuantityAvailable = medicineQuantity;
+        const unitId = req.body.unitId;
+        const medicinePrice = req.body.medicinePrice ?? null;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -859,14 +833,9 @@ controller.addMedicine = [verifyToken(config), body("productiveUnitId").notEmpty
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
-        await pool.query('INSERT INTO `productiveUnits_medicine`(`productiveUnits_id`, `productiveUnits_medicine_name`, `productiveUnits_medicine_gtin`, `productiveUnits_medicine_batch`, `productiveUnits_medicine_expDate`, `productiveUnits_medicine_vendorNit`, `productiveUnits_medicine_vendorNitDv`) VALUES (?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, medicineName, medicineGtin, medicineBatch, medicineExpDate, medicineVendorNit, medicineVendorDv ]);
+        let medicine = await pool.query('INSERT INTO `productiveUnits_medicine`(`productiveUnits_id`, `productiveUnits_medicine_name`, `productiveUnits_medicine_gtin`, `productiveUnits_medicine_batch`, `productiveUnits_medicine_expDate`, `productiveUnits_medicine_vendorNit`, `productiveUnits_medicine_vendorNitDv`, `productiveUnits_medicine_quantity`, `productiveUnits_medicine_quantityAvailable`, `unit_id`, `productiveUnits_medicine_price`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, medicineName, medicineGtin, medicineBatch, medicineExpDate, medicineVendorNit, medicineVendorDv, medicineQuantity, medicineQuantityAvailable, unitId, medicinePrice ]);
 
-        let newMedicine = await pool.query('SELECT productiveUnits_medicine_id AS id FROM `productiveUnits_medicine` WHERE productiveUnits_id = ? ORDER BY `id` DESC LIMIT 1;', [ productiveUnitId ]);
-        newMedicine = JSON.parse(JSON.stringify(newMedicine));
-
-        newMedicine = newMedicine[0].id;
-
-        res.status(200).json({newMedicine});
+        res.status(200).json({newMedicine: medicine.insertId});
     } catch (error) {
         console.log(error);
         res.status(400).json({error});
@@ -887,11 +856,29 @@ controller.getMedicines = [verifyToken(config), query("productiveUnitId").notEmp
     // se verifica que la unidad productiva se encuentre activa
     if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
-    let medicinesActive = await pool.query('SELECT productiveUnits_medicine_id AS id, productiveUnits_medicine_name AS name, productiveUnits_medicine_gtin AS gtin, productiveUnits_medicine_batch AS batch, productiveUnits_medicine_expDate AS expDate, productiveUnits_medicine_vendorNit AS vendorNit, productiveUnits_medicine_vendorNitDv AS vendorDv FROM `productiveUnits_medicine` WHERE productiveUnits_id = ? AND productiveUnits_medicine_state = 1', [ productiveUnitId ]);
+    // Se obtienen las unidades para iterar los piensos
+    let units = await pool.query('SELECT units_id AS id, units_name AS name FROM `units`');
+    units = JSON.parse(JSON.stringify(units));
+
+    let unitsArray = {};
+
+    units.forEach(element => {
+        unitsArray[element.id] = element.name;
+    });
+
+    let medicinesActive = await pool.query('SELECT productiveUnits_medicine_id AS id, productiveUnits_medicine_name AS name, productiveUnits_medicine_gtin AS gtin, productiveUnits_medicine_batch AS batch, productiveUnits_medicine_expDate AS expDate, productiveUnits_medicine_vendorNit AS vendorNit, productiveUnits_medicine_vendorNitDv AS vendorDv, productiveUnits_medicine_quantity AS quantity, productiveUnits_medicine_quantityAvailable AS available, unit_id AS unit, productiveUnits_medicine_price FROM `productiveUnits_medicine` WHERE productiveUnits_id = ? AND productiveUnits_medicine_state = 1', [ productiveUnitId ]);
     medicinesActive = JSON.parse(JSON.stringify(medicinesActive));
 
-    let medicinesInactive = await pool.query('SELECT productiveUnits_medicine_id AS id, productiveUnits_medicine_name AS name, productiveUnits_medicine_gtin AS gtin, productiveUnits_medicine_batch AS batch, productiveUnits_medicine_expDate AS expDate, productiveUnits_medicine_vendorNit AS vendorNit, productiveUnits_medicine_vendorNitDv AS vendorDv FROM `productiveUnits_medicine` WHERE productiveUnits_id = ? AND productiveUnits_medicine_state = 0', [ productiveUnitId ]);
+    medicinesActive.forEach(element => {
+        element.unit = unitsArray[element.unit];
+    });
+
+    let medicinesInactive = await pool.query('SELECT productiveUnits_medicine_id AS id, productiveUnits_medicine_name AS name, productiveUnits_medicine_gtin AS gtin, productiveUnits_medicine_batch AS batch, productiveUnits_medicine_expDate AS expDate, productiveUnits_medicine_vendorNit AS vendorNit, productiveUnits_medicine_vendorNitDv AS vendorDv, productiveUnits_medicine_quantity AS quantity, productiveUnits_medicine_quantityAvailable AS available, unit_id AS unit, productiveUnits_medicine_price FROM `productiveUnits_medicine` WHERE productiveUnits_id = ? AND productiveUnits_medicine_state = 0', [ productiveUnitId ]);
     medicinesInactive = JSON.parse(JSON.stringify(medicinesInactive));
+
+    medicinesInactive.forEach(element => {
+        element.unit = unitsArray[element.unit];
+    });
 
     medicines = {
         active: medicinesActive,
@@ -987,18 +974,19 @@ controller.feedLinkAfter = [verifyToken(config), body("productiveUnitId").notEmp
 }]
 
 // Crear pienso
-controller.createFeed = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("feedName").notEmpty(), body("vendorName").notEmpty(), body("codeTypeId").notEmpty().isInt(), body("code").notEmpty(), body("batch").notEmpty(), body("expDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("quantity").notEmpty(), body("unitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.createFeed = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("feedName").notEmpty(), body("vendorName").optional(), body("codeTypeId").notEmpty().isInt(), body("batch").notEmpty(), body("expDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("quantity").notEmpty(), body("unitId").notEmpty().isInt(), body("price").optional().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // DATOS POST
         const productiveUnitId = req.body.productiveUnitId;
         const feedName = req.body.feedName;
-        const vendorName = req.body.vendorName;
+        const vendorName = req.body.vendorName ?? null;
         const codeTypeId = req.body.codeTypeId;
-        const code = req.body.code;
+        const code = req.body.code ?? null;
         const batch = req.body.batch;
         const expDate = req.body.expDate;
         const quantity = req.body.quantity;
         const unitId = req.body.unitId;
+        const price = req.body.price ?? null;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -1019,7 +1007,7 @@ controller.createFeed = [verifyToken(config), body("productiveUnitId").notEmpty(
         if (codeType.length < 1) throw "Tipo de codigo de referencia inválido";
         if (code.length < codeRule.min || code.length > codeRule.max) throw `El código ${code} no es un ${codeType[0].name} válido, min: ${codeRule.min} y max: ${codeRule.max}`;
 
-        await pool.query('INSERT INTO `productiveUnits_feed`(`productiveUnits_id`, `productiveUnits_feed_name`, `productiveUnits_feed_vendorName`, `productiveUnits_feed_codeType`, `productiveUnits_feed_code`, `productiveUnits_feed_batch`, `productiveUnits_feed_expDate`, `productiveUnits_feed_quantity`, `unit_id`, `productiveUnits_feed_quantityIterator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, feedName, vendorName, codeTypeId, code, batch, expDate, quantity, unitId, quantity ]);
+        await pool.query('INSERT INTO `productiveUnits_feed`(`productiveUnits_id`, `productiveUnits_feed_name`, `productiveUnits_feed_vendorName`, `productiveUnits_feed_codeType`, `productiveUnits_feed_code`, `productiveUnits_feed_batch`, `productiveUnits_feed_expDate`, `productiveUnits_feed_quantity`, `unit_id`, `productiveUnits_feed_quantityIterator`, `productiveUnits_feed_price`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, feedName, vendorName, codeTypeId, code, batch, expDate, quantity, unitId, quantity, price ]);
 
         res.status(200).json({});
     } catch (error) {
@@ -1054,14 +1042,14 @@ controller.getFeeds = [verifyToken(config), query("productiveUnitId").notEmpty()
         });
         
         // Se obtienen los piensos activos
-        let feedsActive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 1', [ productiveUnitId ]);
+        let feedsActive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state, productiveUnits_feed_price AS price FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 1', [ productiveUnitId ]);
 
         feedsActive.forEach(element => {
             element.unit = unitsArray[element.unit];
         });
         
         // Se obtienen los piensos inactivos
-        let feedsInactive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 0', [ productiveUnitId ]);
+        let feedsInactive = await pool.query('SELECT productiveUnits_feed_id AS id, productiveUnits_feed_name AS name, productiveUnits_feed_vendorName AS vendor, productiveUnits_feed_batch AS batch, productiveUnits_feed_quantity AS originalQuantity, productiveUnits_feed_quantityIterator AS quantity, unit_id AS unit, productiveUnits_feed_state AS state, productiveUnits_feed_price AS price FROM `productiveUnits_feed` WHERE productiveUnits_id = ? AND productiveUnits_feed_state = 0', [ productiveUnitId ]);
 
         feedsInactive.forEach(element => {
             element.unit = unitsArray[element.unit];
@@ -1146,6 +1134,132 @@ controller.deleteFeed = [verifyToken(config), query("feedId").notEmpty().isInt()
     }
 
 }];
+
+// FIN CONTROLADORES PIENSOS 
+
+// INICIO CONTROLADORES OTROS INSUMOS
+// Agregar otro insumo
+controller.createSupply = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("name").notEmpty(), body("price").notEmpty().isInt(), body("description").optional(), body("quantity").notEmpty().isFloat(), body("unitId").notEmpty().isInt(), body("purchaseDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS POST
+        const productiveUnitId = req.body.productiveUnitId;
+        const name = req.body.name;
+        const price = req.body.price;
+        const description = req.body.description ?? null;
+        const purchaseDate = req.body.purchaseDate;
+        const quantity = req.body.quantity;
+        const unitId = req.body.unitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        let supply = await pool.query('INSERT INTO `productiveUnits_supplies`(`productiveUnits_id`, `productiveUnits_supplies_name`, `productiveUnits_supplies_price`, `productiveUnits_supplies_purchaseDate`, `productiveUnits_supplies_quantity`, `productiveUnits_supplies_quantityAvailable`, `unit_id`, `productiveUnits_supplies_description`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [ productiveUnitId, name, price, purchaseDate, quantity, quantity, unitId, description ]);
+
+        res.status(200).json({ newSupply: supply.insertId });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Obtener otros insumos
+controller.getSupplies = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS GET
+        const productiveUnitId = req.query.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        let activeSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 1', [ productiveUnitId ]);
+        activeSupplies = JSON.parse(JSON.stringify(activeSupplies));
+
+        let inactiveSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 0', [ productiveUnitId ]);
+        inactiveSupplies = JSON.parse(JSON.stringify(inactiveSupplies));
+
+        supplies = {
+            active: activeSupplies,
+            inactive: inactiveSupplies,
+        }
+
+        res.status(200).json({supplies});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Obtener insumo especifico
+controller.getSupply = [verifyToken(config), param("id").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS GET
+        const supplyId = req.params.id;
+
+        let [supply] = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_id AS productiveUnit, productiveUnits_supplies_name AS name, productiveUnits_supplies_price AS price, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantity AS quantity, productiveUnits_supplies_quantityAvailable AS quantityStock, u.units_name AS unit, productiveUnits_supplies_description AS description FROM `productiveUnits_supplies` AS ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_supplies_id = ?', [ supplyId ]);
+
+        if (supply.length < 1) throw `Este insumo no existe.`;
+
+        const productiveUnitId = supply.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        res.status(200).json({supply});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Obtener insumo especifico
+controller.editSupply = [verifyToken(config), param("id").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS GET
+        const supplyId = req.params.id;
+
+        let [supply] = await pool.query('SELECT productiveUnits_id AS productiveUnit FROM `productiveUnits_supplies` WHERE productiveUnits_supplies_id = ?', [ supplyId ]);
+
+        if (supply.length < 1) throw `Este insumo no existe.`;
+
+        const productiveUnitId = supply.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["insumos"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        await pool.query('UPDATE `productiveUnits_supplies` SET `productiveUnits_supplies_state`= 0 WHERE `productiveUnits_supplies_id`= ?', [ supplyId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// FIN CONTROLADORES OTROS INSUMOS 
 
 // Agregar permiso de unidad productiva
 controller.addPermit = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), body("permName").notEmpty(), body("permEntity").notEmpty(), handleValidationErrors, async(req, res) => {
@@ -1425,6 +1539,116 @@ controller.certificatesLinkAfter = [verifyToken(config), body("productiveUnitId"
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         await pool.query(`UPDATE productiveUnits SET productiveUnits_body = JSON_SET(productiveUnits_body, "$.profile.certificacionesAlevinera", true) WHERE productiveUnits_id = ?`, [ productiveUnitId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Obtener certificados de unidad productiva
+controller.getProcessPlant = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Datos POST
+        const productiveUnitId = req.query.productiveUnitId;
+
+        let processPlant = await pool.query('SELECT productiveUnits_processPlant_body AS body FROM `productiveUnits_processPlant` WHERE productiveUnits_id = ?', [ productiveUnitId ]);
+        processPlant = JSON.parse(JSON.stringify(processPlant));
+
+        processPlant = JSON.parse(processPlant[0].body);
+
+        res.status(200).json({processPlant});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Obtener certificados de unidad productiva
+controller.addProcessPlant = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // Datos POST
+        const productiveUnitId = req.body.productiveUnitId;
+        
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        let body = {
+            belongsProductiveUnit: req.body.belongsProductiveUnit ?? true,
+            insideProperty: req.body.insideProperty ?? true,
+            name: req.body.name ?? null,
+            nit: req.body.nit ?? null,
+            address: req.body.address ?? null,
+            location: req.body.location ?? null,
+            invima: req.body.invima ?? false,
+            invimaDoc: "",
+            certificates: []
+        }
+
+        // Se guarda y registran los certificados
+        if (req.files) {
+            // Ruta dónde guardar los archivos
+            let folderCertificates = "./src/public/content/processPlants/certificates/";
+            let folderInvima = "./src/public/content/processPlants/invima/";
+
+            if (req.files.invima && body.invima) {
+                let invimaDoc = req.files.invima;
+
+                let fileName = genRandomString(12)+".pdf";
+
+                // Se guarda el archivo
+                invimaDoc.mv(folderInvima+fileName);
+
+                body.invimaDoc = fileName;
+            }
+
+            const imageKeys = Object.keys(images);
+
+            // Procesar y guardar cada certificado
+            // for (let key of imageKeys) {
+            //     let file = images[key];
+            //     let fileName = genRandomString(12) + ".pdf";
+
+            //     file.mv(folderCertificates+fileName);
+
+            //     body.certificates.push(fileName);
+            // }
+        }
+
+        await pool.query(`UPDATE productiveUnits SET productiveUnits_body = JSON_SET(productiveUnits_body, "$.profile.processPlant", true) WHERE productiveUnits_id = ?`, [ productiveUnitId ]);
+
+        await pool.query('INSERT INTO `productiveUnits_processPlant`(`productiveUnits_id`, `productiveUnits_processPlant_body`) VALUES (?, ?)', [ productiveUnitId, JSON.stringify(body) ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Marcar que no tiene planta de proceso
+controller.processplantAfter = [verifyToken(config), body("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // DATOS POST
+        const productiveUnitId = req.body.productiveUnitId;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        await pool.query(`UPDATE productiveUnits SET productiveUnits_body = JSON_SET(productiveUnits_body, "$.profile.processPlant", true) WHERE productiveUnits_id = ?`, [ productiveUnitId ]);
 
         res.status(200).json({});
     } catch (error) {

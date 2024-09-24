@@ -8,7 +8,7 @@ const pool = require("../../../../config/dbConnections"+config.DBName);
 const fetch = require('node-fetch');
 
 // Función para formatear fecha según el formato del FrontEnd
-async function spececieName(id) {
+async function specieName(id) {
     // Fetch para obtener los datos de la especie
     specie = await fetch(config.apisRoute+"/general/species?flag="+id, {
         method: "GET"
@@ -86,7 +86,7 @@ async function medicineData(id){
 
 // Función para consultar datos de un estanque
 async function pondData(id){
-    pondData = await pool.query('SELECT productiveUnits_ponds_name AS name FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ id ]);
+    pondData = await pool.query('SELECT productiveUnits_ponds_name AS name FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?', [ id[0] ]);
     pondData = JSON.parse(JSON.stringify(pondData));
 
     pondData[0].id = id;
@@ -107,10 +107,10 @@ async function fingerlingsData(id){
     dispatchData = await pool.query('SELECT specie_id AS specie, JSON_EXTRACT(productiveUnits_fingerlings_body, "$.harvestDate") AS date, batches_token AS token, productiveUnits_fingerlings_id AS id FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ id ]);
     dispatchData = JSON.parse(JSON.stringify(dispatchData));
 
-    dispatchData[0].specie = await spececieName(dispatchData[0].specie);
+    dispatchData[0].specie = await specieName(dispatchData[0].specie);
 
     return dispatchData[0];
 }
 
 
-module.exports = { spececieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData }
+module.exports = { specieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData }

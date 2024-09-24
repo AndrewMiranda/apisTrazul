@@ -7,7 +7,7 @@ const config = require("../configApis");
 const pool = require("../../../../config/dbConnections"+config.DBName);
 const fetch = require('node-fetch');
 const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, productiveUnitActive, getUserHash, getUserAuth } = require("./productiveUnitsEdit");
-const { spececieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData } = require("./batchesAux");
+const { specieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData } = require("./batchesAux");
 
 // Función para construir objeto con información de trazabilidad según el tipo de lote
 async function constructTraceability(token, type, body, prevToken) {
@@ -17,7 +17,7 @@ async function constructTraceability(token, type, body, prevToken) {
     // Se invoca a la función constructora dependiendo del tipo de lote
     switch (type) {
         case 1:
-            body = await basicHatchery(body);
+            body = await basicHatchery(token, body);
             break;
 
         case 2:
@@ -29,7 +29,7 @@ async function constructTraceability(token, type, body, prevToken) {
             break;
 
         case 4:
-            body = await basicFishFarming(body);
+            body = await basicFishFarming(token, body);
             break;
             
         case 5:
@@ -48,12 +48,12 @@ async function constructTraceability(token, type, body, prevToken) {
 }
 
 // Constructor de trazabilidad para lote basico de alevinera
-async function basicHatchery(body) {
+async function basicHatchery(token, body) {
     // Se eliminan los datos innecesarios
     body.productiveUnitId = undefined;
 
     // Se consulta el nombre de la especie
-    body.specie = await spececieName(body.specie);
+    body.specie = await specieName(body.specie);
 
     // Se traduce la unidad de edad (Dias o meses)
     body.ageUnit = await ageUnit(body.age, body.ageUnit);
@@ -70,42 +70,48 @@ async function basicHatchery(body) {
     // Se obtienen los datos del padrote
     body.broodstock = await broodstockData(body.broodstock);
 
-    // Se obtienen los datos de los piensos y se parsean si es que el lote los tiene
-    let feed = body.feed ?? [];
-    if (feed.length > 0) {
-        for (let index = 0; index < feed.length; index++) {
-            const element = feed[index];
-            
-            feed[index] = await feedData(element[0], element[1]);
-        }
+    // Se obtienen los datos de los piensos
+    let feed = await pool.query('SELECT pf.productiveUnits_feed_name AS name, pf.productiveUnits_feed_batch AS batch, pf.productiveUnits_feed_id AS id, bf.batches_feed_quantity AS quantity, productiveUnits_feed_price AS price FROM `batches_feed` AS bf LEFT JOIN batches AS b ON b.batches_id = bf.batches_id LEFT JOIN productiveUnits_feed AS pf ON pf.productiveUnits_id = b.batches_productiveUnit WHERE b.batches_token = ?;', [ token ]);
+    feed = JSON.parse(JSON.stringify(feed));
     
-        body.feed = feed;
-    }
+    body.feed = feed;
 
-    // Se obtienen los datos de las medicinas y se parsean si es que el lote las tiene
-    let medicines = body.medicines ?? [];
-    if (medicines.length > 0) {
-        for (let index = 0; index < medicines.length; index++) {
-            const element = medicines[index];
-            
-            medicines[index] = await medicineData(element);
-        }
-    
-        body.medicines = medicines;
-    }
+    // Se obtienen los datos de las medicinas asociadas al lote
+    let medicines = await pool.query('SELECT pm.productiveUnits_medicine_id AS id, pm.productiveUnits_medicine_name AS name, pm.productiveUnits_medicine_batch AS batch, bm.batches_medicines_quantity AS quantity, productiveUnits_medicine_price AS price FROM `batches_medicines` AS bm LEFT JOIN batches AS b ON b.batches_id = bm.batches_id LEFT JOIN productiveUnits_medicine AS pm ON pm.productiveUnits_medicine_id = bm.productiveUnits_medicine_id WHERE b.batches_token = ?;', [ token ]);
+    feed = JSON.parse(JSON.stringify(feed));
 
-    // Se obtienen los datos de los estanques y se parsean si es que el lote los tiene
-    let ponds = body.ponds ?? [];
-    if (ponds.length > 0) {
-        for (let index = 0; index < ponds.length; index++) {
-            const element = ponds[index];
-            
-            ponds[index] = await pondData(element);
-        }
+    body.medicines = medicines;
+
+    // Se obtienen los datos de los otros insumos asociados al lote
+    let supply = await pool.query('SELECT ps.productiveUnits_supplies_id AS id, ps.productiveUnits_supplies_name AS name, bs.batches_supplies_quantity AS quantity FROM `batches_supplies` AS bs LEFT JOIN batches AS b ON b.batches_id = bs.batches_id LEFT JOIN productiveUnits_supplies AS ps ON ps.productiveUnits_supplies_id = bs.productiveUnits_supplies_id WHERE b.batches_token = ?;', [ token ]);
+    supply = JSON.parse(JSON.stringify(supply));
     
-        body.ponds = ponds;
-    }
+    body.supply = supply;
+
+    // Se obtienen los datos de los estanques asociados al lote
+    let ponds = await pool.query('SELECT pp.productiveUnits_ponds_id AS id, pp.productiveUnits_ponds_name AS name FROM `batches_ponds` AS p LEFT JOIN batches AS b ON p.batches_id = b.batches_id LEFT JOIN productiveUnits_ponds AS pp ON pp.productiveUnits_ponds_id = p.productiveUnits_ponds_id WHERE b.batches_token = ?;', [ token ]);
+    ponds = JSON.parse(JSON.stringify(ponds));
     
+    body.ponds = ponds;
+
+    // Se obtiene los registros de mortalidad
+    let mortality = await pool.query('SELECT bm.batches_mortality_id AS id, bm.batches_mortality_dataDate AS date, bm.batches_mortality_quantity AS quantity, bm.batches_mortality_note AS note FROM `batches_mortality` as bm LEFT JOIN batches AS b ON b.batches_id = bm.batches_id WHERE b.batches_token = ?', [ token ]);
+    mortality = JSON.parse(JSON.stringify(mortality));
+    
+    body.mortality = mortality;
+
+    // Se obtienen los registros de biomasa
+    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
+    biomass = JSON.parse(JSON.stringify(biomass));
+
+    // for (let index = 0; index < biomass.length; index++) {
+    //     const element = biomass[index];
+        
+    //     element.images = JSON.parse(element.images);
+    // }
+
+    body.biomass = biomass;
+
     // Se obtiene los datos del despacho
     let dispatches = body.dispatches ?? [];
     if (dispatches.length > 0) {
@@ -276,7 +282,7 @@ async function mixedHatchery(body, prevToken) {
 }
 
 // Constructor de trazabilidad para lote basico de alevinera
-async function basicFishFarming(body) {
+async function basicFishFarming(token, body) {
     // Se agrega la palabra Individuos a la cantidad inicial de individuos
     body.quantityFish += " Individuos";
 
@@ -296,40 +302,47 @@ async function basicFishFarming(body) {
     body.maximumSize += "cm";
 
     // Se obtienen los datos de los piensos y se parsean si es que el lote los tiene
-    let feed = body.feed ?? [];
-    if (feed.length > 0) {
-        for (let index = 0; index < feed.length; index++) {
-            const element = feed[index];
-            
-            feed[index] = await feedData(element[0], element[1]);
-        }
+    // Se obtienen los datos de los piensos
+    let feed = await pool.query('SELECT pf.productiveUnits_feed_name AS name, pf.productiveUnits_feed_batch AS batch, pf.productiveUnits_feed_id AS id, bf.batches_feed_quantity AS quantity, productiveUnits_feed_price AS price FROM `batches_feed` AS bf LEFT JOIN batches AS b ON b.batches_id = bf.batches_id LEFT JOIN productiveUnits_feed AS pf ON pf.productiveUnits_id = b.batches_productiveUnit WHERE b.batches_token = ?;', [ token ]);
+    feed = JSON.parse(JSON.stringify(feed));
     
-        body.feed = feed;
-    }
+    body.feed = feed;
 
-    // Se obtienen los datos de las medicinas y se parsean si es que el lote las tiene
-    let medicines = body.medicines ?? [];
-    if (medicines.length > 0) {
-        for (let index = 0; index < medicines.length; index++) {
-            const element = medicines[index];
-            
-            medicines[index] = await medicineData(element);
-        }
-    
-        body.medicines = medicines;
-    }
+    // Se obtienen los datos de las medicinas asociadas al lote
+    let medicines = await pool.query('SELECT pm.productiveUnits_medicine_id AS id, pm.productiveUnits_medicine_name AS name, pm.productiveUnits_medicine_batch AS batch, bm.batches_medicines_quantity AS quantity, productiveUnits_medicine_price AS price FROM `batches_medicines` AS bm LEFT JOIN batches AS b ON b.batches_id = bm.batches_id LEFT JOIN productiveUnits_medicine AS pm ON pm.productiveUnits_medicine_id = bm.productiveUnits_medicine_id WHERE b.batches_token = ?;', [ token ]);
+    feed = JSON.parse(JSON.stringify(feed));
 
-    // Se obtienen los datos de los estanques y se parsean si es que el lote los tiene
-    let ponds = body.ponds ?? [];
-    if (ponds.length > 0) {
-        for (let index = 0; index < ponds.length; index++) {
-            const element = ponds[index];
-            
-            ponds[index] = await pondData(element);
-        }
+    body.medicines = medicines;
+
+    // Se obtienen los datos de los otros insumos asociados al lote
+    let supply = await pool.query('SELECT ps.productiveUnits_supplies_id AS id, ps.productiveUnits_supplies_name AS name, bs.batches_supplies_quantity AS quantity FROM `batches_supplies` AS bs LEFT JOIN batches AS b ON b.batches_id = bs.batches_id LEFT JOIN productiveUnits_supplies AS ps ON ps.productiveUnits_supplies_id = bs.productiveUnits_supplies_id WHERE b.batches_token = ?;', [ token ]);
+    supply = JSON.parse(JSON.stringify(supply));
     
-        body.ponds = ponds;
-    }
+    body.supply = supply;
+
+    // Se obtienen los datos de los estanques asociados al lote
+    let ponds = await pool.query('SELECT pp.productiveUnits_ponds_id AS id, pp.productiveUnits_ponds_name AS name FROM `batches_ponds` AS p LEFT JOIN batches AS b ON p.batches_id = b.batches_id LEFT JOIN productiveUnits_ponds AS pp ON pp.productiveUnits_ponds_id = p.productiveUnits_ponds_id WHERE b.batches_token = ?;', [ token ]);
+    ponds = JSON.parse(JSON.stringify(ponds));
+    
+    body.ponds = ponds;
+
+    // Se obtiene los registros de mortalidad
+    let mortality = await pool.query('SELECT bm.batches_mortality_id AS id, bm.batches_mortality_dataDate AS date, bm.batches_mortality_quantity AS quantity, bm.batches_mortality_note AS note FROM `batches_mortality` as bm LEFT JOIN batches AS b ON b.batches_id = bm.batches_id WHERE b.batches_token = ?', [ token ]);
+    mortality = JSON.parse(JSON.stringify(mortality));
+    
+    body.mortality = mortality;
+
+    // Se obtienen los registros de biomasa
+    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
+    biomass = JSON.parse(JSON.stringify(biomass));
+
+    // for (let index = 0; index < biomass.length; index++) {
+    //     const element = biomass[index];
+        
+    //     element.images = JSON.parse(element.images);
+    // }
+
+    body.biomass = biomass;
     
     // Se obtiene los datos del despacho
     let dispatches = body.dispatches ?? [];

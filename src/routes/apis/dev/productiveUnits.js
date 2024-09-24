@@ -33,6 +33,9 @@ router.get('/profileState', controller.profileState);
 // Código de validación para Email
 router.post('/codeEmail', controller.codeEmail);
 
+// Código de validación para Email
+router.post('/codeEmailVerification', controller.codeEmailVerification);
+
 // Obtener nombre de unidad productiva con el ID
 router.get('/nameWithId', controller.nameWithId);
 

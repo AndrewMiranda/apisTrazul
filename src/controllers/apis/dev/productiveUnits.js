@@ -394,7 +394,7 @@ controller.codeEmail = [ async(req, res) => {
             if (regExp.test(email)) {
                 await pool.query('INSERT INTO `productiveUnits_emails`(`productiveUnits_emails_email`, `productiveUnits_emails_code`) VALUES (?, ?)', [ email, verificationCode ]);
 
-                verificationCode = config.apisRoute+verificationCode;
+                verificationCode = config.apisRoute+"/productiveUnit/codeEmailVerification?code="+verificationCode;
 
                 sendMail(email, "Código de verificación de correo electrónico de unidad productiva - Trazul", {email: email, verifyCode: verificationCode}, "verifyCodeProductiveUnit");
 
@@ -403,6 +403,16 @@ controller.codeEmail = [ async(req, res) => {
                 res.status(400).json({error: 'Email no válido'});
             }
         }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}]
+
+// Validar email para unidad productiva
+controller.codeEmailVerification = [ async(req, res) => {
+    try {
+        res.status(200).send("Codigo verificado correctamente, puedes revisar a tu aplicación");
     } catch (error) {
         console.log(error);
         res.status(400).json({error});
