@@ -5,13 +5,14 @@ const config = require("./configApis");
 const pool = require("../../../config/dbConnections"+config.DBName);
 const fetch = require('node-fetch');
 const verifyToken = require("./../../../helpers/auth");
-const { genRandomNumberCode, generateRandomHash } = require('../../../helpers/randomString');
-const { body, query } = require('express-validator');
+const { genRandomNumberCode, genRandomString } = require('../../../helpers/randomString');
+const { body, query, param } = require('express-validator');
 const { handleValidationErrors } = require('../../../helpers/hasErrorsResults');
 const {sendMail} = require("../../../helpers/emails/index");
 const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, getUserHash, productiveUnitActive, constructTraceability, getCountryName, getDocumentTypeName } = require('./common/batches');
-const { spececieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData } = require("./common/batchesAux");
+const { specieName, formatDate, ageUnit, broodstockData, feedData, medicineData, pondData, dispatchData, fingerlingsData } = require("./common/batchesAux");
 const { generaterRandomSerial, generaterBatchToken, generaterDispatchToken } = require('../../../helpers/serialTrazul');
+const sharp = require('sharp');
 
 // Controlador base
 const controller = {};
@@ -19,7 +20,7 @@ const controller = {};
 // Obtener tipos de estados iniciales de un lote
 controller.initialStates = [verifyToken(config), async(req, res) => {
     try {
-        let initialStates = await pool.query('SELECT batchesInitialStates_id AS id, batchesInitialStates_name AS name FROM `batchesInitialStates`; ');
+        let initialStates = await pool.query('SELECT batchesInitialStates_id AS id, batchesInitialStates_name AS name, batchesInitialStates_images AS images FROM `batchesInitialStates`; ');
         initialStates = JSON.parse(JSON.stringify(initialStates));
 
         res.status(200).json({initialStates});
@@ -31,7 +32,7 @@ controller.initialStates = [verifyToken(config), async(req, res) => {
 
 
 // Crear lote alevinera
-controller.createBatchAlevinera = [verifyToken(config), body("initialState").notEmpty().isInt(), body("specie").notEmpty().isInt(), body("broodstock").notEmpty().isInt(), body("quantityFish").notEmpty().isInt(), body("sowingDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("minimumSize").optional().isFloat(), body("maximumSize").optional(), body("estimatedInitialHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("estimatedIFinalHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("harvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("age").notEmpty().isInt(), body("ageUnit").notEmpty().isInt(), body("serial").notEmpty(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.createBatchAlevinera = [verifyToken(config), body("initialState").notEmpty().isInt(), body("specie").notEmpty().isInt(), body("broodstock").notEmpty().isInt(), body("quantityFish").notEmpty().isInt(), body("sowingDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("minimumSize").optional().isFloat(), body("maximumSize").optional(), body("estimatedInitialHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("estimatedIFinalHarvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("harvestDate").optional().isISO8601("yyyy-mm-dd").toDate(), body("age").notEmpty().isInt(), body("ageUnit").notEmpty().isInt(), body("serial").notEmpty(), body("estimatedSalesPrice").optional().isInt(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // DATOS POST
         const productiveUnitId = req.body.productiveUnit;
@@ -41,16 +42,19 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
         const quantityFish = req.body.quantityFish;
         const minimumSize = req.body.minimumSize ?? null;
         const maximumSize = req.body.maximumSize ?? null;
+        const sowingDate = req.body.sowingDate ?? null;
         const estimatedInitialHarvestDate = req.body.estimatedInitialHarvestDate ?? null;
         const estimatedIFinalHarvestDate = req.body.estimatedIFinalHarvestDate ?? null;
         const harvestDate = req.body.harvestDate ?? null;
         const age = req.body.age;
         const ageUnit = req.body.ageUnit;
         const serial = req.body.serial;
+        let estimatedSalesPrice = req.body.estimatedSalesPrice ?? null;
         const description = req.body.description ?? "";
         let feed = req.body.feed;
         let medicines = req.body.medicines;
         let ponds = req.body.ponds;
+        let supplies = req.body.supplies;
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -70,6 +74,9 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
         // Se parsean los estanques
         ponds = JSON.parse(ponds);
 
+        // Variable para guardar la query de estanques
+        let queryPonds = "";
+
         // Se verifica que haya vinculado más de un estanque
         if (ponds.length < 1) throw "Es obligatorio asociar un estanque";
 
@@ -85,26 +92,39 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
             if (validPond[0].state == 0) throw `El estanque '${element[0]}' se encuentra desactivado`;
 
             // Se verifica si el último estanque ya se encuentra en uso
-            if (index === ponds.length - 1 || validPond[0].used == 1) throw `El estanque '${validPond[0].name}' ya se encuentra en uso`;
+            if (index === ponds.length - 1 && validPond[0].used == 1) throw `El estanque '${validPond[0].name}' ya se encuentra en uso`;
         }
 
         // Se parsean los medicamentos
         medicines = JSON.parse(medicines);
 
+        // Variable para guardar la query de medicinas
+        let queryMedicines = "";
+
         // Se verifica que los medicamentos sean válidos
         for (let index = 0; index < medicines.length; index++) {
             const element = medicines[index];
+
+            const medicinesId = element[0];
+            const medicinesQuantity = element[1];
             
-            let validMedicine = await pool.query('SELECT productiveUnits_medicine_state AS state FROM `productiveUnits_medicine` WHERE productiveUnits_medicine_id = ? AND productiveUnits_id = ?', [ element, productiveUnitId ]); 
+            let validMedicine = await pool.query('SELECT productiveUnits_medicine_state AS state, productiveUnits_medicine_name AS name, productiveUnits_medicine_quantityAvailable AS available FROM `productiveUnits_medicine` WHERE productiveUnits_medicine_id = ? AND productiveUnits_id = ?', [ medicinesId, productiveUnitId ]); 
             validMedicine = JSON.parse(JSON.stringify(validMedicine));
 
-            if (!validMedicine.length > 0) throw `El medicamento '${element}' no existe o no le pertenece a la granja`;
+            if (!validMedicine.length > 0) throw `El medicamento '${validMedicine[0].name}' no existe o no le pertenece a la granja`;
 
-            if (validMedicine[0].state == 0) throw `El medicamento '${element}' se encuentra desactivado`;
+            if (validMedicine[0].state == 0) throw `El medicamento '${validMedicine[0].name}' se encuentra desactivado`;
+
+            if (medicinesQuantity > validMedicine[0].available) throw `El medicamento '${validMedicine[0].name}}' no cuenta con la cantidad suficiente (${medicinesQuantity})`;
+
+            element.push(validMedicine[0].available);
         }
 
         // Se parsean los piensos
         feed = JSON.parse(feed);
+
+        // Variable para guardar la query de piensos
+        let queryFeeds = "";
 
         // Se verifica que los piensos sean válidos y si se pueden agregar
         for (let index = 0; index < feed.length; index++) {
@@ -121,6 +141,33 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
             if (validFeed[0].state == 0) throw `El pienso '${feedId}' se encuentra desactivado`;
 
             if (feedQuantity > validFeed[0].quantity) throw `El pienso '${feedId}' no cuenta con la cantidad suficiente (${feedQuantity})`;
+
+            element.push(validFeed[0].quantity);
+        }
+
+        // Se parsean los piensos
+        supplies = JSON.parse(supplies);
+
+        // Variable para guardar la query de piensos
+        let querySupplies = "";
+
+        // Se verifica que los piensos sean válidos y si se pueden agregar
+        for (let index = 0; index < supplies.length; index++) {
+            const element = supplies[index];
+
+            const supplyId = element[0];
+            const supplyQuantity = element[1];
+            
+            let validSupply = await pool.query('SELECT productiveUnits_supplies_state AS state, productiveUnits_supplies_quantityAvailable AS quantity FROM `productiveUnits_supplies` WHERE productiveUnits_supplies_id = ? AND productiveUnits_id = ?', [ supplyId, productiveUnitId ]); 
+            validSupply = JSON.parse(JSON.stringify(validSupply));
+
+            if (!validSupply.length > 0) throw `El insumo '${supplyId}' no existe o no le pertenece a la granja`;
+
+            if (validSupply[0].state == 0) throw `El insumo '${supplyId}' se encuentra desactivado`;
+
+            if (supplyQuantity > validSupply[0].quantity) throw `El insumo '${supplyId}' no cuenta con la cantidad suficiente (${supplyQuantity})`;
+
+            element.push(validSupply[0].quantity);
         }
 
         // Se construye el JSON del body dependiento del estado inicial de lote
@@ -133,27 +180,104 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
             quantityFishIterator: quantityFish,
             minimumSize,
             maximumSize,
+            sowingDate,
             estimatedInitialHarvestDate,
             estimatedIFinalHarvestDate,
             harvestDate,
             age,
             ageUnit,
             serial,
-            description,
-            medicines,
-            ponds,
-            feed
+            estimatedSalesPrice,
+            description
         }
 
         // Se genera el token
         const token = generaterBatchToken(productiveUnitId, 1);
 
         // Se registra el lote
-        await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`, `batches_state`) VALUES (?, ?, ?, ?)', [ token, productiveUnitId, 1, JSON.stringify(body), initialState ]);
+        let batch = await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`, `batches_state`) VALUES (?, ?, ?, ?, ?)', [ token, productiveUnitId, 1, JSON.stringify(body), initialState ]);
 
-        // Se registra en uso el último estanque asociado
+        // Se registra el cambio de estado del último estanque asociado como "en uso"
         let lastPond = ponds[ponds.length - 1][0];
         await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_used`= 1 WHERE `productiveUnits_ponds_id` = ?', [ lastPond ]);
+
+        // Se construye el query para estanques
+        for (let index = 0; index < ponds.length; index++) {
+            const element = ponds[index];
+
+            queryPonds += `(${element[0]}, ${batch.insertId}, "${element[1]}"),`;
+        }
+
+        // Se elimina la última coma para evitar error en consuta
+        if (queryPonds.endsWith(',')) {
+            queryPonds = queryPonds.slice(0, -1);
+        }
+        
+        // Se registran los estanques asociados
+        await pool.query('INSERT INTO `batches_ponds`(`productiveUnits_ponds_id`, `batches_id`, `batches_ponds_useDate`) VALUES '+queryPonds);
+
+        if (feed.length > 0) {
+            // Se construye el query para piensos
+            for (let index = 0; index < feed.length; index++) {
+                const element = feed[index];
+
+                queryFeeds += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_feed` SET `productiveUnits_feed_quantityIterator` = ? WHERE `productiveUnits_feed_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (queryFeeds.endsWith(',')) {
+                queryFeeds = queryFeeds.slice(0, -1);
+            }
+
+            // Se registran los piensos asociados
+            await pool.query('INSERT INTO `batches_feed`(`batches_id`, `productiveUnits_feed_id`, `batches_feed_quantity`) VALUES '+queryFeeds);
+        }
+
+        if (medicines.length > 0) {
+            // Se construye el query para medicinas
+            for (let index = 0; index < medicines.length; index++) {
+                const element = medicines[index];
+
+                queryMedicines += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_medicine` SET `productiveUnits_medicine_quantityAvailable`= ? WHERE `productiveUnits_medicine_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (queryMedicines.endsWith(',')) {
+                queryMedicines = queryMedicines.slice(0, -1);
+            }
+            
+            // Se registran los medicamentos asociados
+            await pool.query('INSERT INTO `batches_medicines`(`batches_id`, `productiveUnits_medicine_id`, `batches_medicines_quantity`) VALUES '+queryMedicines);
+        }
+
+        if (supplies.length > 0) {
+            // Se construye el query para medicinas
+            for (let index = 0; index < supplies.length; index++) {
+                const element = supplies[index];
+
+                querySupplies += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_supplies` SET `productiveUnits_supplies_quantityAvailable`= ? WHERE `productiveUnits_supplies_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (querySupplies.endsWith(',')) {
+                querySupplies = querySupplies.slice(0, -1);
+            }
+            
+            // Se registran los medicamentos asociados
+            await pool.query('INSERT INTO `batches_supplies`(`batches_id`, `productiveUnits_supplies_id`, `batches_supplies_quantity`) VALUES '+querySupplies);
+        }
 
         res.status(200).json({token});
     } catch (error) {
@@ -367,50 +491,77 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
         // Datos POST
-        const harvestDate = req.body.harvestDate;
-        const weight = req.body.weight;
-        const quantityFish = req.body.quantityFish ?? 0;
-        const minimumSize = req.body.minimumSize;
-        const maximumSize = req.body.maximumSize;
+        const initialState = req.body.initialState;
+        const quantityFish = req.body.quantityFish;
+        const minimumSize = req.body.minimumSize ?? null;
+        const maximumSize = req.body.maximumSize ?? null;
+        const sowingDate = req.body.sowingDate ?? null;
+        const estimatedInitialHarvestDate = req.body.estimatedInitialHarvestDate ?? null;
+        const estimatedIFinalHarvestDate = req.body.estimatedIFinalHarvestDate ?? null;
+        const harvestDate = req.body.harvestDate ?? null;
         const serial = req.body.serial;
         const description = req.body.description ?? "";
-        let ponds = req.body.ponds;
+        const weight = req.body.weight;
         let feed = req.body.feed;
         let medicines = req.body.medicines;
+        let ponds = req.body.ponds;
+        let supplies = req.body.supplies;
         let fingerlings = req.body.fingerlings;
 
         // Se parsean los estanques
         ponds = JSON.parse(ponds);
 
-        // Se verifica que los estanques sean válidos
+        // Variable para guardar la query de estanques
+        let queryPonds = "";
+
+        // Se verifica que haya vinculado más de un estanque
+        if (ponds.length < 1) throw "Es obligatorio asociar un estanque";
+
+        // Se verifica que los estanques sean válidos y que el último no esté en uso
         for (let index = 0; index < ponds.length; index++) {
             const element = ponds[index];
             
-            let validPond = await pool.query('SELECT productiveUnits_ponds_state AS state FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ element, productiveUnitId ]); 
+            let validPond = await pool.query('SELECT productiveUnits_ponds_name AS name, productiveUnits_ponds_state AS state, productiveUnits_ponds_used AS used FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ? AND productiveUnits_id = ?', [ element[0], productiveUnitId ]); 
             validPond = JSON.parse(JSON.stringify(validPond));
 
-            if (!validPond.length > 0) throw `El estanque '${element}' no existe o no le pertenece a la granja`;
+            if (!validPond.length > 0) throw `El estanque '${element[0]}' no existe o no le pertenece a la granja`;
 
-            if (validPond[0].state == 0) throw `El estanque '${element}' se encuentra desactivado`;
+            if (validPond[0].state == 0) throw `El estanque '${element[0]}' se encuentra desactivado`;
+
+            // Se verifica si el último estanque ya se encuentra en uso
+            if (index === ponds.length - 1 && validPond[0].used == 1) throw `El estanque '${validPond[0].name}' ya se encuentra en uso`;
         }
 
         // Se parsean los medicamentos
         medicines = JSON.parse(medicines);
 
+        // Variable para guardar la query de medicinas
+        let queryMedicines = "";
+
         // Se verifica que los medicamentos sean válidos
         for (let index = 0; index < medicines.length; index++) {
             const element = medicines[index];
+
+            const medicinesId = element[0];
+            const medicinesQuantity = element[1];
             
-            let validMedicine = await pool.query('SELECT productiveUnits_medicine_state AS state FROM `productiveUnits_medicine` WHERE productiveUnits_medicine_id = ? AND productiveUnits_id = ?', [ element, productiveUnitId ]); 
+            let validMedicine = await pool.query('SELECT productiveUnits_medicine_state AS state, productiveUnits_medicine_name AS name, productiveUnits_medicine_quantityAvailable AS available FROM `productiveUnits_medicine` WHERE productiveUnits_medicine_id = ? AND productiveUnits_id = ?', [ medicinesId, productiveUnitId ]); 
             validMedicine = JSON.parse(JSON.stringify(validMedicine));
 
-            if (!validMedicine.length > 0) throw `El medicamento '${element}' no existe o no le pertenece a la granja`;
+            if (!validMedicine.length > 0) throw `El medicamento '${validMedicine[0].name}' no existe o no le pertenece a la granja`;
 
-            if (validMedicine[0].state == 0) throw `El medicamento '${element}' se encuentra desactivado`;
+            if (validMedicine[0].state == 0) throw `El medicamento '${validMedicine[0].name}' se encuentra desactivado`;
+
+            if (medicinesQuantity > validMedicine[0].available) throw `El medicamento '${validMedicine[0].name}}' no cuenta con la cantidad suficiente (${medicinesQuantity})`;
+
+            element.push(validMedicine[0].available);
         }
 
         // Se parsean los piensos
         feed = JSON.parse(feed);
+
+        // Variable para guardar la query de piensos
+        let queryFeeds = "";
 
         // Se verifica que los piensos sean válidos y si se pueden agregar
         for (let index = 0; index < feed.length; index++) {
@@ -426,12 +577,34 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
 
             if (validFeed[0].state == 0) throw `El pienso '${feedId}' se encuentra desactivado`;
 
-            if (feedQuantity > validFeed[0].quantity){ 
-                throw `El pienso '${feedId}' no cuenta con la cantidad suficiente (${feedQuantity})`;
-            }else{
-                // TMP - Debería disminuir la cantidad de pienso disponible
-                //await pool.query('');
-            }
+            if (feedQuantity > validFeed[0].quantity) throw `El pienso '${feedId}' no cuenta con la cantidad suficiente (${feedQuantity})`;
+
+            element.push(validFeed[0].quantity);
+        }
+
+        // Se parsean los piensos
+        supplies = JSON.parse(supplies);
+
+        // Variable para guardar la query de piensos
+        let querySupplies = "";
+
+        // Se verifica que los piensos sean válidos y si se pueden agregar
+        for (let index = 0; index < supplies.length; index++) {
+            const element = supplies[index];
+
+            const supplyId = element[0];
+            const supplyQuantity = element[1];
+            
+            let validSupply = await pool.query('SELECT productiveUnits_supplies_state AS state, productiveUnits_supplies_quantityAvailable AS quantity FROM `productiveUnits_supplies` WHERE productiveUnits_supplies_id = ? AND productiveUnits_id = ?', [ supplyId, productiveUnitId ]); 
+            validSupply = JSON.parse(JSON.stringify(validSupply));
+
+            if (!validSupply.length > 0) throw `El insumo '${supplyId}' no existe o no le pertenece a la granja`;
+
+            if (validSupply[0].state == 0) throw `El insumo '${supplyId}' se encuentra desactivado`;
+
+            if (supplyQuantity > validSupply[0].quantity) throw `El insumo '${supplyId}' no cuenta con la cantidad suficiente (${supplyQuantity})`;
+
+            element.push(validSupply[0].quantity);
         }
 
         // Se parsean los alevinos
@@ -461,18 +634,21 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
 
         // Se construye el JSON del body
         let body = {
+            productiveUnitId,
+            initialState,
             weight,
             weightIterator: weight,
-            harvestDate,
             quantityFish,
             quantityFishIterator: quantityFish,
             minimumSize,
             maximumSize,
+            sowingDate,
+            estimatedInitialHarvestDate,
+            estimatedIFinalHarvestDate,
+            harvestDate,
             serial,
+            estimatedSalesPrice,
             description,
-            medicines,
-            ponds,
-            feed,
             fingerlings
         }
 
@@ -480,7 +656,89 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
         const token = generaterBatchToken(productiveUnitId, 4);
 
         // Se registra el lote
-        await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`) VALUES (?, ?, ?, ?)', [ token, productiveUnitId, 4, JSON.stringify(body) ]);
+        let batch = await pool.query('INSERT INTO `batches`(`batches_token`, `batches_productiveUnit`, `batchesTypes_id`, `batches_body`, `batches_state`) VALUES (?, ?, ?, ?, ?)', [ token, productiveUnitId, 4, JSON.stringify(body), initialState ]);
+
+        // Se registra el cambio de estado del último estanque asociado como "en uso"
+        let lastPond = ponds[ponds.length - 1][0];
+        await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_used`= 1 WHERE `productiveUnits_ponds_id` = ?', [ lastPond ]);
+
+        // Se construye el query para estanques
+        for (let index = 0; index < ponds.length; index++) {
+            const element = ponds[index];
+
+            queryPonds += `(${element[0]}, ${batch.insertId}, "${element[1]}"),`;
+        }
+
+        // Se elimina la última coma para evitar error en consuta
+        if (queryPonds.endsWith(',')) {
+            queryPonds = queryPonds.slice(0, -1);
+        }
+        
+        // Se registran los estanques asociados
+        await pool.query('INSERT INTO `batches_ponds`(`productiveUnits_ponds_id`, `batches_id`, `batches_ponds_useDate`) VALUES '+queryPonds);
+
+        if (feed.length > 0) {
+            // Se construye el query para piensos
+            for (let index = 0; index < feed.length; index++) {
+                const element = feed[index];
+
+                queryFeeds += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_feed` SET `productiveUnits_feed_quantityIterator` = ? WHERE `productiveUnits_feed_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (queryFeeds.endsWith(',')) {
+                queryFeeds = queryFeeds.slice(0, -1);
+            }
+
+            // Se registran los piensos asociados
+            await pool.query('INSERT INTO `batches_feed`(`batches_id`, `productiveUnits_feed_id`, `batches_feed_quantity`) VALUES '+queryFeeds);
+        }
+
+        if (medicines.length > 0) {
+            // Se construye el query para medicinas
+            for (let index = 0; index < medicines.length; index++) {
+                const element = medicines[index];
+
+                queryMedicines += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_medicine` SET `productiveUnits_medicine_quantityAvailable`= ? WHERE `productiveUnits_medicine_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (queryMedicines.endsWith(',')) {
+                queryMedicines = queryMedicines.slice(0, -1);
+            }
+            
+            // Se registran los medicamentos asociados
+            await pool.query('INSERT INTO `batches_medicines`(`batches_id`, `productiveUnits_medicine_id`, `batches_medicines_quantity`) VALUES '+queryMedicines);
+        }
+
+        if (supplies.length > 0) {
+            // Se construye el query para medicinas
+            for (let index = 0; index < supplies.length; index++) {
+                const element = supplies[index];
+
+                querySupplies += `(${batch.insertId}, ${element[0]}, "${element[1]}"),`;
+
+                let newQuantity = element[2] - element[1];
+
+                await pool.query('UPDATE `productiveUnits_supplies` SET `productiveUnits_supplies_quantityAvailable`= ? WHERE `productiveUnits_supplies_id` = ?', [ newQuantity, element[0] ]);
+            }
+
+            // Se elimina la última coma para evitar error en consuta
+            if (querySupplies.endsWith(',')) {
+                querySupplies = querySupplies.slice(0, -1);
+            }
+            
+            // Se registran los medicamentos asociados
+            await pool.query('INSERT INTO `batches_supplies`(`batches_id`, `productiveUnits_supplies_id`, `batches_supplies_quantity`) VALUES '+querySupplies);
+        }
 
         res.status(200).json({token});
     } catch (error) {
@@ -702,10 +960,15 @@ controller.engordeMixed = [verifyToken(config), body("productiveUnit").notEmpty(
 }];
 
 // Obtener lotes generados de una unidad productiva
-controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("availableDispatch").optional().isBoolean(), query("state").optional().isInt(), handleValidationErrors, async(req, res) => {    
     try {
         // Se obtiene el ID de la unidad productiva
         const productiveUnitId = req.query.productiveUnitId;
+
+        // Se obtienen los filtros
+        const availableDispatch = req.query.availableDispatch ?? null;
+        const state = req.query.state ?? null;
+        let filter = "";
 
         // ID del usuario
         const userId = await getUserId(req);
@@ -716,11 +979,17 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
+        if (availableDispatch != null) {
+            filter += " AND batches_state = 4";
+        }else if(state != null){
+            filter += " AND batches_state = ?";
+        }
+
         // Lotes que no han sido despachados
-        let batchesWhitout = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 0', [ productiveUnitId ]);
-        batchesWhitout = JSON.parse(JSON.stringify(batchesWhitout));
+        let batches = await pool.query('SELECT batches_token AS token, batches_date AS date, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ?'+filter+" ORDER BY batches_date DESC;", [ productiveUnitId, state ]);
+        batches = JSON.parse(JSON.stringify(batches));
 
-        for (const iterator of batchesWhitout) {
+        for (const iterator of batches) {
             if (iterator.type == 1 || iterator.type == 4) {
                 let body = JSON.parse(iterator.body);
 
@@ -733,7 +1002,7 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                     body.specie = fingerlingData[0].specie;
                 }
 
-                iterator.specie = await spececieName(body.specie) ?? "";
+                iterator.specie = await specieName(body.specie) ?? "";
                 iterator.serial = body.serial;
 
                 iterator.type = undefined;
@@ -758,12 +1027,12 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                             body.specie = fingerlingData[0].specie;
                         }
                         
-                        iterator.specie = await spececieName(body.specie) ?? "";
+                        iterator.specie = await specieName(body.specie) ?? "";
                         iterator.serial = body.serial;
 
                         iterator.type = undefined;
                         iterator.body = undefined;
-                        iterator.prevToken = undefined;
+                        iterator.prevToken = undefined; 
 
                         break
                     }else{
@@ -772,134 +1041,6 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                     }
                 }
             }   
-        }
-
-        // Lotes que han sido parcialmente despachados
-        let batchesPartial = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 1', [ productiveUnitId ]);
-        batchesPartial = JSON.parse(JSON.stringify(batchesPartial));
-
-        for (const iterator of batchesPartial) {
-            if (iterator.type == 1 || iterator.type == 4) {
-                let body = JSON.parse(iterator.body);
-
-                if (iterator.type == 4) {
-                    let fingerling = body.fingerlings;
-
-                    let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
-                    fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
-                    
-                    body.specie = fingerlingData[0].specie;
-                }
-
-                iterator.specie = await spececieName(body.specie) ?? "";
-                iterator.serial = body.serial;
-
-                iterator.type = undefined;
-                iterator.body = undefined;
-                iterator.prevToken = undefined;
-            }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
-                let prevTokenBatch = JSON.parse(iterator.prevToken);
-
-                while (true) {
-                    let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
-                    batch = JSON.parse(JSON.stringify(batch));
-
-                    if (batch[0].type == 1 || batch[0].type == 4) {
-                        let body = JSON.parse(batch[0].body);
-
-                        if (batch[0].type == 4) {
-                            let fingerling = body.fingerlings;
-        
-                            let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
-                            fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
-                            
-                            body.specie = fingerlingData[0].specie;
-                        }
-                        
-                        iterator.specie = await spececieName(body.specie) ?? "";
-                        iterator.serial = body.serial;
-
-                        iterator.type = undefined;
-                        iterator.body = undefined;
-                        iterator.prevToken = undefined;
-
-                        break
-                    }else{
-                        prevTokenBatch = iterator.prevToken;
-                        continue;
-                    }
-                }
-            }   
-        }
-
-        // Se agrupan los lotes
-        let batches = {
-            batchesWhitout,
-            batchesPartial
-        };
-
-        // Se verifica si se mandó el parametro opcional
-        if (!req.query.available) {
-            // Lotes que han sido parcialmente despachados
-            let batchesPackOff = await pool.query('SELECT batches_token AS token, batches_date AS date, batches_packOff AS packOff, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ? AND batches_packOff = 2', [ productiveUnitId ]);
-            batchesPackOff = JSON.parse(JSON.stringify(batchesPackOff));
-
-            for (const iterator of batchesPackOff) {
-                if (iterator.type == 1 || iterator.type == 4) {
-                    let body = JSON.parse(iterator.body);
-    
-                    if (iterator.type == 4) {
-                        let fingerling = body.fingerlings;
-    
-                        let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
-                        fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
-                        
-                        body.specie = fingerlingData[0].specie;
-                    }
-    
-                    iterator.specie = await spececieName(body.specie) ?? "";
-                    iterator.serial = body.serial;
-    
-                    iterator.type = undefined;
-                    iterator.body = undefined;
-                    iterator.prevToken = undefined;
-                }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
-                    let prevTokenBatch = JSON.parse(iterator.prevToken);
-    
-                    while (true) {
-                        let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
-                        batch = JSON.parse(JSON.stringify(batch));
-    
-                        if (batch[0].type == 1 || batch[0].type == 4) {
-                            let body = JSON.parse(batch[0].body);
-    
-                            if (batch[0].type == 4) {
-                                let fingerling = body.fingerlings;
-            
-                                let fingerlingData = await pool.query('SELECT specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ fingerling[0] ]);
-                                fingerlingData = JSON.parse(JSON.stringify(fingerlingData));
-                                
-                                body.specie = fingerlingData[0].specie;
-                            }
-                            
-                            iterator.specie = await spececieName(body.specie) ?? "";
-                            iterator.serial = body.serial;
-    
-                            iterator.type = undefined;
-                            iterator.body = undefined;
-                            iterator.prevToken = undefined;
-    
-                            break
-                        }else{
-                            prevTokenBatch = iterator.prevToken;
-                            continue;
-                        }
-                    }
-                }   
-            }
-
-            // Se agrega al objeto de lotes
-            batches.batchesPackOff = batchesPackOff;
         }
 
         res.status(200).json({batches});
@@ -946,6 +1087,298 @@ controller.generateSerial = [verifyToken(config), async(req, res) => {
     const randomSerial = generaterRandomSerial(2);
 
     res.status(200).json({"serial": randomSerial});
+}];
+
+// Asociar estanque a lote
+controller.associatePond = [verifyToken(config), body("pondId").notEmpty().isInt(), body("pondDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // Se obtiene el ID del lote, el ID del estanque y la fecha de uso
+        const pondId = req.body.pondId;
+        const pondDate = req.body.pondDate;
+        const batchesToken = req.params.id;
+
+        // Se obtiene la información del lote
+        let [pond] = await pool.query('SELECT productiveUnits_id AS productiveUnit, productiveUnits_ponds_used AS used, productiveUnits_ponds_name AS name FROM `productiveUnits_ponds` WHERE productiveUnits_ponds_id = ?;', [ pondId ]);
+
+        if (!pond || pond.length === 0) throw ('Estanque no encontrado');
+
+        if (pond.used == 1) throw `El lote ${pond.name} se encuentra en uso.`;
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(pond.productiveUnit, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        let [batchData] = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ? AND batches_productiveUnit = ?;', [ batchesToken, pond.productiveUnit ]);
+
+        if (!batchData || batchData.length === 0) throw ('El lote no pertenece a la unidad productiva');
+
+        // Se registra la relación lote-estanque
+        await pool.query('INSERT INTO `batches_ponds`(`productiveUnits_ponds_id`, `batches_id`, `batches_ponds_useDate`) VALUES (?, ?, ?)', [ pondId, batchData.id, pondDate ]);
+
+        // Se establece como libre al último estanque anterior
+        let [lastPond] = await pool.query('SELECT productiveUnits_ponds_id AS pondId FROM `batches_ponds` WHERE batches_id = ? ORDER BY `batches_ponds_id` DESC;', [ batchData.id ]);
+
+        await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_used`= 0 WHERE `productiveUnits_ponds_id` = ?', [ lastPond.pondId ]);
+
+        // Se establece como en uso el nuevo estanque
+        await pool.query('UPDATE `productiveUnits_ponds` SET `productiveUnits_ponds_used`= 1 WHERE `productiveUnits_ponds_id` = ?', [ pondId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Asociar pienso a lote
+controller.associateFeed = [verifyToken(config), body("feedId").notEmpty().isInt(), body("feedQuantity").notEmpty().isFloat(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // Se obtiene el ID del lote, el ID del estanque y la fecha de uso
+        const feedId = req.body.feedId;
+        const feedQuantity = req.body.feedQuantity;
+        const batchesToken = req.params.id;
+
+        // Se obtiene la información del lote
+        let [feed] = await pool.query('SELECT productiveUnits_id AS productiveUnit, productiveUnits_feed_quantityIterator AS quantityAvailable, productiveUnits_feed_name AS name FROM `productiveUnits_feed` WHERE productiveUnits_feed_id = ?;', [ feedId ]);
+
+        if (!feed || feed.length === 0) throw ('Pienso no encontrado');
+
+        if (feed.quantityAvailable < feedQuantity) throw `El pienso ${feed.name} no cuenta con la cantidad requerida.`;
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(feed.productiveUnit, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        let [batchData] = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ? AND batches_productiveUnit = ?;', [ batchesToken, feed.productiveUnit ]);
+
+        if (!batchData || batchData.length === 0) throw ('El lote no pertenece a la unidad productiva');
+
+        // Se registra la relación lote-pienso
+        await pool.query('INSERT INTO `batches_feed`(`batches_id`, `productiveUnits_feed_id`, `batches_feed_quantity`) VALUES (?, ?, ?)', [ batchData.id, feedId, feedQuantity ]);
+
+        // Se disminuye la cantidad disponible del pienso
+        let newQuantity = feed.quantityAvailable - feedQuantity;
+
+        await pool.query('UPDATE `productiveUnits_feed` SET `productiveUnits_feed_quantityIterator` = ? WHERE `productiveUnits_feed_id` = ?', [ newQuantity, feedId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Asociar medicina a lote
+controller.associateMedicine = [verifyToken(config), body("medicineId").notEmpty().isInt(), body("medicineQuantity").notEmpty().isFloat(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // Se obtiene el ID del lote, el ID del estanque y la fecha de uso
+        const medicineId = req.body.medicineId;
+        const medicineQuantity = req.body.medicineQuantity;
+        const batchesToken = req.params.id;
+
+        // Se obtiene la información del lote
+        let [medicine] = await pool.query('SELECT productiveUnits_id AS productiveUnit, productiveUnits_medicine_quantityAvailable AS quantityAvailable, productiveUnits_medicine_name AS name FROM `productiveUnits_medicine` WHERE productiveUnits_medicine_id = ?;', [ medicineId ]);
+
+        if (!medicine || medicine.length === 0) throw ('Medicamento no encontrado');
+
+        if (medicine.quantityAvailable < medicineQuantity) throw `El medicamento ${medicine.name} no cuenta con la cantidad requerida.`;
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(medicine.productiveUnit, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        let [batchData] = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ? AND batches_productiveUnit = ?;', [ batchesToken, medicine.productiveUnit ]);
+
+        if (!batchData || batchData.length === 0) throw ('El lote no pertenece a la unidad productiva');
+
+        // Se registra la relación lote-pienso
+        await pool.query('INSERT INTO `batches_medicines`(`batches_id`, `productiveUnits_medicine_id`, `batches_medicines_quantity`) VALUES (?, ?, ?)', [ batchData.id, medicineId, medicineQuantity ]);
+
+        // Se disminuye la cantidad disponible del pienso
+        let newQuantity = medicine.quantityAvailable - medicineQuantity;
+
+        await pool.query('UPDATE `productiveUnits_medicine` SET `productiveUnits_medicine_quantityAvailable`= ? WHERE `productiveUnits_medicine_id` = ?', [ newQuantity, medicineId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Asociar insumo a lote
+controller.associateSupply = [verifyToken(config), body("supplyId").notEmpty().isInt(), body("supplyQuantity").notEmpty().isFloat(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // Se obtiene el ID del lote, el ID del estanque y la fecha de uso
+        const supplyId = req.body.supplyId;
+        const supplyQuantity = req.body.supplyQuantity;
+        const batchesToken = req.params.id;
+
+        // Se obtiene la información del lote
+        let [supply] = await pool.query('SELECT productiveUnits_id AS productiveUnit, productiveUnits_supplies_quantityAvailable AS quantityAvailable, productiveUnits_supplies_name AS name FROM `productiveUnits_supplies` WHERE productiveUnits_supplies_id = ?;', [ supplyId ]);
+
+        if (!supply || supply.length === 0) throw ('Insumo no encontrado');
+
+        if (supply.quantityAvailable < supplyQuantity) throw `El insumo ${supply.name} no cuenta con la cantidad requerida.`;
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(supply.productiveUnit, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        let [batchData] = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ? AND batches_productiveUnit = ?;', [ batchesToken, supply.productiveUnit ]);
+
+        if (!batchData || batchData.length === 0) throw ('El lote no pertenece a la unidad productiva');
+
+        // Se registra la relación lote-insumo
+        await pool.query('INSERT INTO `batches_supplies`(`batches_id`, `productiveUnits_supplies_id`, `batches_supplies_quantity`) VALUES (?, ?, ?)', [ batchData.id, supplyId, supplyQuantity ]);
+
+        // Se disminuye la cantidad disponible del pienso
+        let newQuantity = supply.quantityAvailable - supplyQuantity;
+
+        await pool.query('UPDATE `productiveUnits_supplies` SET `productiveUnits_supplies_quantityAvailable`= ? WHERE `productiveUnits_supplies_id` = ?', [ newQuantity, supplyId ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Registrar mortalidad
+controller.addMortality = [verifyToken(config), body("date").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("quantity").notEmpty().isInt(), body("note").optional(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        const date = req.body.date;
+        const quantity = req.body.quantity;
+        const note = req.body.note ?? null;
+        const batchesToken = req.params.id;
+        
+        let [batchData] = await pool.query('SELECT batches_id AS id, batches_productiveUnit AS productiveUnit, JSON_UNQUOTE(JSON_EXTRACT(batches_body, "$.quantityFishIterator")) AS quantityFishIterator FROM `batches` WHERE batches_token = ?;', [ batchesToken ]);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(batchData.productiveUnit, userId, ["lotes"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        await pool.query('INSERT INTO `batches_mortality`(`batches_id`, `batches_mortality_dataDate`, `batches_mortality_quantity`, `batches_mortality_note`) VALUES (?, ?, ?, ?)', [ batchData.id, date, quantity, note ]);
+
+        // Se calcula el nuevo valor de quantityFishIterator, asegurando que no sea menor de 0
+        const newQuantityFishIterator = Math.max(0, batchData.quantityFishIterator - quantity);
+
+        await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.quantityFishIterator", ?) WHERE batches_token = ?', [ newQuantityFishIterator, batchesToken ]);
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Registrar de biomasa
+controller.addBiomass = [verifyToken(config), body("samples").notEmpty(), param("id").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        let samples = req.body.samples ?? [];
+        const batchesToken = req.params.id;
+        let images = req.files ?? [];
+
+        samples = JSON.parse(samples);
+
+        // Validar que haya al menos 10 muestras
+        if (samples.length < 10) {
+            throw "Para completar el registro de biomasa se necesitan 10 muestras";
+        }
+
+        // Validar el número de imágenes subidas (1 a 4 fotos)
+        const imageKeys = Object.keys(images);
+        if (imageKeys.length < 1 || imageKeys.length > 4) {
+            throw "Para completar el registro de biomasa se necesitan evidencias fotográficas. Mínimo una(1) foto y máximo cuatro(4) fotos.";
+        }
+
+        let [batchData] = await pool.query('SELECT batches_id AS id, p.productiveUnits_types_id AS type, JSON_UNQUOTE(JSON_EXTRACT(batches_body, "$.quantityFishIterator")) AS quantityFishIterator FROM `batches` AS b LEFT JOIN productiveUnits AS p ON p.productiveUnits_id = b.batches_productiveUnit WHERE batches_token = ?;', [ batchesToken ]);
+        
+        let minSize = samples[0].size;
+        let maxSize = samples[0].size;
+        let minWeight = samples[0].weight;
+        let maxWeight = samples[0].weight;
+
+        totalWeight = 0;
+
+        for (let index = 0; index < samples.length; index++) {
+            let element = samples[index];
+
+            if (element.size > maxSize) {
+                maxSize = element.size;
+            }
+
+            if (element.size < minSize) {
+                minSize = element.size;
+            }
+
+            if (element.weight > maxWeight) {
+                maxWeight = element.weight;
+            }
+
+            if (element.weight < minWeight) {
+                minWeight = element.weight;
+            }
+            
+            if (batchData.type == 1 && element.size == 0) {  
+                throw "Es obligatorio que las muestras tengan el tamaño.";
+            }
+            
+            if (batchData.type == 4 && element.weight == 0) {
+                throw "Es obligatorio que las muestras tengan el peso.";
+            }
+
+            totalWeight += element.weight;
+        }
+
+        let biomass = batchData.quantityFishIterator * (totalWeight/samples.length);
+
+        // Array para guardar url de las imagenes 
+        let imagesUrl = [];
+
+        // Ruta dónde guardar el archivo
+        let folder = "./src/public/content/batches/biomassImages/";
+
+        // Procesar y guardar cada imagen subida
+        for (let key of imageKeys) {
+            let file = images[key];
+            let fileName = genRandomString(12) + ".jpeg";
+
+            await sharp(file.data)
+                .jpeg({ quality: 100 })
+                .toFile(folder + fileName);
+
+            imagesUrl.push(fileName);
+        }
+
+        await pool.query('INSERT INTO `batches_biomass`(`batches_id`, `batches_biomass_samples`, `batches_biomass_images`, batches_biomass_minSize, batches_biomass_maxSize, batches_biomass_minWeight, batches_biomass_maxWeight, batches_biomass_value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [ batchData.id, JSON.stringify(samples), JSON.stringify(imagesUrl), minSize, maxSize, minWeight, maxWeight, biomass ]);
+
+        if (batchData.type == 1 && batchData.type == 2 && batchData.type == 3) {  
+            await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.minimumSize", ?), batches_body = JSON_SET(batches_body, "$.maximumSize", ?) WHERE batches_token = ?', [ minSize, maxSize, batchesToken ]);
+        }
+        
+        // if (batchData.type == 4 && batchData.type == 5 && batchData.type == 6) {  
+        //     await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.minimumSize", ?), batches_body = JSON_SET(batches_body, "$.maximumSize", ?) WHERE batches_token = ?', [ minSize, maxSize, batchesToken ]);
+        // }
+
+        res.status(200).json({});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
 }];
 
 // Obtener metodos de embalaje

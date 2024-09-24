@@ -62,6 +62,21 @@ router.post('/informacionBioseguridadAlevinera', controller.editInformacionBiose
 // Cargar certificado de bioseguridad
 router.post('/biosecurityLinkAfter', controller.biosecurityLinkAfter);
 
+/*
+-------------------------------
+- Información de planta de proceso -
+-------------------------------
+*/
+
+// Obtener información de bioseguridad de una alevinera
+router.get('/processPlant', controller.getProcessPlant);
+
+// Cargar certificado de bioseguridad
+router.post('/addProcessPlant', controller.addProcessPlant);
+
+// Cargar certificado de bioseguridad
+router.post('/processplantAfter', controller.processplantAfter);
+
 
 /*
 ----------------------
@@ -119,10 +134,22 @@ router.post('/feed', controller.createFeed);
 router.get('/feed', controller.getFeeds); 
 
 // Descontinuar piensos
-router.get('/deleteFeed', controller.deleteFeed); 
+router.get('/deleteFeed', controller.deleteFeed);
 
 // Obtener pienso especifico
 router.get('/specificFeed', controller.getEspecifiFeed);
+
+// Crear insumo
+router.post('/supply', controller.createSupply);
+
+// Obtener insumos
+router.get('/supply', controller.getSupplies);
+
+// Obtener insumo especifico
+router.get('/supply/:id', controller.getSupply);
+
+// Editar insumo especifico
+router.patch('/supply/:id', controller.editSupply);
 
 // Agregar permiso de unidad productiva
 router.post('/permit', controller.addPermit);
