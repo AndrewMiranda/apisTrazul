@@ -229,5 +229,8 @@ router.get('/rejectFingerlignsDispatch', controller.rejectFingerlignsDispatch);
 // FIN DE RUTAS PERFIL DE ENGORDE //
 // // // // // // // // // // // //
 
+// Obtener tipos de certificados
+router.get('/certificatesCategories', controller.certificatesCategories);
+
 //Se exporta el enrutador
 module.exports = router;

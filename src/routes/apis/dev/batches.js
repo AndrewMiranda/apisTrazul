@@ -29,6 +29,9 @@ router.post('/alevineraDerivative', controller.createBatchAlevineraDerivative);
 // Crear lote alevinera derivado
 router.post('/alevineraMixed', controller.createBatchAlevineraMixed);
 
+// Editar lote alevinera
+// router.put('/alevineraMixed', controller.createBatchAlevineraMixed);
+
 // Crear lote engorde
 router.post('/engorde', controller.createBatchEngorde);
 

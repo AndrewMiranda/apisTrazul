@@ -774,7 +774,7 @@ controller.incomes = [ verifyToken(config), query("productiveUnit").notEmpty().i
     }
 }]
 
-// Agegar gasto
+// Agegar Ingresos
 controller.addIncomes = [verifyToken(config), body("productiveUnit").notEmpty().isInt(), body("type").notEmpty().isInt(), body("name").notEmpty(), body("value").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // Se obtiene la unidad productiva

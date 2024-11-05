@@ -476,7 +476,7 @@ controller.createBatchAlevineraMixed = [verifyToken(config), body("productiveUni
 }];
 
 // Crear lote alevinera
-controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmpty().isISO8601("yyyy-mm-dd").toDate(), body("weight").notEmpty().isInt(), body("quantityFish").optional().isInt(), body("minimumSize").notEmpty().isInt(), body("maximumSize").notEmpty().isInt(), body("fingerlings").notEmpty(), body("serial").notEmpty(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+controller.createBatchEngorde = [verifyToken(config), body("weight").notEmpty().isFloat(), body("quantityFish").optional().isInt(), body("minimumSize").isInt(), body("maximumSize").isInt(), body("fingerlings").notEmpty(), body("serial").notEmpty(), body("description"), body("feed").notEmpty(), body("medicines").notEmpty(), body("ponds").notEmpty(), body("productiveUnit").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
     try {
         // ID de unidad productiva
         const productiveUnitId = req.body.productiveUnit;
@@ -502,6 +502,7 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
         const serial = req.body.serial;
         const description = req.body.description ?? "";
         const weight = req.body.weight;
+        let estimatedSalesPrice = req.body.estimatedSalesPrice ?? null;
         let feed = req.body.feed;
         let medicines = req.body.medicines;
         let ponds = req.body.ponds;
@@ -619,7 +620,7 @@ controller.createBatchEngorde = [verifyToken(config), body("harvestDate").notEmp
             let validFingerlings = await pool.query('SELECT productiveUnits_fingerlings_state AS state, specie_id AS specie FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ? AND productiveUnits_id = ?', [ element, productiveUnitId ]); 
             validFingerlings = JSON.parse(JSON.stringify(validFingerlings));
 
-            if (!validFingerlings.length > 0) throw `Los alevinos '${element}' no existem o no le pertenecen a la granja`;
+            if (!validFingerlings.length > 0) throw `Los alevinos '${element}' no existen o no le pertenecen a la granja`;
 
             if (validFingerlings[0].state == 0) throw `Los alevinos '${element}' se encuentra desactivados`;
 
@@ -1293,10 +1294,72 @@ controller.addBiomass = [verifyToken(config), body("samples").notEmpty(), param(
         let images = req.files ?? [];
 
         samples = JSON.parse(samples);
+        let biomass = 0;
 
-        // Validar que haya al menos 10 muestras
-        if (samples.length < 10) {
-            throw "Para completar el registro de biomasa se necesitan 10 muestras";
+        let minSize = 0;
+        let maxSize = 0;
+        let minWeight = 0;
+        let maxWeight = 0;
+
+        let [batchData] = await pool.query('SELECT batches_id AS id, b.batchesTypes_id AS type, p.productiveUnits_types_id AS PUnitType, JSON_UNQUOTE(JSON_EXTRACT(batches_body, "$.quantityFishIterator")) AS quantityFishIterator, batches_body AS body FROM `batches` AS b LEFT JOIN productiveUnits AS p ON p.productiveUnits_id = b.batches_productiveUnit WHERE batches_token = ?;', [ batchesToken ]);
+
+        //let body = JSON.parse(batchData.body);
+
+        if (batchData.quantityFishIterator < 1) throw "El lote no tiene individuos"; 
+
+        if(batchData.PUnitType == 1){
+            // Validar que haya al menos 10 muestras
+            if (samples.length < 1) {
+                throw "Para completar el registro de biomasa se necesita por lo menos una muestra";
+            }
+
+            biomass = (samples[0].weight/samples[0].quantity) * batchData.quantityFishIterator;
+        }else{
+            if (batchData.quantityFishIterator < 10) throw "El lote tiene menos de 10 individuos. No tiene sentido que registres la biomasa. Usalos para consumo personal."; 
+
+            // Validar que haya al menos 1 muestra
+            if (samples.length < 10) {
+                throw "Para completar el registro de biomasa se necesitan por lo menos diez(10) muestras";
+            }
+            
+            minSize = samples[0].size;
+            maxSize = samples[0].size;
+            minWeight = samples[0].weight;
+            maxWeight = samples[0].weight;
+
+            totalWeight = 0;
+
+            for (let index = 0; index < samples.length; index++) {
+                let element = samples[index];
+
+                if (element.size > maxSize) {
+                    maxSize = parseFloat(element.size);
+                }
+
+                if (element.size < minSize) {
+                    minSize = parseFloat(element.size);
+                }
+
+                if (element.weight > maxWeight) {
+                    maxWeight = parseFloat(element.weight);
+                }
+
+                if (element.weight < minWeight) {
+                    minWeight = parseFloat(element.weight);
+                }
+                
+                if (batchData.type == 1 && element.size == 0) {  
+                    throw "Es obligatorio que las muestras tengan el tamaño.";
+                }
+                
+                if (batchData.type == 4 && element.weight == 0) {
+                    throw "Es obligatorio que las muestras tengan el peso.";
+                }
+
+                totalWeight += parseFloat(element.weight);
+            }
+
+            biomass = batchData.quantityFishIterator * (totalWeight/samples.length);
         }
 
         // Validar el número de imágenes subidas (1 a 4 fotos)
@@ -1304,47 +1367,7 @@ controller.addBiomass = [verifyToken(config), body("samples").notEmpty(), param(
         if (imageKeys.length < 1 || imageKeys.length > 4) {
             throw "Para completar el registro de biomasa se necesitan evidencias fotográficas. Mínimo una(1) foto y máximo cuatro(4) fotos.";
         }
-
-        let [batchData] = await pool.query('SELECT batches_id AS id, p.productiveUnits_types_id AS type, JSON_UNQUOTE(JSON_EXTRACT(batches_body, "$.quantityFishIterator")) AS quantityFishIterator FROM `batches` AS b LEFT JOIN productiveUnits AS p ON p.productiveUnits_id = b.batches_productiveUnit WHERE batches_token = ?;', [ batchesToken ]);
         
-        let minSize = samples[0].size;
-        let maxSize = samples[0].size;
-        let minWeight = samples[0].weight;
-        let maxWeight = samples[0].weight;
-
-        totalWeight = 0;
-
-        for (let index = 0; index < samples.length; index++) {
-            let element = samples[index];
-
-            if (element.size > maxSize) {
-                maxSize = element.size;
-            }
-
-            if (element.size < minSize) {
-                minSize = element.size;
-            }
-
-            if (element.weight > maxWeight) {
-                maxWeight = element.weight;
-            }
-
-            if (element.weight < minWeight) {
-                minWeight = element.weight;
-            }
-            
-            if (batchData.type == 1 && element.size == 0) {  
-                throw "Es obligatorio que las muestras tengan el tamaño.";
-            }
-            
-            if (batchData.type == 4 && element.weight == 0) {
-                throw "Es obligatorio que las muestras tengan el peso.";
-            }
-
-            totalWeight += element.weight;
-        }
-
-        let biomass = batchData.quantityFishIterator * (totalWeight/samples.length);
 
         // Array para guardar url de las imagenes 
         let imagesUrl = [];
@@ -1362,17 +1385,17 @@ controller.addBiomass = [verifyToken(config), body("samples").notEmpty(), param(
                 .toFile(folder + fileName);
 
             imagesUrl.push(fileName);
-        }
+        } 
 
         await pool.query('INSERT INTO `batches_biomass`(`batches_id`, `batches_biomass_samples`, `batches_biomass_images`, batches_biomass_minSize, batches_biomass_maxSize, batches_biomass_minWeight, batches_biomass_maxWeight, batches_biomass_value) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [ batchData.id, JSON.stringify(samples), JSON.stringify(imagesUrl), minSize, maxSize, minWeight, maxWeight, biomass ]);
 
-        if (batchData.type == 1 && batchData.type == 2 && batchData.type == 3) {  
-            await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.minimumSize", ?), batches_body = JSON_SET(batches_body, "$.maximumSize", ?) WHERE batches_token = ?', [ minSize, maxSize, batchesToken ]);
+        if (batchData.type == 1 || batchData.type == 2 || batchData.type == 3) {  
+            await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.biomass", ?) WHERE batches_token = ?', [ biomass, batchesToken ]);
         }
         
-        // if (batchData.type == 4 && batchData.type == 5 && batchData.type == 6) {  
-        //     await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.minimumSize", ?), batches_body = JSON_SET(batches_body, "$.maximumSize", ?) WHERE batches_token = ?', [ minSize, maxSize, batchesToken ]);
-        // }
+        if (batchData.type == 4 || batchData.type == 5 || batchData.type == 6) {  
+            await pool.query('UPDATE batches SET batches_body = JSON_SET(batches_body, "$.biomass", ?, "$.minimumSize", ?, "$.maximumSize", ?)  WHERE batches_token = ?', [ biomass, minSize, maxSize, batchesToken ]);
+        }
 
         res.status(200).json({});
     } catch (error) {

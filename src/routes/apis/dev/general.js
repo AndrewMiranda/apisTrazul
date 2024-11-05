@@ -48,6 +48,9 @@ router.get("/expensesTypesUnits", controller.expensesTypesUnits);
 // Unidades de tipos de ingresos
 router.get("/incomesTypes", controller.incomesTypes);
 
+// Contacto de web
+router.post("/contactForm", controller.contactForm);
+
 
 // APP UPDATE AND UPDATE ENDPOINTS
 //

@@ -327,6 +327,25 @@ controller.expensesTypesUnits = [ query("category").optional().isInt(), handleVa
     }
 }];
 
+// Formulario de contacto
+controller.contactForm = [ body("name").notEmpty(), body("lastName").optional(), body("email").notEmpty().isEmail(), body("message").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        let name = req.body.name;
+        let lastName = req.body.lastName ?? "";
+        let email = req.body.email;
+        let message = req.body.message;
+
+        // Correo para propietario del despacho
+        await sendMail("contacto@redazul.co", `El despacho de tu lote: ${token} ha sido rechazado`, {name, lastName, message}, "notifyDispatchRejected");
+
+
+        res.status(200).json({expensesTypesUnits});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
   /////////////////////////////////////
  // APP UPDATE AND UPDATE ENDPOINTS //
 /////////////////////////////////////

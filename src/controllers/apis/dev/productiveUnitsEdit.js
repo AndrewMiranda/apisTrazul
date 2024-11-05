@@ -1183,10 +1183,10 @@ controller.getSupplies = [verifyToken(config), query("productiveUnitId").notEmpt
         // se verifica que la unidad productiva se encuentre activa
         if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
 
-        let activeSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 1', [ productiveUnitId ]);
+        let activeSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantity AS total, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 1', [ productiveUnitId ]);
         activeSupplies = JSON.parse(JSON.stringify(activeSupplies));
 
-        let inactiveSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 0', [ productiveUnitId ]);
+        let inactiveSupplies = await pool.query('SELECT productiveUnits_supplies_id AS id, productiveUnits_supplies_name AS name, productiveUnits_supplies_purchaseDate AS purchaseDate, productiveUnits_supplies_quantity AS total, productiveUnits_supplies_quantityAvailable AS quantityAvailable, u.units_name AS unit, productiveUnits_supplies_price AS price FROM `productiveUnits_supplies` as ps LEFT JOIN units AS u ON u.units_id = ps.unit_id WHERE productiveUnits_id = ? AND productiveUnits_supplies_state = 0', [ productiveUnitId ]);
         inactiveSupplies = JSON.parse(JSON.stringify(inactiveSupplies));
 
         supplies = {
@@ -1574,6 +1574,9 @@ controller.addProcessPlant = [verifyToken(config), body("productiveUnitId").notE
         // ID del usuario
         const userId = await getUserId(req);
 
+        console.log("Se está creando");
+        console.log(productiveUnitId);
+
         // se verifica que la unidad productiva pertenezca al usuario
         if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["modifyProductiveUnit"])) throw `Esta unidad productiva no pertenece a este usuario.`;
 
@@ -1609,7 +1612,7 @@ controller.addProcessPlant = [verifyToken(config), body("productiveUnitId").notE
                 body.invimaDoc = fileName;
             }
 
-            const imageKeys = Object.keys(images);
+            // const imageKeys = Object.keys(images);
 
             // Procesar y guardar cada certificado
             // for (let key of imageKeys) {
@@ -1994,6 +1997,7 @@ controller.createFingerlingsEngorde = [verifyToken(config), body("productiveUnit
         let age = req.body.age ?? "";
         let ageUnit = req.body.ageUnit ?? "";
         const referenceCode  = req.body.referenceCode;
+        let price = req.body.price;
 
         // // Se verifica si el código de referencia es válido
         // let codeType = await pool.query('SELECT referenceCodes_name  AS name, referenceCodes_rule AS rule FROM `referenceCodes` WHERE referenceCodes_id = ?', [ referenceCodeType ]);
@@ -2018,7 +2022,8 @@ controller.createFingerlingsEngorde = [verifyToken(config), body("productiveUnit
             harvestDate,
             age,
             ageUnit,
-            referenceCode
+            referenceCode,
+            price
         }
 
         await pool.query('INSERT INTO `productiveUnits_fingerlings`(`productiveUnits_id`, `specie_id`, `productiveUnits_fingerlings_body`) VALUES (?, ?, ?)', [ productiveUnitId, specie, JSON.stringify(fingerlingsBody) ]);
@@ -2466,5 +2471,38 @@ controller.rejectFingerlignsDispatch = [verifyToken(config), query("productiveUn
     }
 }];
 
+// Obtener tipos de certificados y sus certificados anidados
+controller.certificatesCategories = [ verifyToken(config),  async (req, res) => { 
+    try {
+        let result = await pool.query(`SELECT  cg.certificationsGroups_id AS categoryId, cg.certificationsGroups_name AS categoryName, c.certifications_id AS certificateId, c.certifications_name AS certificateName FROM certificationsGroups cg LEFT JOIN certifications c ON cg.certificationsGroups_id = c.certificationsGroups_id `);
+
+        const certificatesCategories = [];
+        const categoryMap = {};
+
+        result.forEach(row => {
+            if (!categoryMap[row.categoryId]) {
+                categoryMap[row.categoryId] = {
+                    id: row.categoryId,
+                    name: row.categoryName,
+                    certificates: []
+                };
+                certificatesCategories.push(categoryMap[row.categoryId]);
+            }
+    
+            if (row.certificateId) {
+                categoryMap[row.categoryId].certificates.push({
+                    id: row.certificateId,
+                    name: row.certificateName
+                });
+            }
+        });
+
+        res.status(200).json({ certificatesCategories });
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ error });
+    }
+}];
 
 module.exports = controller;

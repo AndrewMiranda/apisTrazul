@@ -16,12 +16,13 @@ const controller = {};
 
 
 // Crear usuario
-controller.createUser = [ async(req, res) => {
+controller.createUser = [ body(""), handleValidationErrors, async(req, res) => {
     // Datos del POST
     let email = req.body.email;
     let password = req.body.password;
     let confirmPassword = req.body.confirmPassword;
-    let profileType  = req.body.profileType ;
+    let profileType = req.body.profileType;
+    let categoryUser = req.body.categoryUser ?? 1;
 
     fetch(config.apisRouteRedAzul+'/users/register', {
         method: 'POST',
@@ -34,7 +35,7 @@ controller.createUser = [ async(req, res) => {
 
             userHash = data.code;
 
-            await pool.query('INSERT INTO `users`(`users_code`) VALUES (?)', [userHash]);
+            await pool.query('INSERT INTO `users`(`users_code`, users_category) VALUES (?, ?)', [userHash, categoryUser]);
 
             let userData = await pool.query('SELECT `users_id` AS id FROM `users` WHERE `users_code` = ?', [userHash]);
             userData = JSON.parse(JSON.stringify(userData));
@@ -361,7 +362,7 @@ controller.getUserDataWithEmail = [ verifyToken(config), query("email"), handleV
     })
 }];
 
-controller.login = [ body("email").notEmpty().isEmail(), body('password').notEmpty().isLength({ min: 6 }), handleValidationErrors, async(req, res) => {
+controller.login = [ body("email").notEmpty(), body('password').notEmpty().isLength({ min: 6 }), handleValidationErrors, async(req, res) => {
     try {
         // Se obtiene el email y la contraseña
         const email = req.body.email;
@@ -374,11 +375,11 @@ controller.login = [ body("email").notEmpty().isEmail(), body('password').notEmp
         }).then(async response => {
             if (response.ok) {
                 // Se obtiene el hash del usuario
-                let hash = await response.json();
-                hash = hash.hash;
+                let data = await response.json();
+                hash = data.hash;
 
                 // Se verifica si el usuario cuenta con usuario en trazul y se obtiene el ID del usuario
-                let userData = await pool.query('SELECT users_id AS id FROM `users` WHERE users_code = ?', [ hash ]);
+                let userData = await pool.query('SELECT users_id AS id, users_category AS category FROM `users` WHERE users_code = ?', [ hash ]);
                 userData = JSON.parse(JSON.stringify(userData));
 
                 if (!userData.length > 0) throw "El usuario no ha asociado su cuenta a Trazul";
@@ -394,7 +395,7 @@ controller.login = [ body("email").notEmpty().isEmail(), body('password').notEmp
                 // Se crea una sesión nueva
                 await pool.query('INSERT INTO `users_sessions`(`users_id`, `users_sessions_code`, `users_sessions_ip`) VALUES (?, ?, ?)', [ userId, token, sessionIp ]);
 
-                res.status(200).json({session: token});
+                res.status(200).json({session: token, profileType: data.profileType, userCategory: userData[0].category, name: data.name});
             } else {
                 // Se obtiene el error
                 let error = await response.json();

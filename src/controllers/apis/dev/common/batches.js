@@ -71,7 +71,7 @@ async function basicHatchery(token, body) {
     body.broodstock = await broodstockData(body.broodstock);
 
     // Se obtienen los datos de los piensos
-    let feed = await pool.query('SELECT pf.productiveUnits_feed_name AS name, pf.productiveUnits_feed_batch AS batch, pf.productiveUnits_feed_id AS id, bf.batches_feed_quantity AS quantity, productiveUnits_feed_price AS price FROM `batches_feed` AS bf LEFT JOIN batches AS b ON b.batches_id = bf.batches_id LEFT JOIN productiveUnits_feed AS pf ON pf.productiveUnits_id = b.batches_productiveUnit WHERE b.batches_token = ?;', [ token ]);
+    let feed = await pool.query('SELECT pf.productiveUnits_feed_name AS name, pf.productiveUnits_feed_batch AS batch, pf.productiveUnits_feed_id AS id, bf.batches_feed_quantity AS quantity, productiveUnits_feed_price AS price FROM `batches_feed` AS bf LEFT JOIN batches AS b ON b.batches_id = bf.batches_id LEFT JOIN productiveUnits_feed AS pf ON pf.productiveUnits_feed_id = bf.productiveUnits_feed_id WHERE b.batches_token = ?;', [ token ]);
     feed = JSON.parse(JSON.stringify(feed));
     
     body.feed = feed;
@@ -100,15 +100,12 @@ async function basicHatchery(token, body) {
     
     body.mortality = mortality;
 
-    // Se obtienen los registros de biomasa
-    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
-    biomass = JSON.parse(JSON.stringify(biomass));
+    // Se evita sobreescritura de valor de biomasa en el body
+    body.biomassValue = body.biomass;
 
-    // for (let index = 0; index < biomass.length; index++) {
-    //     const element = biomass[index];
-        
-    //     element.images = JSON.parse(element.images);
-    // }
+    // Se obtienen los registros de biomasa
+    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_samples AS samples bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
+    biomass = JSON.parse(JSON.stringify(biomass));
 
     body.biomass = biomass;
 
@@ -332,16 +329,12 @@ async function basicFishFarming(token, body) {
     
     body.mortality = mortality;
 
+    // Se evita sobreescritura de valor de biomasa en el body
+    body.biomassValue = body.biomass;
+    
     // Se obtienen los registros de biomasa
     let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
     biomass = JSON.parse(JSON.stringify(biomass));
-
-    // for (let index = 0; index < biomass.length; index++) {
-    //     const element = biomass[index];
-        
-    //     element.images = JSON.parse(element.images);
-    // }
-
     body.biomass = biomass;
     
     // Se obtiene los datos del despacho
