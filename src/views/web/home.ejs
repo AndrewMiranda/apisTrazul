@@ -10,201 +10,248 @@
 </head> 
 <body>
     <%- include('../partials/headerTrazul.ejs') %>
-    <div class="heroSection">
-        <video class="sourceVideo" autoplay muted loop>
-            <source  src="/images/background2.mp4" type="video/mp4">
-            Tu navegador no soporta el elemento de video.
+    <section id="allSections">  
+    <section class="divVideo">
+        <video class="sourceVideoPc" autoplay muted loop >
+            <source src="/images/heroeRedAzul-movil1.mp4" type="video/mp4"  id="videoSource">
+            Tu navegador no soporta la etiqueta de video.
         </video>
-        <div class="overlay">
-            <div class="infoHero">
-                <div class="leftSection">
-                    <h1 class="titleHero">“Traza el camino de tu producción al éxito”</h1>
-                    <p class="descriptionHero">Trazul es la aplicación de gestión, trazabilidad y costeo de lotes, especializada en el sector acuícola colombiano, fácil, segura, adaptada a las exigencias de la normatividad nacional e internacional y te permite vender en línea.</p>
-                    <a class="downloadButton" href="https://redazul.co/unete">
-                        <img src="/images/apk_install_24.svg" alt="">
-                        <p>Descargala y usala gratis</p>
-                    </a>
+        <a href="/unete" class="buttomUnete">Únete gratis</a>    
+    </section>
+
+        <section id="containerSectionTrazul"> 
+            <div class="sectionTrazul" id="firstAnimation">
+                <h2 class="titleSection" id="titleTrazul" style="color: #FFF;">Pon en venta tus lotes en miPescao.com desde TRAZUL</h2>
+                <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
+    
+                <div class="containerInfoTrazul">
+                    <div class="leftContent" id="leftTrazul">
+                        <div class="optionInfo">
+                            <p class="right"><span>Trazabilidad</span> <b>Interna y externa,</b> pensada para la <b>interoperabilidad</b> y para cumplir con el <b>mercado europeo y estadounidense.</b></p>
+                            <div class="contentImg">
+                                <img  src="/images/TrAzul-ICOs-AquaCode.png" alt="">
+                            </div>                            
+                        </div>
+                        <div class="optionInfo">
+                            <p class="right"><span>Registro contable</span> orientado a la estimación de la <b>utilidad por lote.</b></p>
+                            <div class="contentImg">
+                                <img  src="/images/contable-TrAzul-ICO.png" alt="">
+                            </div>
+                            
+                        </div>
+                        <div class="optionInfo">
+                            <p class="right"><span>Registro de procesos de la producción</span> que son claves para evaluar el rendimiento y para vender ofrecimiendo un mayor valor percibido. </p>
+                            <div class="contentImg">
+                                <img  src="/images/process.svg" alt="">
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="centerContent" id="centerTrazul">
+                        <img src="/images/trazulApp.png" alt="">
+                    </div>
+                    <div class="rightContent" id="rightTrazul">
+                        <div class="optionInfo reverseMobile">
+                            <div class="contentImg">
+                                <img src="/images/policultivoTrAzul-ICO.png" alt="">
+                            </div>
+                            <p class="left"><span>Cultivo de múltiples especies</span> pueden ser trazados, gestionado y vendidos </p>
+                        </div>
+                        <div class="optionInfo reverseMobile">
+                            <div class="contentImg">
+                                <img src="/images/permisos1.png" alt="">
+                            </div>
+                            <p class="left"><span>Adaptada a los requerimientos nacionales</span> sin dejar de cumplir con estándares internacionales (GDST) </p>
+                        </div>
+                        <div class="optionInfo reverseMobile">
+                            <div class="contentImg">
+                                <img src="/images/personalTraza2.png" alt="">
+                            </div>
+                            <p class="left"><span>Usuarios con diversos roles</span> por unidad productiva y organización </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="rightSection">
-                    <img src="/images/heroe.jpg" alt="">                     
+            </div>
+        </section>
+    
+        <div id="benefitsOfTrazul">
+            <div class="sectionSolution" id="sectionSolution">
+                <h2 class="titleSection titleSolution">Beneficios de usar TRAZUL en tu unidad productiva</h2>
+                <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
+    
+                <div class="containerSolution">
+                    <div class="leftcontentSolution" id="leftContentSolution">
+                        <img src="/images/design-various-RedAzul.png" alt="">
+                    </div>
+                    <div class="rightContentSolution" id="rightContentSolution">
+                        <div class="optionInfoSolution">
+                            <div class="contentImg">
+                                <img src="/images/userNatural2.png" alt="">
+                            </div>
+                            <p class="left"><span>Usuarios verificados</span> para generar confianza entre ellos en las negociaciones.</p>
+                        </div>
+                        <div class="optionInfoSolution">
+                            <div class="contentImg">
+                                <img src="/images/lotePescado2.png" alt="">
+                            </div>
+                            <p class="left"><span>Oferta por lotes con trazabilidad</span> para generar confianza en la calidad de los productos.</p>
+                        </div>
+                        <div class="optionInfoSolution">
+                            <div class="contentImg">
+                                <img src="/images/positionICO.png" alt="">
+                            </div>
+                            <p class="left"><span>Buscador con contexto geográfico</span> que es importante para los controladores.</p>
+                        </div>
+                        <div class="optionInfoSolution">
+                            <div class="contentImg">
+                                <img src="/images/verificaCampo.png" alt="">
+                            </div>
+                            <p class="left"><span>Servicio de verificación en campo</span> durante la cosecha y/o despacho.</p>
+                        </div>
+                    </div>
                 </div>
+                <p></p>
             </div>
         </div>
-    </div>
-
-    <div class="sectionTrazul container">
-        <h2 class="titleSection">Pon en venta tus lotes en miPescao.com desde TRAZUL</h2>
-        <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
-
-        <div class="containerInfoTrazul">
-            <div class="leftContent">
-                <div class="optionInfo">
-                    <p class="right"><span>Trazabilidad</span> <b>Interna y externa,</b> pensada para la <b>interoperabilidad</b> y para cumplir con el <b>mercado europeo y estadounidense.</b></p>
-                    <div class="contentImg">
-                        <img  src="/images/TrAzul-ICOs-AquaCode.png" alt="">
-                    </div>
-                    
-                </div>
-                <div class="optionInfo">
-                    <p class="right"><span>Registro contable</span> orientado a la estimación de la <b>utilidad por lote.</b></p>
-                    <div class="contentImg">
-                        <img  src="/images/contable-TrAzul-ICO.png" alt="">
-                    </div>
-                    
-                </div>
-                <div class="optionInfo">
-                    <p class="right"><span>Registro de procesos de la producción</span> que son claves para evaluar el rendimiento y para vender ofrecimiendo un mayor valor percibido. </p>
-                    <div class="contentImg">
-                        <img  src="/images/process.svg" alt="">
-                    </div>
-                    
-                </div>
-            </div>
-            <div class="centerContent">
-                <img src="/images/trazulApp.png" alt="">
-            </div>
-            <div class="rightContent">
-                <div class="optionInfo reverseMobile">
-                    <div class="contentImg">
-                        <img src="/images/policultivoTrAzul-ICO.png" alt="">
-                    </div>
-                    <p class="left"><span>Cultivo de múltiples especies</span> pueden ser trazados, gestionado y vendidos </p>
-                </div>
-                <div class="optionInfo reverseMobile">
-                    <div class="contentImg">
-                        <img src="/images/permisos1.png" alt="">
-                    </div>
-                    <p class="left"><span>Adaptada a los requerimientos nacionales</span> sin dejar de cumplir con estándares internacionales (GDST) </p>
-                </div>
-                <div class="optionInfo reverseMobile">
-                    <div class="contentImg">
-                        <img src="/images/personalTraza2.png" alt="">
-                    </div>
-                    <p class="left"><span>Usuarios con diversos roles</span> por unidad productiva y organización </p>
-                </div>
-            </div>
-        </div>
-        <a class="downloadButtonOtherSection" href="/downloadTrazul">
-            <img src="/images/apk_install_24Blue.svg" alt="">
-            <p>Descargala y usala gratis</p>
-        </a>
-    </div>
-
-    <div class="" style="width: 100%; background-color: #FFFFFF;">
-        <div class="sectionSolution container">
-            <h2 class="titleSection">Beneficios de usar TRAZUL en tu unidad productiva</h2>
-            <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
-
-            <div class="containerSolution">
-                <div class="leftcontentSolution">
-                    <img src="/images/design-various-RedAzul.png" alt="">
-                </div>
-                <div class="rightContentSolution">
-                    <div class="optionInfoSolution">
-                        <div class="contentImg">
-                            <img src="/images/userNatural2.png" alt="">
-                        </div>
-                        <p class="left"><span>Usuarios verificados</span> para generar confianza entre ellos en las negociaciones.</p>
-                    </div>
-                    <div class="optionInfoSolution">
-                        <div class="contentImg">
-                            <img src="/images/lotePescado2.png" alt="">
-                        </div>
-                        <p class="left"><span>Oferta por lotes con trazabilidad</span> para generar confianza en la calidad de los productos.</p>
-                    </div>
-                    <div class="optionInfoSolution">
-                        <div class="contentImg">
-                            <img src="/images/positionICO.png" alt="">
-                        </div>
-                        <p class="left"><span>Buscador con contexto geográfico</span> que es importante para los controladores.</p>
-                    </div>
-                    <div class="optionInfoSolution">
-                        <div class="contentImg">
-                            <img src="/images/verificaCampo.png" alt="">
-                        </div>
-                        <p class="left"><span>Servicio de verificación en campo</span> durante la cosecha y/o despacho.</p>
-                    </div>
-                </div>
-            </div>
-            <a class="downloadButtonOtherSection" href="/downloadTrazul">
-                <img src="/images/apk_install_24Blue.svg" alt="">
-                <p>Descargala y usala gratis</p>
-            </a>
-        </div>
-    </div>
-
-    <div class="container sectionPlans">
-        <h2 class="titleSection">Nuestros planes</h2>
-            <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
-
-        <div class="containerCards">
-            <div class="cardPlan generalShadow">
-                <img src="/images/stacks_24.svg" alt="">
-                <div class="titleCard">Suscripción mensual</div>
-                <div class="priceCard">$80.000 mensual</div>
-                <ul class="descriptionPlan">
-                    <li>Uso de todas las funciones de la app, para usuarios con 3 - 5 estanques.</li>                
-                </ul>
-                <a href="#contactForm" class="buttonContact generalShadow"> Contáctanos </a>
-            </div>
-            <div class="cardPlan generalShadow">
-                <img src="/images/stacks_24.svg" alt="">
-                <div class="titleCard">Adicional por estanque</div>
-                <div class="priceCard">$15.000</div>
-                <ul class="descriptionPlan">
-                    <li>Precio adicional por estanque trazado. Para usuarios con más de 5 estanques</li>
-                    <!-- <li>Vender lotes</li>} -->
-                </ul>
-                <a href="#contactForm" class="buttonContact generalShadow"> Contáctanos </a>
-            </div>
-            <div class="cardPlan generalShadow">
-                <img src="/images/stacks_24.svg" alt="">
-                <!-- <div class="titleCard">Plan principal</div>
-                <div class="priceCard">$12.000 mensual</div> -->
-                <ul class="descriptionPlan">
-                    <li>Por cada lote de 1 tonelada o más, vendido por medio de nuestra plataforma, se le dará al cliente 2 meses de uso gratuito de la aplicación</li>
-                    <!-- <li>Vender lotes</li>
-                    <li>compra de lotes</li> -->
-                </ul>
-                <a href="#contactForm" class="buttonContact"> Contáctanos </a>
-            </div>
-        </div>
-
+        <div class="containerPlans">
+            <div class="container sectionPlans">
+                <h2 class="titleSection">Nuestros planes</h2>
         
-        <a class="downloadButtonOtherSection" href="/downloadTrazul">
-            <img src="/images/apk_install_24Blue.svg" alt="">
-            <p>Descargala y usala gratis</p>
-        </a>
-    </div>
-
-    <div class="" id="contactForm" style="width: 100%; background-color: #FFFFFF;">
-        <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
-        <div class="container contactSection ">
-            <div class="infoSection">      
-                <img class="imgFormSection" src="/images/heroe-1.jpg" alt="">          
-                <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit est dolorem ab inventore labore consequatur esse, voluptatum magnam officia delectus?</p> -->
+                <div class="containerCards">
+                <div class="cardPlan basicPlan">
+                    <div class="titleCard">Plan básico</div>
+                    <span>Ideal para acuicultores que inician con su primer estanque.</span>
+                    <div class="priceCard">$75.000 mensual</div>
+                    <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
+                    <ul class="descriptionPlan">
+                        <li><b>Este plan incluye:</b></li>
+                        <li>✓ 1 unidad productiva</li>
+                        <li>✓ 1 usuario</li>
+                        <li>✓ 1 estanque</li>
+                    </ul>
+                </div>
+                    <div class="cardPlan platinumPlan">
+                        <div class="titleCard">Plan platino</div>
+                        <span>Ideal para acuicultores con hasta 3 estanques, listos para crecer.</span>
+                        <div class="priceCard">$130.000 mensual</div>
+                        <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
+                        <ul class="descriptionPlan">
+                            <li><b>Este plan incluye:</b></li>
+                            <li>✓ 1 unidad productiva</li>
+                            <li>✓ 3 usuarios</li>
+                            <li>✓ 3 estanques</li>
+                        </ul>
+                    </div>
+                    <div class="cardPlan goldPlan">
+                        <div class="titleCard">Plan oro</div>
+                        <span>Ideal para acuicultores con operaciones de mayor escala.</span>
+                        <div class="priceCard">$370.400 mensual</div>
+                        <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
+                        <ul class="descriptionPlan">
+                            <li><b>Este plan incluye:</b></li>
+                            <li>✓ 2 unidades productiva</li>
+                            <li>✓ Usuarios ilimitados</li>
+                            <li>✓ 10 estanques</li>
+                        </ul>
+                    </div>
+                </div>
+    
             </div>
-            <form class="containerFormSection">
-                <select name="rolUSer" class="rolUser" id="" onchange="verifyInputs()">
-                    <option disabled selected value="">¿Cual es tu rol?</option>
-                    <option value="Acuicultor">Acuicultor</option>
-                    <option value="Comprador mayorista">Comprador mayorista</option>
-                    <option value="Transportador">Transportador</option>
-                    <option value="Otro">Otro</option>
-                </select>
-                <input type="text" name="otherRol" style="display: none;" class="otherRol" placeholder="¿Cual es?" onkeydown="verifyInputs()">
-                <input type="text" name="nameUser" class="nameUser" placeholder="Nombre completo" onkeydown="verifyInputs()">
-                <input type="email" name="userEmail" class="userEmail" placeholder="Correo electronico" onkeydown="verifyInputs()">
-                <input type="number" name="numberPhone" class="numberPhone" placeholder="Numero celular" onkeydown="verifyInputs()">
-                <textarea name="message" class="message" id="" placeholder="Escribe un mensaje" cols="20" rows="7" onkeydown="verifyInputs()"></textarea>
-                <input type="submit" value="Contactarnos" class="buttomSubmit" onclick="sendform()">
-            </form>
+            <div class="titleSection">Adicionales</div>
+
+            <div class="aditionalsCard generalShadow">
+                <div class="optonsAditionals">
+                    <div class="aditionalOptions">
+                        <div class="titleAditional">Unidades productiva</div>
+                        <div class="descriptionAditional">$50.000 mensual</div>
+                    </div>
+                    <div class="aditionalOptions">
+                        <div class="titleAditional">Estanques adicionales</div>
+                        <div class="descriptionAditional">$50.000 mensual</div>
+                    </div>
+                    <div class="aditionalOptions">
+                        <div class="titleAditional">Usuarios adicionales</div>
+                        <div class="descriptionAditional">$15.000 mensual</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cotizarPlan">
+                <h3 class="titleSection">Calcula el precio con base en tu necesidades</h3>
+                
+                <div class="containerSectionCalculator">
+                    <div class="calculatorcontainer generalShadow">
+                        <div class="infoCalculator ">
+                            <label class="labelOptions" for="numberProductiveUnit">
+                                <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
+                                <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" id="numberProductiveUnit">
+                            </label>
+                            <label class="labelOptions" for="numberPonds">
+                                <span class="titleInputsCalculator">¿Cuantos estanques tienes?</span>
+                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" id="numberProductiveUnit">
+                            </label>
+                            <label class="labelOptions" for="numberUsers">
+                                <span class="titleInputsCalculator">¿Cuantos usuarios tienes?</span>
+                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" id="numberProductiveUnit">
+                            </label>
+                            <div class="calculate generalShadow">Calcular precio</div>
+                        </div>
+                        <div class="price">Precio: <b>$120.000</b> mensuales.</div>
+                    </div>
+                    <div class="responseCalculator">
+                        <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
+
+                        <div class="cardPerfectPlan goldAllPlan generalShadow">
+                            <div class="titleCard">Plan oro</div>
+                            <!-- <span>Ideal para acuicultores con operaciones de mayor escala.</span> -->
+                            <div class="priceCard">$370.400 mensual</div>
+                        </div>
+                        
+                        <div class="subtitlePerfectPlan">Adicionales:</div>
+
+                        <ul>
+                            <li>✓ 3 estanques adicionales - <b class="bPerfectPlan">$20.000</b> </li>
+                            <li>✓ 3 usuarios adicionales - <b class="bPerfectPlan">$20.000</b> </li>
+                            <li>✓ 3 unidades productivas adicionales - <b class="bPerfectPlan">$20.000</b> </li>
+                        </ul>
+
+                        <div class="subtitlePerfectPlan">Total:</div>
+                        <span>Total mensual a pagar <b class="bPerfectPlan">$500.000</b></span>
+
+                        <a href="#contactForm" class="buttonContact generalShadow buttonPerfectPlan"> Comprar </a>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
 
-    <%- include('../partials/footerTrazul.ejs') %>
-
-
+        <div class="" id="contactForm" style="width: 100%; background-color: #FFFFFF;">
+            <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
+            <div class="container contactSection ">
+                <div class="infoSection">      
+                    <img class="imgFormSection" src="/images/heroe-1.jpg" alt="">
+                </div>
+                <form class="containerFormSection">
+                    <select name="rolUSer" class="rolUser" id="" onchange="verifyInputs()">
+                        <option disabled selected value="">¿Cual es tu rol?</option>
+                        <option value="Acuicultor">Acuicultor</option>
+                        <option value="Comprador mayorista">Comprador mayorista</option>
+                        <option value="Transportador">Transportador</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <input type="text" name="otherRol" style="display: none;" class="otherRol" placeholder="¿Cual es?" onkeydown="verifyInputs()">
+                    <input type="text" name="nameUser" class="nameUser" placeholder="Nombre completo" onkeydown="verifyInputs()">
+                    <input type="email" name="userEmail" class="userEmail" placeholder="Correo electronico" onkeydown="verifyInputs()">
+                    <input type="number" name="numberPhone" class="numberPhone" placeholder="Numero celular" onkeydown="verifyInputs()">
+                    <textarea name="message" class="message" id="" placeholder="Escribe un mensaje" cols="20" rows="7" onkeydown="verifyInputs()"></textarea>
+                    <input type="submit" value="Contactarnos" class="buttomSubmit" onclick="sendform()">
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    
     <%- include('../partials/loader.ejs') %>
 </body>
 </html>

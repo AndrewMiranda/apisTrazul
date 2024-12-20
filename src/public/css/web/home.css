@@ -4,11 +4,24 @@
 /* ------------------------------------------------------------------------------------------------------------------- */
 
 /* All sections */
+#allSections{
+    background: url("../../images/prototipoRedAzul-co.svg")top/cover;
+    width: 100%;
+    height: auto;
+    background-repeat: no-repeat;
+}
+html{
+    scroll-behavior: auto !important;
+}
+body{
+    overflow-x: hidden;
+}
+
 .downloadButtonOtherSection{
-    margin: 70px  auto;
+    margin:40px  auto;
     width: max-content;
     max-width: 90%;
-    border: 0.5vh solid #3194d2;
+    border: 0.5vh solid #ffffff;
     padding: 2vh 4vh;
     display: flex;
     align-items: center;
@@ -19,7 +32,7 @@
     border-radius: 10px;
 
     p{
-        color: #3192d2;
+        color: #ffffff;
         font-size: clamp(18px, 3vh, 30px);
         font-weight: bold;
     }
@@ -31,178 +44,36 @@
 
 
 /* Heroe */
-.heroSection{
-    position: relative;
-    /* background: url("../../images/single-image.jpg")center/cover; */
+
+.divVideo{
     width: 100%;
-    min-height: calc(100vh - 70px);
-    background-repeat: no-repeat;
+    /* height: calc(100vh - 70px); */
+    height: calc((var(--vh, 1vh) * 100) - 70px);
+    /* position: relative; */
+    overflow: hidden;
 }
 
-.sourceVideo{
-    width: 100%;
-    position: absolute;
-    height: 100%;
-    left: 0;
-    top: 0;
-    object-fit: cover;
-    z-index: -1;
-}
-
-.heroSection::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
+.sourceVideoPc{
     width: 100%;
     height: 100%;
-    background-color:rgba(0, 0, 255, 0.5);
-    /* background-color: rgb(69, 40, 220, 0.6); */
+    object-fit: cover ;
 }
 
-#mi-video{
-    width: 100%;
-    min-height: calc(100vh - 70px);
+.buttomUnete{
     position: absolute;
-    left: 0;
-    top: 0;
-    object-fit: cover;
-    z-index: -1;
-}
-
-.overlay{
-    position: relative;
-    padding: 10px 0 30px;
-} 
-
-.infoHero{
-    display: flex;
-    justify-content:center;
-    column-gap: 10%;
-    align-items: center;
-    min-height: calc(100vh - 70px);
-    max-width: 1500px;
-    margin: auto;
-    padding: 20px 0;
-    width: 90%;
-}
-
-.leftSection{
-    width: 55%;
-    display: flex;
-    flex-direction: column;
-    row-gap: 5vh;
-}
-
-.titleHero{
-    color: var(--white);
-    font-size: clamp(30px, 8vh, 50px);
-    font-family: "Quicksand-semiBold";
-    b{
-        color: #FFF;
-        font-family: "Quicksand-bold";
-    }
-}
-
-.descriptionHero{
-    color: var(--white);
-    font-size: 3vh;
-    font-size: clamp(15px, 3vh, 30px);
-    font-family: "Quicksand-semiBold";
-    line-height: 1.75;
-    
-}
-
-.downloadButton{
-    width: max-content;
-    border: 0.5vh solid #FFF;
-    padding: 2vh 4vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    column-gap: 3vh;
-    color: #FFF;
-    cursor: pointer;
-    border-radius: 10px;
-
-    p{
-        color: #FFFFFF;
-        font-size: clamp(18px, 3vh, 30px);
-        font-weight: bold;
-    }
-
-    img{
-        width: 4.5vh;
-    }
-}
-
-.rightSection {
-    width: 30%;
-}
-
-.rightSection img {
-    width: 100%;
-    max-height: 60vh;
-    object-fit: contain;
-    border-radius: 10px;
-}
-
-@media screen and (max-width: 1000px){
-    .titleHero{
-        font-size: 30px;
-        text-align: center;
-    }
-
-    .descriptionHero{
-        font-size: 20px;
-        text-align: center;
-    }
-
-    .downloadButton,
-    .downloadButtonOtherSection{
-        margin-left:auto !important;
-        margin-right: auto !important;
-        p{
-            font-size: 18px;
-            text-align: center;
-        }
-    
-        img{
-            width: 24px;
-        }
-    }
-    .downloadButtonOtherSection{
-        border-radius: 1px solid #3194d2;
-    }
-}
-
-@media screen and (max-width: 800px){
-    .infoHero{
-        flex-direction: column;
-        row-gap: 3vh;
-        height: auto;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .leftSection{
-        width: 100%;
-        row-gap: 3vh;
-    }
-
-    .rightSection {
-        width: 100%;
-    }
-
-    .overlay{
-        height: auto;
-    }
-
-    .downloadButtonOtherSection{
-        p{
-            font-size: 16px;
-        }
-    }
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #FFED00;
+    border-radius: 10px 10px 0 0;
+    padding: 13px;
+    width: 15%;
+    min-width: 200px;
+    max-width: 200px;
+    text-align: center;    
+    font-size: 23px ;
+    font-family: "Nunito-bold";
+    color: #4D4D4D;
 }
 
 
@@ -212,18 +83,39 @@
 /* ------------------------------------------------------------------------------------------------------------------- */
 /* Seccion de trazul */
 
+#containerSectionTrazul{
+    height: calc((100vh - 70px)* 3);
+}
+
 .sectionTrazul{
-    margin-top: 40px !important;
+    padding-top: 40px;
+    height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    row-gap: 40px;
+    position: sticky;
+    top: 70px;
+    overflow: hidden;
+    width: 100%;
 }
 
 
 .titleSection{
     text-align: center;
-    color: #0071BC;
+    color: #FFF;
     font-family: "Quicksand-bold";
     font-size: 30px;
     text-align: center;
-    margin: 0 10px 25px;
+
+    /* margin: 10px auto ; */
+    overflow: hidden;
+    width: 90%;
+    margin: 0 auto;
+}
+
+#titleTrazul{
+    transform: scale(2);
+    opacity: 0;
 }
 
 .description{
@@ -233,23 +125,41 @@
 .containerInfoTrazul{
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    margin: 40px 0;
+    justify-content: center;
+    flex: 1;
+    height: calc(100% - 80px);
+    padding-bottom: 40px;
+    column-gap: 40px;
+    /* overflow: hidden; */
+    /* margin: 40px 0; */
 }
 
 .leftContent,
 .rightContent{
     width: 35%;
+    max-width: 420px;
     row-gap: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: stretch;
+    will-change: transform;
+    opacity: 0;
+}
+
+.leftContent{
+    transform: translateX(-100%);
+}
+
+.rightContent{
+    transform: translateX(100%);
 }
 
 .centerContent{
     width: 20%;
-
+    max-width: 300px;
+    transform: scale(2);
+    opacity: 0;
     img{
         width: 100%;
         height: 100%;
@@ -261,7 +171,13 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;   
+    align-items: center;
+    background-color: rgb(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 15px;
+    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
 
 
     .right{
@@ -350,7 +266,13 @@
     }
 }
 
-@media screen and (max-width: 750px){
+@media screen and (max-width: 1000px){
+    /* #titleTrazul{
+        color: #3194d2 !important;
+    } */
+    .sectionTrazul{
+        height: auto;
+    }
 
     .titleSection{
         font-size: 25px;
@@ -358,10 +280,12 @@
 
     .containerInfoTrazul{
         flex-direction: column;
+        align-items: center;
     }
 
     .leftContent, .rightContent{
         width: 100%;
+        max-width: 90%;
     }
 
     .centerContent{
@@ -425,21 +349,35 @@
 /* ---------------------------------------------------------------------------------- */
 /* Solucion  */
 
+#benefitsOfTrazul{
+    /* background-color: #FFFFFF; */
+    width: 100%;
+    height: calc((100vh - 70px)* 3);
+}
+
 .sectionSolution{
     padding-top: 40px;
     padding-bottom: 40px;
+    position: sticky;
+    top: 70px;
+    overflow: hidden;
+    height: calc(100vh - 70px);
+
 }
 
 .containerSolution{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 5px 0;
 }
 
 .leftcontentSolution{
     width: 60%;
-
+    max-width: 720px;
+    transform: translateX(-100%);
+    will-change: transform, opacity;
+    opacity: 0;
     img{
         width: 100%;
     }
@@ -447,18 +385,31 @@
 
 .rightContentSolution{
     width: 38%;
+    max-width: 456px;
+    transform: translateX(100%);
+    will-change: transform, opacity;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    row-gap: 20px;
+    row-gap: 15px;
+    opacity: 0;
 }
 
+.titleSolution{
+    opacity: 0;
+}
 
 .optionInfoSolution{
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;   
+    align-items: center;  
+    background-color: rgb(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 15px;
+    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16); 
 
 
     .right{
@@ -498,6 +449,14 @@
     }
 }
 
+@media screen and (min-height: 700px){
+    .sectionSolution{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+}
+
 @media screen and (max-width: 1000px){
     .leftcontentSolution {
         width: 45%;
@@ -506,9 +465,14 @@
     .rightContentSolution {
         width: 55%;
     }
+    .sectionSolution{
+        height: auto;
+        width: 90%;
+        margin-left: 5%;
+    }
 }
 
-@media screen and (max-width: 700px){
+@media screen and (max-width: 1000px){
     .containerSolution{
         flex-direction: column;
         row-gap: 15px;
@@ -548,6 +512,12 @@
     margin-bottom: 40px !important;
 }
 
+.containerPlans{
+    width: 1200px;
+    max-width: 90%;
+    margin: auto;
+}
+
 .containerCards{
     width: 100%;
     display: flex;
@@ -561,7 +531,6 @@
     display: flex;
     flex-direction: column;
     row-gap: 10px;
-    align-items: center;
     justify-content: space-between;
     margin-top: 30px;
     background-color: #FFFFFF;
@@ -569,6 +538,7 @@
     border-radius: 10px;
     width: 320px;
     max-width: 32%;
+    transition: transform .9s ease;
 
     img{
         width: 50px;
@@ -576,10 +546,15 @@
     }
 }
 
+.cardPlan:hover{
+    transform: scale(1.1);
+}
+
 .titleCard{
     color: #000000;
     font-size: 22px;
     font-weight: bold;
+    text-align: left;
 }
 
 .descriptionPlan{
@@ -588,9 +563,11 @@
 }
 
 .priceCard{
-    color: #707070;
+    color: #000;
+    /* font-weight: ; */
     font-size: 20px;
 }
+
 
 ul{
     list-style: none;
@@ -598,25 +575,227 @@ ul{
     display: flex;
     flex-direction: column;
     row-gap: 10px;
-
-    li{
-        text-align: center;
-    }
 }
 
 .buttonContact{
-    background-color: #3194d2;
-    color: #ffffff;
+    background-color: #FFFFFF;
+    color: #3194d2;
     padding: 10px 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     text-align: center;
     font-size: 18px;
     font-weight: bold;
+    margin: 10px 0;
     cursor: pointer;
 }
 
+.aditionalsCard{
+    background-color: #FFFFFF;
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+    width: 88%;
+    margin: auto;
+    border-radius: 10px;
+}
 
-@media screen and (max-width: 700px){
+.titleCardAditional{
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.optonsAditionals{
+    display: flex;
+    justify-content: space-evenly   ;
+    padding: 20px;
+    row-gap: 25px;
+    flex-wrap: wrap;
+    column-gap: 20px;
+}
+
+.aditionalOptions{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    background-color: #FFFFFF;
+    min-width: 165px;
+    justify-content: center;
+}
+
+.titleAditional{
+    text-align: center;
+    font-weight: bold;
+    color: #000;
+}
+
+.descriptionAditional{
+    text-align: center;
+    color: #000;
+}
+
+.goldPlan{
+    background: linear-gradient(to bottom, #fef4bb, #FFFFFF);
+}
+
+.platinumPlan{
+    background: linear-gradient(to bottom, #cceff8, #FFFFFF);
+}
+
+.basicPlan{
+    background: linear-gradient(to bottom, #F8F8F8, #FFFFFF);
+}
+
+.descriptionPlan li b{
+    color: #000000;
+}
+
+/* Calculadora */
+.cotizarPlan{
+    display: flex;
+    flex-direction: column;
+    row-gap: 40px;
+    margin-bottom: 40px;
+}
+
+.containerSectionCalculator{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    column-gap: 5%;
+}
+
+.calculatorcontainer{
+    border: 1px solid #3194d2;
+    border-radius: 10px;
+    /* padding: 15px 0 0; */
+    min-width: 380px;
+    max-width: 35%;
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+}
+
+
+.responseCalculator{
+    border: 1px solid #3194d2;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    width: 35%;
+    min-width: 380px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    row-gap: 10px;
+}
+
+.labelOptions{
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+}
+
+.infoCalculator{
+    padding: 29px 20px;
+}
+
+.calculate{
+    width: max-content;
+    margin: auto;
+    background: #3194d2;
+    color: #FFF;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.titleInputsCalculator{
+    color: #707070;
+}
+
+.inputCalculator{
+    border: none;
+    outline: none;
+    appearance: textfield;
+    border-radius: 10px;
+    height: 40px;
+    padding: 0 10px;
+}
+
+.price{
+    background-color: #3194d2;
+    color: #FFFFFF;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    padding: 12px 0;
+    b{
+        color: #ffffff;
+    }
+}
+
+.infoCalculator{
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+}
+
+.cardPerfectPlan{
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+
+    .titleCard{
+        font-size: 18px;
+    }
+
+    .priceCard{
+        font-size: 16px;
+    }
+
+}
+
+.goldAllPlan{
+    /* background: linear-gradient(to bottom, #fef4bb, #FFFFFF); */
+    background-color: #fef4bb;
+}
+
+.platinumAllPlan{
+    /* background: linear-gradient(to bottom, #cceff8, #FFFFFF); */
+    background-color: #cceff8;
+}
+
+.basicAllPlan{
+    /* background: linear-gradient(to bottom, #F8F8F8, #FFFFFF); */
+    background-color: #F8F8F8;
+}
+
+.titlePerfectPlan{
+    color: #000000;
+    font-weight: bold;
+    font-size:18px;
+}
+
+.subtitlePerfectPlan{
+    color: #000000;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.buttonPerfectPlan{
+    margin: 0 !important;
+}
+
+.bPerfectPlan{
+    color: #000;
+}
+
+@media screen and (max-width: 1000px){
     .titleCard{
         color: #000000;
         font-size: 18px;
@@ -632,6 +811,32 @@ ul{
         max-width: 45%;
     }
     
+    .calculatorcontainer{
+        min-width: auto;
+        width: 45%;
+        max-width: 45%;
+    }
+    .responseCalculator{
+        min-width: auto;
+        width: 45%;
+        max-width: 45%;
+    }
+}
+
+@media screen and (max-width: 700px){
+    .containerSectionCalculator{
+        flex-direction: column;
+        align-items: center;
+        row-gap: 40px;
+    }
+    .calculatorcontainer{
+        width: 90%;
+        max-width: 90%;
+    }
+    .responseCalculator{
+        width: 90%;
+        max-width: 90%;
+    }
 }
 
 
@@ -673,6 +878,8 @@ ul{
 
 .titleContact{
     padding-top: 30px;
+    color: #3194d2;
+    margin: 0 auto;
 }
 
 .containerFormSection{
