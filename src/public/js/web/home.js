@@ -143,7 +143,7 @@ function sectionSolutionFunction(){
             sectionSolution.style.position = "sticky";
             benefitsOfTrazul.style.height = "calc((100vh - 70px)* 3)";
         }else if ( scrollPercentage <= 100) {
-            const opacityValue = (scrollPercentage - 55) / 45;
+            const opacityValue = (scrollPercentage - 55) / 50;
             leftContentSolution.style.transform = `translateX(${transformValueLeft}%)`;
             rightContentSolution.style.transform = `translateX(${transformValueRight}%)`;
             leftContentSolution.style.opacity = `${opacityValue}`;
@@ -165,21 +165,6 @@ function sectionSolutionFunction(){
 
 
 }
-
-// let scrollY = 0;
-// let targetScrollY = 0;
-
-// const smoothScroll = () => {
-//     targetScrollY = window.scrollY; // Captura el desplazamiento del usuario
-//     scrollY += (targetScrollY - scrollY) * 0.1; // Inercia para suavidad
-
-//     document.querySelector(".scroll-container").style.transform = `translateY(-${scrollY}px)`;
-
-//     requestAnimationFrame(smoothScroll);
-// };
-
-// smoothScroll();
-
 
 document.addEventListener("DOMContentLoaded", () => {
     const scrollContainer = document.querySelector("body"); // Cambia el selector si necesitas aplicar a un contenedor específico
@@ -209,3 +194,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300); // Ajusta el tiempo según el efecto deseado
     }, { passive: false });
 });
+
+function validadeInputs(nameInput){
+    let input = document.getElementsByName(nameInput)[0];
+    let validateInput = input.getAttribute('valid-input');
+    if(isNaN(input.value)){
+        console.log('Invalid');
+        input.setAttribute('valid-input', false);
+    }else{
+        console.log('Valid');
+        input.setAttribute('valid-input', true);
+    }
+}
+
+function calculatePrecio(){
+    let responseCalculator = document.getElementsByClassName("responseCalculator")[0];
+
+
+
+    responseCalculator.style.display = "flex";
+}

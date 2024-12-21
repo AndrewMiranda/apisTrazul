@@ -7,6 +7,14 @@ router.get("/", (req, res) => {
     res.render("web/home");
 });
 
+router.get("/home1", (req, res) => {
+    res.render("web/home1");
+});
+
+router.get("/unete", (req, res) => {
+    res.render("web/joinTrazul");
+});
+
 
 router.get("/downloadTrazul", (req, res) => {
     res.render("web/downloadTrazul");

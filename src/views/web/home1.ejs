@@ -16,7 +16,7 @@
             <source src="/images/heroeRedAzul-movil1.mp4" type="video/mp4"  id="videoSource">
             Tu navegador no soporta la etiqueta de video.
         </video>
-        <a href="/unete" class="buttomUnete">Únete gratis</a>    
+        <a href="#plans" class="buttomUnete">Únete</a>    
     </section>
 
         <section id="containerSectionTrazul"> 
@@ -113,28 +113,41 @@
                 <p></p>
             </div>
         </div>
-        <div class="containerPlans">
+        
+        <div class="containerPlans" id="plans">
             <div class="container sectionPlans">
                 <h2 class="titleSection">Nuestros planes</h2>
         
                 <div class="containerCards">
-                <div class="cardPlan basicPlan">
-                    <div class="titleCard">Plan básico</div>
-                    <span>Ideal para acuicultores que inician con su primer estanque.</span>
-                    <div class="priceCard">$75.000 mensual</div>
-                    <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
-                    <ul class="descriptionPlan">
-                        <li><b>Este plan incluye:</b></li>
-                        <li>✓ 1 unidad productiva</li>
-                        <li>✓ 1 usuario</li>
-                        <li>✓ 1 estanque</li>
-                    </ul>
-                </div>
+                    <div class="cardPlan basicPlan">
+                        <div class="titleCard">Prueba gratuita</div>
+                        <span>Solicita una prueba gratis por un mes</span>
+                        <div class="priceCard">$0 mensual</div>
+                        <a href="" class="buttonContact generalShadow">Solicitar prueba</a>
+                        <ul class="descriptionPlan">
+                            <li><b>Esta prueba incluye:</b></li>
+                            <li>✓ 1 unidad productiva</li>
+                            <li>✓ 1 usuario</li>
+                            <li>✓ 1 estanque</li>
+                        </ul>
+                    </div>
+                    <div class="cardPlan basicPlan">
+                        <div class="titleCard">Plan básico</div>
+                        <span>Ideal para acuicultores que inician con su primer estanque.</span>
+                        <div class="priceCard">$75.000 mensual</div>
+                        <a href="" class="buttonContact generalShadow"> Comprar </a>
+                        <ul class="descriptionPlan">
+                            <li><b>Este plan incluye:</b></li>
+                            <li>✓ 1 unidad productiva</li>
+                            <li>✓ 1 usuario</li>
+                            <li>✓ 1 estanque</li>
+                        </ul>
+                    </div>
                     <div class="cardPlan platinumPlan">
                         <div class="titleCard">Plan platino</div>
                         <span>Ideal para acuicultores con hasta 3 estanques, listos para crecer.</span>
                         <div class="priceCard">$130.000 mensual</div>
-                        <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
+                        <a href="" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
                             <li><b>Este plan incluye:</b></li>
                             <li>✓ 1 unidad productiva</li>
@@ -162,7 +175,7 @@
             <div class="aditionalsCard generalShadow">
                 <div class="optonsAditionals">
                     <div class="aditionalOptions">
-                        <div class="titleAditional">Unidades productiva</div>
+                        <div class="titleAditional">Unidades productiva adicional</div>
                         <div class="descriptionAditional">$50.000 mensual</div>
                     </div>
                     <div class="aditionalOptions">
@@ -184,21 +197,21 @@
                         <div class="infoCalculator ">
                             <label class="labelOptions" for="numberProductiveUnit">
                                 <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" id="numberProductiveUnit">
+                                <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberProductiveUnit')">
                             </label>
                             <label class="labelOptions" for="numberPonds">
                                 <span class="titleInputsCalculator">¿Cuantos estanques tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" id="numberProductiveUnit">
+                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberPonds')">
                             </label>
                             <label class="labelOptions" for="numberUsers">
                                 <span class="titleInputsCalculator">¿Cuantos usuarios tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" id="numberProductiveUnit">
+                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberUsers')">
                             </label>
-                            <div class="calculate generalShadow">Calcular precio</div>
+                            <div class="calculate generalShadow" onclick="calculatePrecio()">Calcular precio</div>
                         </div>
                         <div class="price">Precio: <b>$120.000</b> mensuales.</div>
                     </div>
-                    <div class="responseCalculator">
+                    <div class="responseCalculator"  style="display: none;">
                         <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
 
                         <div class="cardPerfectPlan goldAllPlan generalShadow">
