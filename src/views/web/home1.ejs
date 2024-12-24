@@ -21,7 +21,7 @@
 
         <section id="containerSectionTrazul"> 
             <div class="sectionTrazul" id="firstAnimation">
-                <h2 class="titleSection" id="titleTrazul" style="color: #FFF;">Pon en venta tus lotes en miPescao.com desde TRAZUL</h2>
+                <h2 class="titleSection" id="titleTrazul" style="color: #FFF;">Beneficios de usar TRAZUL en tu unidad productiva    </h2>
                 <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
     
                 <div class="containerInfoTrazul">
@@ -76,7 +76,7 @@
     
         <div id="benefitsOfTrazul">
             <div class="sectionSolution" id="sectionSolution">
-                <h2 class="titleSection titleSolution">Beneficios de usar TRAZUL en tu unidad productiva</h2>
+                <h2 class="titleSection titleSolution">Pon en venta tus lotes en miPescao.com desde TRAZUL</h2>
                 <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
     
                 <div class="containerSolution">
@@ -120,10 +120,10 @@
         
                 <div class="containerCards">
                     <div class="cardPlan basicPlan">
-                        <div class="titleCard">Prueba gratuita</div>
+                        <div class="titleCard" id="titlePrefectPLan">Prueba gratuita</div>
                         <span>Solicita una prueba gratis por un mes</span>
                         <div class="priceCard">$0 mensual</div>
-                        <a href="" class="buttonContact generalShadow">Solicitar prueba</a>
+                        <a href="/unete" class="buttonContact generalShadow">Solicitar prueba</a>
                         <ul class="descriptionPlan">
                             <li><b>Esta prueba incluye:</b></li>
                             <li>✓ 1 unidad productiva</li>
@@ -132,10 +132,10 @@
                         </ul>
                     </div>
                     <div class="cardPlan basicPlan">
-                        <div class="titleCard">Plan básico</div>
+                        <div class="titleCard" id="titlePrefectPLan">Plan básico</div>
                         <span>Ideal para acuicultores que inician con su primer estanque.</span>
                         <div class="priceCard">$75.000 mensual</div>
-                        <a href="" class="buttonContact generalShadow"> Comprar </a>
+                        <a href="/unete" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
                             <li><b>Este plan incluye:</b></li>
                             <li>✓ 1 unidad productiva</li>
@@ -144,10 +144,10 @@
                         </ul>
                     </div>
                     <div class="cardPlan platinumPlan">
-                        <div class="titleCard">Plan platino</div>
+                        <div class="titleCard" id="titlePrefectPLan">Plan platino</div>
                         <span>Ideal para acuicultores con hasta 3 estanques, listos para crecer.</span>
                         <div class="priceCard">$130.000 mensual</div>
-                        <a href="" class="buttonContact generalShadow"> Comprar </a>
+                        <a href="/unete" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
                             <li><b>Este plan incluye:</b></li>
                             <li>✓ 1 unidad productiva</li>
@@ -159,7 +159,7 @@
                         <div class="titleCard">Plan oro</div>
                         <span>Ideal para acuicultores con operaciones de mayor escala.</span>
                         <div class="priceCard">$370.400 mensual</div>
-                        <a href="#contactForm" class="buttonContact generalShadow"> Comprar </a>
+                        <a href="/unete" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
                             <li><b>Este plan incluye:</b></li>
                             <li>✓ 2 unidades productiva</li>
@@ -199,47 +199,131 @@
                                 <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
                                 <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberProductiveUnit')">
                             </label>
-                            <label class="labelOptions" for="numberPonds">
+                            <label class="labelOptions" for="estanques">
                                 <span class="titleInputsCalculator">¿Cuantos estanques tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberPonds')">
+                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" valid-input="false" id="estanques" onkeyup="validadeInputs('numberPonds')">
                             </label>
-                            <label class="labelOptions" for="numberUsers">
+                            <label class="labelOptions" for="usuarios">
                                 <span class="titleInputsCalculator">¿Cuantos usuarios tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberUsers')">
+                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" valid-input="false" id="usuarios" onkeyup="validadeInputs('numberUsers')">
                             </label>
-                            <div class="calculate generalShadow" onclick="calculatePrecio()">Calcular precio</div>
+                            <buttom valid-form="false" id="calculateform" class="calculate generalShadow "  >Calcular precio</buttom>
                         </div>
-                        <div class="price">Precio: <b>$120.000</b> mensuales.</div>
+                        <div class="price" id="priceFormCalculator"></div>
                     </div>
                     <div class="responseCalculator"  style="display: none;">
                         <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
 
-                        <div class="cardPerfectPlan goldAllPlan generalShadow">
-                            <div class="titleCard">Plan oro</div>
+                        <div class="cardPerfectPlan  generalShadow">
+                            <div class="titleCard" id="titlePrefectPlan">Plan oro</div>
                             <!-- <span>Ideal para acuicultores con operaciones de mayor escala.</span> -->
-                            <div class="priceCard">$370.400 mensual</div>
+                            <div class="priceCard" id="pricePerfectPlan">$370.400 mensual</div>
                         </div>
                         
                         <div class="subtitlePerfectPlan">Adicionales:</div>
 
                         <ul>
-                            <li>✓ 3 estanques adicionales - <b class="bPerfectPlan">$20.000</b> </li>
-                            <li>✓ 3 usuarios adicionales - <b class="bPerfectPlan">$20.000</b> </li>
-                            <li>✓ 3 unidades productivas adicionales - <b class="bPerfectPlan">$20.000</b> </li>
+                            <li><span id="spanNumberEstanques">✓ 3 estanques adicionales</span> - <b class="bPerfectPlan" id="priceEstanques">$20.000</b> </li>
+                            <li><span id="spanNumberUsuarios">✓ 3 usuarios adicionales</span> - <b class="bPerfectPlan" id="priceUsuarios">$20.000</b> </li>
+                            <li><span id="spanNumberUnidades">✓ 3 unidades productivas</span> - <b class="bPerfectPlan" id="priceUnidad">$20.000</b> </li>
                         </ul>
 
                         <div class="subtitlePerfectPlan">Total:</div>
-                        <span>Total mensual a pagar <b class="bPerfectPlan">$500.000</b></span>
+                        <span>Total mensual a pagar - <b class="bPerfectPlan" id="totalPlan">$500.000</b></span>
 
-                        <a href="#contactForm" class="buttonContact generalShadow buttonPerfectPlan"> Comprar </a>
+                        <a href="/unete" class="buttonContact generalShadow buttonPerfectPlan"> Comprar </a>
 
                     </div>
                 </div>
             </div>
 
+            <div class="carrouselApp">
+                <h3 class="titleSection">Conoce nuestra aplicación</h3>
+
+                <div id="subtitleSlider">Puedes ver los lotes que has creado, registrar la mortalidad de tus lotes, insumos, biomasa, alimento, medicamentos, etc...</div>
+                <!-- <div class="subtitleSlider">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam, totam.</div> -->
+                <div class="slider">
+                    <img class="arrowsSlider" src="/images/leftArrow.svg" alt="" onclick="leftSlider()">
+
+                    <div class="containerSlider" id="containerSlider">
+                        <div class="sliderOption" id="divTransition">
+                            <img class="imgSlider" src="/images/imagesApp/allLots.jpg" alt="">
+                            <img class="imgSlider" src="/images/imagesApp/infoLots.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/biomasa.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/supervivenciaYcostos.jpg" alt="">
+                        </div>
+                        <div class="sliderOption">
+                            <img class="imgSlider" src="/images/imagesApp/personalOperativo.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/personalGuardado.jpg" alt="">
+                            <img class="imgSlider " src="/images/imagesApp/ingresos.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/egresos.jpg" alt="">
+                            
+                        </div>
+                        <div class="sliderOption">
+                            <img class="imgSlider" src="/images/imagesApp/insumos.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/padrotesView.jpg" alt="">
+                            <img class="imgSlider " src="/images/imagesApp/vincularAlimento.jpg" alt="">
+                            <img class="imgSlider noPhone" src="/images/imagesApp/otrosInsumos.jpg" alt="">
+                        </div>
+                        
+                    </div>
+
+                    <img class="arrowsSlider" src="/images/chevron_right.svg" alt="" onclick="rightSlider()">
+                </div>
+            </div>
+
         </div>
 
-        <div class="" id="contactForm" style="width: 100%; background-color: #FFFFFF;">
+        <div class="containerSection heightSection classAnimation">
+            <div class="contactSection" >
+                <div class="left">
+                    <h2>CONTACTO</h2>
+                    <div class="subtitle">Trabajemos juntos</div>
+    
+                    <div class="infoContact">
+                        <p>Barranquilla - Colombia (Suramérica)</p>
+                        <a href="mailto:contacto@redazul.co">contacto@redazul.co</a>
+                        <p>Tel: +57 311 5858284</p>
+                    </div>
+    
+                    <div class="socialMedia">
+                        <a href="https://wa.me/573115858284" target="_blank"><img src="/images/whiteIcons1-whatsapp.svg" alt=""></a>
+                        <a href="https://www.instagram.com/redazul.co/profilecard/?igsh=MWZtb3F5emo2YjQwbQ==" target="_blank"><img src="/images/whiteIcoInstagram.svg" alt="intagram"></a>
+                        <a href="https://www.facebook.com/share/tWzA2T53Y692YwCB/" target="_blank"><img src="/images/whiteIcoFacebook.svg" alt="facebook"></a>
+                        <a href="https://www.linkedin.com/company/redazul/" target="_blank"><img src="/images/whiteIcons8-linkedinBlack.svg" alt="linkeding"></a>
+                    </div>
+                </div>
+                <div class="right">
+                    <form action="" id="formContact" onsubmit="sendContactFunction(event)">
+                        <label for="name">
+                            <p>Nombres</p>
+                            <input id="name" type="text" placeholder="" name="name" class="inputFormHome" required>
+                        </label>
+                        
+                        <label for="lastName">
+                            <p>Apellidos</p>
+                            <input id="lastName" type="text" placeholder="" name="lastname" class="inputFormHome">
+                        </label>
+    
+                        <label for="email" class="width100">
+                            <p>Email</p>
+                            <input id="email" type="email" placeholder="" name="email" class="inputFormHome " required>
+                        </label>
+                        
+                        <label for="comentario" class="width100">
+                            <p>Comentarios</p>
+                            <textarea name="message"  id="" class="inputFormHome" required></textarea>
+                        </label>
+                        
+                        <div class="width100">
+                            <input type="submit" form="formContact" value="Enviar" class="buttomFormHome">
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- <div class="" id="contactForm" style="width: 100%; background-color: #FFFFFF;">
             <h2 class="titleSection titleContact">Ponte en contacto con nosotros</h2>
             <div class="container contactSection ">
                 <div class="infoSection">      
@@ -261,11 +345,12 @@
                     <input type="submit" value="Contactarnos" class="buttomSubmit" onclick="sendform()">
                 </form>
             </div>
-        </div>
+        </div> -->
     </section>
     
     
     <%- include('../partials/loader.ejs') %>
 </body>
 </html>
+<script src="/js/web/global.js"></script>
 <script src="/js/web/home.js"></script>
