@@ -21,9 +21,7 @@
 
         <section id="containerSectionTrazul"> 
             <div class="sectionTrazul" id="firstAnimation">
-                <h2 class="titleSection" id="titleTrazul" style="color: #FFF;">Beneficios de usar TRAZUL en tu unidad productiva    </h2>
-                <!-- <p class="description">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid doloremque veniam, ullam corrupti vitae nesciunt eos blanditiis minus nobis iusto?</p> -->
-    
+                <h2 class="titleSection" id="titleTrazul">Beneficios de usar TRAZUL en tu unidad productiva    </h2>
                 <div class="containerInfoTrazul">
                     <div class="leftContent" id="leftTrazul">
                         <div class="optionInfo">
@@ -44,7 +42,6 @@
                             <div class="contentImg">
                                 <img  src="/images/process.svg" alt="">
                             </div>
-                            
                         </div>
                     </div>
                     <div class="centerContent" id="centerTrazul">
@@ -119,9 +116,9 @@
                 <h2 class="titleSection">Nuestros planes</h2>
         
                 <div class="containerCards">
-                    <div class="cardPlan basicPlan">
+                    <div class="cardPlan    freePlan">
                         <div class="titleCard" id="titlePrefectPLan">Prueba gratuita</div>
-                        <span>Solicita una prueba gratis por un mes</span>
+                        <span>Solicita una prueba <b>gratis</b> por un mes</span>
                         <div class="priceCard">$0 mensual</div>
                         <a href="/unete" class="buttonContact generalShadow">Solicitar prueba</a>
                         <ul class="descriptionPlan">
@@ -133,7 +130,7 @@
                     </div>
                     <div class="cardPlan basicPlan">
                         <div class="titleCard" id="titlePrefectPLan">Plan básico</div>
-                        <span>Ideal para acuicultores que inician con su primer estanque.</span>
+                        <span>Ideal para acuicultores que inician y necesitan aseosiria para su unidad productiva.</span>
                         <div class="priceCard">$75.000 mensual</div>
                         <a href="/unete" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
@@ -145,7 +142,7 @@
                     </div>
                     <div class="cardPlan platinumPlan">
                         <div class="titleCard" id="titlePrefectPLan">Plan platino</div>
-                        <span>Ideal para acuicultores con hasta 3 estanques, listos para crecer.</span>
+                        <span>Ideal para pequeños acuicultores, listos para crecer.</span>
                         <div class="priceCard">$130.000 mensual</div>
                         <a href="/unete" class="buttonContact generalShadow"> Comprar </a>
                         <ul class="descriptionPlan">
@@ -170,69 +167,77 @@
                 </div>
     
             </div>
-            <div class="titleSection">Adicionales</div>
-
-            <div class="aditionalsCard generalShadow">
-                <div class="optonsAditionals">
-                    <div class="aditionalOptions">
-                        <div class="titleAditional">Unidades productiva adicional</div>
-                        <div class="descriptionAditional">$50.000 mensual</div>
+            <div class="containerAdicional">
+                <div class="aditionalsCard generalShadow">
+                    <div class="">
+                        <h3 class="titleSection titleCalculator">Adicionales</h3>
+                        <p class="textCalculator">Ajusta tu plan según tus necesidades.</p>
                     </div>
-                    <div class="aditionalOptions">
-                        <div class="titleAditional">Estanques adicionales</div>
-                        <div class="descriptionAditional">$50.000 mensual</div>
-                    </div>
-                    <div class="aditionalOptions">
-                        <div class="titleAditional">Usuarios adicionales</div>
-                        <div class="descriptionAditional">$15.000 mensual</div>
-                    </div>
+                    <!-- <div class="optonsAditionals"> -->
+                        <div class="aditionalOptions">
+                            <div class="titleAditional">Unidades productiva adicional</div>
+                            <div class="descriptionAditional">$50.000 mensual</div>
+                        </div>
+                        <div class="aditionalOptions">
+                            <div class="titleAditional">Estanques adicionales</div>
+                            <div class="descriptionAditional">$50.000 mensual</div>
+                        </div>
+                        <div class="aditionalOptions">
+                            <div class="titleAditional">Usuarios adicionales</div>
+                            <div class="descriptionAditional">$15.000 mensual</div>
+                        </div>
+                        <div class=""></div>
+                    <!-- </div> -->
                 </div>
-            </div>
 
-            <div class="cotizarPlan">
-                <h3 class="titleSection">Calcula el precio con base en tu necesidades</h3>
-                
-                <div class="containerSectionCalculator">
-                    <div class="calculatorcontainer generalShadow">
-                        <div class="infoCalculator ">
-                            <label class="labelOptions" for="numberProductiveUnit">
-                                <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberProductiveUnit')">
-                            </label>
-                            <label class="labelOptions" for="estanques">
-                                <span class="titleInputsCalculator">¿Cuantos estanques tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" valid-input="false" id="estanques" onkeyup="validadeInputs('numberPonds')">
-                            </label>
-                            <label class="labelOptions" for="usuarios">
-                                <span class="titleInputsCalculator">¿Cuantos usuarios tienes?</span>
-                                <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" valid-input="false" id="usuarios" onkeyup="validadeInputs('numberUsers')">
-                            </label>
-                            <buttom valid-form="false" id="calculateform" class="calculate generalShadow "  >Calcular precio</buttom>
+                <div class="cotizarPlan generalShadow">
+                    <h3 class="titleSection titleCalculator">Calcula el precio con base en tu necesidades</h3>
+                    
+                    <div class="containerSectionCalculator">
+                        <div class="calculatorcontainer generalShadow">
+                            <div class="infoCalculator ">
+                                <label class="labelOptions" for="numberProductiveUnit">
+                                    <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
+                                    <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberProductiveUnit')">
+                                </label>
+                                <label class="labelOptions" for="estanques">
+                                    <span class="titleInputsCalculator">¿Cuantos estanques tienes?</span>
+                                    <input class="inputCalculator generalShadow" placeholder="Numero de estanques en tu unidad productiva" type="number" name="numberPonds" valid-input="false" id="estanques" onkeyup="validadeInputs('numberPonds')">
+                                </label>
+                                <label class="labelOptions" for="usuarios">
+                                    <span class="titleInputsCalculator">¿Cuantos usuarios tienes?</span>
+                                    <input class="inputCalculator generalShadow" placeholder="Numero de usuarios en tu unidad productiva" type="number" name="numberUsers" valid-input="false" id="usuarios" onkeyup="validadeInputs('numberUsers')">
+                                </label>
+                                <buttom valid-form="false" id="calculateform" class="calculate generalShadow "  >Calcular precio</buttom>
+                            </div>
+                            <div class="price" id="priceFormCalculator"></div>
                         </div>
-                        <div class="price" id="priceFormCalculator"></div>
-                    </div>
-                    <div class="responseCalculator"  style="display: none;">
-                        <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
+                        <div class="responseCalculator">
+                            <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
 
-                        <div class="cardPerfectPlan  generalShadow">
-                            <div class="titleCard" id="titlePrefectPlan">Plan oro</div>
-                            <!-- <span>Ideal para acuicultores con operaciones de mayor escala.</span> -->
-                            <div class="priceCard" id="pricePerfectPlan">$370.400 mensual</div>
+                            <div class="cardPerfectPlan  generalShadow">
+                                <div class="titleCard" id="titlePrefectPlan"></div>
+                                <!-- <span>Ideal para acuicultores con operaciones de mayor escala.</span> -->
+                                <div class="priceCard" id="pricePerfectPlan"></div>
+                            </div>
+                            
+                            <div class="subtitlePerfectPlan">Adicionales:</div>
+
+                            <ul>
+                                <li><span id="spanNumberEstanques"></span> - <b class="bPerfectPlan" id="priceEstanques"></b> </li>
+                                <li><span id="spanNumberUsuarios"></span> - <b class="bPerfectPlan" id="priceUsuarios"></b> </li>
+                                <li><span id="spanNumberUnidades"></span> - <b class="bPerfectPlan" id="priceUnidad"></b> </li>
+                            </ul>
+
+                            <div class="subtitlePerfectPlan">Total:</div>
+                            <span>Total mensual a pagar - <b class="bPerfectPlan" id="totalPlan">0</b></span>
+
+                            <a href="/unete" class="buttonContact generalShadow buttonPerfectPlan"> Comprar </a>
+
+                            <div id="overlay">
+                                <p>Completa el formulario para descrubrir cual es el plan pefecto para ti.</p>
+                            </div>
                         </div>
-                        
-                        <div class="subtitlePerfectPlan">Adicionales:</div>
-
-                        <ul>
-                            <li><span id="spanNumberEstanques">✓ 3 estanques adicionales</span> - <b class="bPerfectPlan" id="priceEstanques">$20.000</b> </li>
-                            <li><span id="spanNumberUsuarios">✓ 3 usuarios adicionales</span> - <b class="bPerfectPlan" id="priceUsuarios">$20.000</b> </li>
-                            <li><span id="spanNumberUnidades">✓ 3 unidades productivas</span> - <b class="bPerfectPlan" id="priceUnidad">$20.000</b> </li>
-                        </ul>
-
-                        <div class="subtitlePerfectPlan">Total:</div>
-                        <span>Total mensual a pagar - <b class="bPerfectPlan" id="totalPlan">$500.000</b></span>
-
-                        <a href="/unete" class="buttonContact generalShadow buttonPerfectPlan"> Comprar </a>
-
                     </div>
                 </div>
             </div>
@@ -240,7 +245,7 @@
             <div class="carrouselApp">
                 <h3 class="titleSection">Conoce nuestra aplicación</h3>
 
-                <div id="subtitleSlider">Puedes ver los lotes que has creado, registrar la mortalidad de tus lotes, insumos, biomasa, alimento, medicamentos, etc...</div>
+                <div id="subtitleSlider">Puedes ver los lotes que has creado, registrar la <b class="bSubtitleEslider">mortalidad</b> de tus lotes, <b class="bSubtitleEslider">insumos</b>, <b class="bSubtitleEslider">biomasa</b>, <b class="bSubtitleEslider">alimento</b>, <b class="bSubtitleEslider">medicamentos</b>, entre otros.</div>
                 <!-- <div class="subtitleSlider">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam, totam.</div> -->
                 <div class="slider">
                     <img class="arrowsSlider" src="/images/leftArrow.svg" alt="" onclick="leftSlider()">
@@ -277,8 +282,8 @@
         <div class="containerSection heightSection classAnimation">
             <div class="contactSection" >
                 <div class="left">
-                    <h2>CONTACTO</h2>
-                    <div class="subtitle">Trabajemos juntos</div>
+                    <h2>CONTACTANOS</h2>
+                    <!-- <div class="subtitle">Trabajemos juntos</div> -->
     
                     <div class="infoContact">
                         <p>Barranquilla - Colombia (Suramérica)</p>

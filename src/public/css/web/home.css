@@ -84,7 +84,8 @@ body{
 /* Seccion de trazul */
 
 #containerSectionTrazul{
-    height: calc((100vh - 70px)* 3);
+    height: calc((100vh - 70px)* 2);
+
 }
 
 .sectionTrazul{
@@ -229,10 +230,40 @@ body{
         }
 
     }
+
+    #titleTrazul{
+        color: #3194d2 !important;
+        opacity: 1;
+        transform: scale(1);
+    }
     
     .centerContent{
         width: 25%;
     }
+
+    .leftContent{
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .centerContent{
+        display: none;
+    }
+
+    .rightContent{
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+
+/*      leftTrazul.style.transform = `translateX(0)`;
+        rightTrazul.style.transform = `translateX(0)`;
+        leftTrazul.style.opacity = `1`;
+        rightTrazul.style.opacity = `1`;
+        titleSection.style.transform = `scale(1)`;
+        titleSection.style.opacity = `1`;
+        sectionTrazul.style.position = `initial`;
+        containerSectionTrazul.style.height = `auto` */
 
 }
 
@@ -356,7 +387,7 @@ body{
 #benefitsOfTrazul{
     /* background-color: #FFFFFF; */
     width: 100%;
-    height: calc((100vh - 70px)* 3);
+    height: calc((100vh - 70px)* 2);
 }
 
 .sectionSolution{
@@ -464,16 +495,32 @@ body{
 @media screen and (max-width: 1000px){
     .leftcontentSolution {
         width: 45%;
+        transform: translateX(0px);
+        opacity: 1;
     }
 
     .rightContentSolution {
         width: 55%;
+        transform: translateX(0px);
+        opacity: 1;
     }
     .sectionSolution{
         height: auto;
         width: 90%;
         margin-left: 5%;
     }
+
+    .titleSolution{
+        opacity: 1;
+    }
+
+    /* leftContentSolution.style.transform = `translateX(0)`;
+    rightContentSolution.style.transform = `translateX(0)`;
+    leftContentSolution.style.opacity = "1";
+    rightContentSolution.style.opacity = "1";
+    titleSolution.style.opacity = "1";
+    sectionSolution.style.position = "initial";
+    benefitsOfTrazul.style.height = "auto"; */
 }
 
 @media screen and (max-width: 1000px){
@@ -527,7 +574,7 @@ body{
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    column-gap: 20px;
+    column-gap: 2%;
     row-gap: 20px;
 }
 
@@ -541,12 +588,16 @@ body{
     padding: 20px;
     border-radius: 10px;
     width: 320px;
-    max-width: 32%;
+    max-width: 23%;
     transition: transform .9s ease;
 
     img{
         width: 50px;
         height: 50px;
+    }
+
+    span{
+        font-size: 14px;
     }
 }
 
@@ -582,8 +633,8 @@ ul{
 }
 
 .buttonContact{
-    background-color: #FFFFFF;
-    color: #3194d2;
+    background-color: #3FDFB6;
+    color: #FFF;
     padding: 10px 20px;
     border-radius: 20px;
     text-align: center;
@@ -595,11 +646,12 @@ ul{
 
 .aditionalsCard{
     background-color: #FFFFFF;
-    margin-top: 40px !important;
-    margin-bottom: 40px !important;
-    width: 88%;
-    margin: auto;
+    width: 23%;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px;
 }
 
 .titleCardAditional{
@@ -612,19 +664,19 @@ ul{
 
 .optonsAditionals{
     display: flex;
-    justify-content: space-evenly   ;
+    justify-content: space-evenly;
     padding: 20px;
     row-gap: 25px;
-    flex-wrap: wrap;
-    column-gap: 20px;
+    column-gap: 20px;   
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
 }
 
 .aditionalOptions{
     display: flex;
     flex-direction: column;
     row-gap: 10px;
-    background-color: #FFFFFF;
-    min-width: 294px;
     justify-content: center;
 }
 
@@ -648,7 +700,11 @@ ul{
 }
 
 .basicPlan{
-    background: linear-gradient(to bottom, #F8F8F8, #FFFFFF);
+    background: linear-gradient(to bottom, #e4e2e2, #FFF);
+}
+
+.freePlan{
+    background: linear-gradient(to bottom, #edeaea, #FFFFFF);
 }
 
 .descriptionPlan li b{
@@ -659,23 +715,30 @@ ul{
 .cotizarPlan{
     display: flex;
     flex-direction: column;
-    row-gap: 40px;
-    margin-bottom: 40px;
+    width: 74%;
+    background-color: #FFF;
+    row-gap: 25px;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.titleCalculator{
+    color: #3194d2;
+    width: 100%;
 }
 
 .containerSectionCalculator{
     width: 100%;
     display: flex;
-    justify-content: center;
-    column-gap: 5%;
+    justify-content: space-between;
+    column-gap: 20px;
 }
 
 .calculatorcontainer{
     border: 1px solid #3194d2;
     border-radius: 10px;
     /* padding: 15px 0 0; */
-    min-width: 380px;
-    max-width: 35%;
+    width: 48%;
     display: flex;
     display: flex;
     flex-direction: column;
@@ -688,13 +751,31 @@ ul{
     border: 1px solid #3194d2;
     border-radius: 10px;
     background-color: #FFFFFF;
-    width: 35%;
-    min-width: 380px;
+    width: 48%;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     row-gap: 10px;
+    position: relative;
+}
+
+#overlay{
+    position: absolute;
+    left: 0px;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: opacity 1 ease;
 }
 
 .labelOptions{
@@ -764,7 +845,7 @@ ul{
         font-size: 16px;
     }
 
-}
+}   
 
 .goldAllPlan{
     /* background: linear-gradient(to bottom, #fef4bb, #FFFFFF); */
@@ -787,6 +868,11 @@ ul{
     font-size:18px;
 }
 
+.textCalculator{
+    text-align: center;
+    margin-top: 10px;
+}
+
 .subtitlePerfectPlan{
     color: #000000;
     font-weight: bold;
@@ -799,6 +885,13 @@ ul{
 
 .bPerfectPlan{
     color: #000;
+}
+
+.containerAdicional{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: 0 auto;
 }
 
 @media screen and (max-width: 1000px){
@@ -827,22 +920,52 @@ ul{
         width: 45%;
         max-width: 45%;
     }
+
+    .containerAdicional{
+        flex-direction: column;
+        row-gap: 40px;
+    }
+
+    .aditionalsCard{
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .aditionalOptions{
+        width: max-content;
+    }
+    
+    .cotizarPlan{
+        width: 100%;
+    }
 }
 
 @media screen and (max-width: 700px){
     .containerSectionCalculator{
         flex-direction: column;
         align-items: center;
-        row-gap: 40px;
+        row-gap: 25px;
     }
     .calculatorcontainer{
-        width: 90%;
-        max-width: 90%;
+        width: 100%;
+        max-width: 100%;
     }
     .responseCalculator{
-        width: 90%;
-        max-width: 90%;
+        width: 100%;
+        max-width: 100%;
     }
+
+    .aditionalOptions{
+        min-width: 100%;
+    }
+
+    .aditionalsCard{
+        flex-direction: column;
+        flex-direction: column;
+        row-gap: 25px;
+        padding: 17px;
+    }
+
 }
 
 
@@ -851,94 +974,6 @@ ul{
         max-width: 100%;
     }
 }
-
-/* ------------------------------------ */
-/* ------------------------------------ */
-/* Sección de contacto */
-/* 
-.contactSection{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 40px !important;
-
-}
-
-.infoSection{
-    width: 50%;
-    padding: 5px 5% 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.imgFormSection{
-    width: 90%;
-    height: 90%;
-    border-radius: 15px;
-}
-
-.containerFormSection{
-    width: 50%;
-    padding: 5px 5% 20px;
-}
-
-.titleContact{
-    padding-top: 30px;
-    color: #3194d2;
-    margin: 0 auto;
-}
-
-.containerFormSection{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 20px;
-    margin: auto;
-}
-
-.containerFormSection input, 
-.containerFormSection textarea,
-.containerFormSection select{
-    width: 90%;
-    background-color: #FFFFFF;
-    height: 42px;
-    padding: 0 5%;
-    outline: none;
-    font-size: 18px;
-    width: 100%;
-    border: 1px solid #ddd ;
-    border-radius: 10px;
-}
-
-.containerFormSection textarea{
-    padding-top: 10px;
-}
-
-.buttomSubmit{
-    width: max-content !important;
-    background-color: #3194d2 !important;
-    border: 0 !important;
-    color: #FFFFFF;
-    padding:10px 20px !important;
-}
-
-@media screen and (max-width: 800px){
-    .contactSection{
-        flex-direction: column;
-    }
-
-    .infoSection{
-        width: 100%;
-    }
-
-    .containerFormSection{
-        width: 100%;
-    }
-
-    .imgFormSection{
-        width: 100%;
-    }
-} */
 
 
 /* containerSlider */
@@ -952,12 +987,17 @@ ul{
     margin: auto;
 }
 
+.bSubtitleEslider{
+    color: #FFFFFF;
+    font-family: "nunito-bold";
+}
+
 .carrouselApp{
     width: 100%;
-    padding: 40px 0;
+    padding: 70px 0;
     display: flex;
     flex-direction: column;
-    row-gap: 20px;
+    row-gap: 35px;
 }
 
 .containerSlider{
@@ -990,8 +1030,8 @@ ul{
     border-radius: 10px;
 }
 .arrowsSlider{
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     cursor: pointer;
 }
 

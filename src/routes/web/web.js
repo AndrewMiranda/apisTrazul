@@ -4,7 +4,7 @@ const path = require('path');
 
 
 router.get("/", (req, res) => {
-    res.render("web/home");
+    res.render("web/home1");
 });
 
 router.get("/home1", (req, res) => {

@@ -57,13 +57,17 @@
 
 <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
+    // document.addEventListener('DOMContentLoaded', function() {
 
-        setTimeout(function() {
-            loader();
-        }, 1000);
+    //     setTimeout(function() {
+    //         loader();
+    //     }, 1000);
         
-    })
+    // })
+
+    window.onload = function() {
+        loader();
+    }
 
     let contenedor = document.getElementById('containerLoad');
 
