@@ -17,6 +17,12 @@ body{
     overflow-x: hidden;
 }
 
+.divVideo{
+    width: 100%;
+    height: calc((var(--vh, 1vh) * 100) - 70px);
+    overflow: hidden;
+}
+
 .downloadButtonOtherSection{
     margin:40px  auto;
     width: max-content;
@@ -48,9 +54,12 @@ body{
 .divVideo{
     width: 100%;
     /* height: calc(100vh - 70px); */
+    /* height: calc(100vh - 70px); */
+    /* height: calc(100vh - 70px); */
     height: calc((var(--vh, 1vh) * 100) - 70px);
     /* position: relative; */
     overflow: hidden;
+    position: relative;
 }
 
 .sourceVideoPc{
@@ -98,6 +107,7 @@ body{
     top: 70px;
     overflow: hidden;
     width: 100%;
+    margin-bottom: 40px;
 }
 
 
@@ -397,6 +407,9 @@ body{
     top: 70px;
     overflow: hidden;
     height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
 }
 
@@ -404,7 +417,9 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 0;
+    width: 90%;
+    margin: 0 auto;
+    max-height: 60vh;
 }
 
 .leftcontentSolution{
@@ -413,8 +428,13 @@ body{
     transform: translateX(-100%);
     will-change: transform, opacity;
     opacity: 0;
+    height: 60vh;
+    max-width: 600px;
+    height: 100%;
     img{
         width: 100%;
+        height: 100%;   
+        object-fit: contain;
     }
 }
 
@@ -426,8 +446,9 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    row-gap: 15px;
+    /* row-gap: 15px; */
     opacity: 0;
+    height: 100%;
 }
 
 .titleSolution{
@@ -445,8 +466,7 @@ body{
     -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
     -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16); 
-
-
+    height: 20%;
     .right{
         text-align: right;
     }
@@ -463,15 +483,16 @@ body{
     .contentImg{
         border-radius: 50%;
         border: 2px solid #3194d2;
-        width: 80px;
-        height: 80px;
         display: flex;
         justify-content: center;
         align-items: center;
         overflow: hidden;
+        max-height: 90%; /* Máximo 90% del alto del padre */
+        height: 80px; /* Altura inicial */
+        aspect-ratio: 1 / 1;
 
         img{
-            padding: 15%;
+            padding: 10px;
             width: 100%;
             height: 100%;
             object-fit:scale-down;
@@ -479,16 +500,25 @@ body{
     }
 
     p{
-        width: calc(100% - 120px);
+        width: calc(100% - 80px);
         word-break: break-word;
     }
 }
 
 @media screen and (min-height: 700px){
     .sectionSolution{
+        /* display: flex;
+        flex-direction: column;
+        justify-content: space-around; */
+    }
+}
+
+
+@media screen and (max-height: 700px){
+    .sectionSolution{
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-between;
     }
 }
 
@@ -514,6 +544,7 @@ body{
         opacity: 1;
     }
 
+
     /* leftContentSolution.style.transform = `translateX(0)`;
     rightContentSolution.style.transform = `translateX(0)`;
     leftContentSolution.style.opacity = "1";
@@ -527,6 +558,7 @@ body{
     .containerSolution{
         flex-direction: column;
         row-gap: 15px;
+        max-height: 100%;
     }
     .leftcontentSolution {
         width: 100%;
@@ -534,6 +566,7 @@ body{
 
     .rightContentSolution {
         width: 100%;
+        row-gap: 20px;
     }
     .containerSolution{
         padding: 10px 0 0;
@@ -678,7 +711,29 @@ ul{
     flex-direction: column;
     row-gap: 10px;
     justify-content: center;
+    border-radius: 15px;
+    padding: 10px;
 }
+
+
+.aditionalUnits{
+    /* background: linear-gradient(to bottom, #c8e6c9, #ffffff); */
+    background: linear-gradient(to bottom, #D2F4D2, #fff);
+    border: 1px solid #D2F4D2;
+}
+
+.aditionalPonds{
+    /* background: linear-gradient(to bottom, #b3e5fc, #ffffff); */
+    background: linear-gradient(to bottom, #CAEDF9, #fff);
+    border: 1px solid #CAEDF9;
+}
+
+.aditionalUsers{
+    /* background: linear-gradient(to bottom, #d1c4e9, #ffffff); */
+    border: 1px solid #ECD9EC;
+    background: linear-gradient(to bottom, #ECD9EC, #fff);
+}
+
 
 .titleAditional{
     text-align: center;
@@ -784,22 +839,20 @@ ul{
     row-gap: 16px;
 }
 
-.infoCalculator{
-    padding: 29px 20px;
-}
 
 .calculate{
     width: max-content;
-    margin: auto;
+    margin: 0 auto;
     background: #A2A2A2;
     color: #FFF;
     padding: 10px;
-    
-    border-radius: 10px;
+
+    border-radius: 20px;
 }
 
 .titleInputsCalculator{
     color: #707070;
+    font-weight: bold;
 }
 
 .inputCalculator{
@@ -825,8 +878,10 @@ ul{
 .infoCalculator{
     display: flex;
     flex-direction: column;
-    row-gap: 15px;
+    justify-content: space-between;
+    row-gap: 20px;
     height: 100%;
+    padding: 20px;
 }
 
 .cardPerfectPlan{
@@ -895,6 +950,11 @@ ul{
 }
 
 @media screen and (max-width: 1000px){
+
+    .containerCards{
+        justify-content: space-between;
+    }
+
     .titleCard{
         color: #000000;
         font-size: 18px;
@@ -977,14 +1037,36 @@ ul{
 
 
 /* containerSlider */
+#containerSubtitles{
+    display: flex;
+    align-items: center;
+    width: 90%;
+    overflow: hidden;
+    scrollbar-width: none;
+    transition: transform 0.5s ease-in-out;
+    margin: 0 auto;
+}
 
-#subtitleSlider{
+.backgroundText{
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.subtitleSlider{
     text-align: center;
     color: #FFFFFF;
     font-size: 18px;
     font-weight: bold;
-    width: 90%;
+    width: 95%;
     margin: auto;
+    background-color: rgba(255, 255, 255, 0.15);
+    padding: 8px 15px;
+    border-radius: 10px;
+    /* min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5px; */
 }
 
 .bSubtitleEslider{
@@ -994,7 +1076,7 @@ ul{
 
 .carrouselApp{
     width: 100%;
-    padding: 70px 0;
+    padding: 110px 0;
     display: flex;
     flex-direction: column;
     row-gap: 35px;
@@ -1003,7 +1085,7 @@ ul{
 .containerSlider{
     display: flex;
     width: 90%;
-    overflow: auto;
+    overflow: hidden;
     scrollbar-width: none;
     transition: transform 0.5s ease-in-out;
 }
@@ -1029,6 +1111,14 @@ ul{
     padding: 10px;
     border-radius: 10px;
 }
+
+.containerImg{
+    height: 100px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
 .arrowsSlider{
     width: 42px;
     height: 42px;
@@ -1052,7 +1142,7 @@ ul{
     transition: margin 1s ease;
 }
 
-#divTransition{
+#divTransition, #subtitleTransition{
     transition: margin 1s ease;
 }
 
@@ -1077,7 +1167,7 @@ ul{
     padding-bottom: 40px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     width: 90%;
     max-width: 1200px;
     height: 100%;

@@ -174,15 +174,15 @@
                         <p class="textCalculator">Ajusta tu plan según tus necesidades.</p>
                     </div>
                     <!-- <div class="optonsAditionals"> -->
-                        <div class="aditionalOptions">
+                        <div class="aditionalOptions aditionalUnits">
                             <div class="titleAditional">Unidades productiva adicional</div>
                             <div class="descriptionAditional">$50.000 mensual</div>
                         </div>
-                        <div class="aditionalOptions">
+                        <div class="aditionalOptions aditionalPonds">
                             <div class="titleAditional">Estanques adicionales</div>
                             <div class="descriptionAditional">$50.000 mensual</div>
                         </div>
-                        <div class="aditionalOptions">
+                        <div class="aditionalOptions aditionalUsers">
                             <div class="titleAditional">Usuarios adicionales</div>
                             <div class="descriptionAditional">$15.000 mensual</div>
                         </div>
@@ -196,7 +196,7 @@
                     <div class="containerSectionCalculator">
                         <div class="calculatorcontainer generalShadow">
                             <div class="infoCalculator ">
-                                <label class="labelOptions" for="numberProductiveUnit">
+                                <label class="labelOptions " for="numberProductiveUnit">
                                     <span class="titleInputsCalculator">¿Cuantas unidades productivas tienes?</span>
                                     <input class="inputCalculator generalShadow" placeholder="Numero de unidades productivas" type="number" name="numberProductiveUnit" valid-input="false" id="numberProductiveUnit" onkeyup="validadeInputs('numberProductiveUnit')">
                                 </label>
@@ -210,7 +210,7 @@
                                 </label>
                                 <buttom valid-form="false" id="calculateform" class="calculate generalShadow "  >Calcular precio</buttom>
                             </div>
-                            <div class="price" id="priceFormCalculator"></div>
+                            <!-- <div class="price" id="priceFormCalculator"></div> -->
                         </div>
                         <div class="responseCalculator">
                             <p class="titlePerfectPlan">El plan perfecto para ti es:</p>
@@ -245,10 +245,23 @@
             <div class="carrouselApp">
                 <h3 class="titleSection">Conoce nuestra aplicación</h3>
 
-                <div id="subtitleSlider">Puedes ver los lotes que has creado, registrar la <b class="bSubtitleEslider">mortalidad</b> de tus lotes, <b class="bSubtitleEslider">insumos</b>, <b class="bSubtitleEslider">biomasa</b>, <b class="bSubtitleEslider">alimento</b>, <b class="bSubtitleEslider">medicamentos</b>, entre otros.</div>
+                <div id="containerSubtitles">
+                    <div id="subtitleTransition" class="backgroundText">
+                        <div class="subtitleSlider" >Puedes ver los lotes que has creado, registrar la <b class="bSubtitleEslider">mortalidad</b> de tus lotes, <b class="bSubtitleEslider">insumos</b>, <b class="bSubtitleEslider">biomasa</b>, <b class="bSubtitleEslider">alimento</b>, <b class="bSubtitleEslider">medicamentos</b>, entre otros.</div>
+                    </div>
+                    <div class="backgroundText">
+                        <div class="subtitleSlider">Puedes vincular a tus <b class='bSubtitleEslider'> trabajadores </b> en la unidad productiva para que registren sus actividades diarias, además de llevar un registro diario de los <b class='bSubtitleEslider'> ingresos y egresos </b>.</div>
+                    </div>
+                    
+                    <div class="backgroundText">
+                        <div class="subtitleSlider">Puedes registrar tus <b class='bSubtitleEslider'> insumos  </b> y <b class='bSubtitleEslider'> vincularlos </b> a los lotes correspondientes diariamente conforme los utilices.</div>
+                    </div>
+                </div>
                 <!-- <div class="subtitleSlider">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam, totam.</div> -->
                 <div class="slider">
-                    <img class="arrowsSlider" src="/images/leftArrow.svg" alt="" onclick="leftSlider()">
+                    <div class="containerImg" onclick="leftSlider()">
+                        <img class="arrowsSlider" src="/images/leftArrow.svg" alt="">
+                    </div>
 
                     <div class="containerSlider" id="containerSlider">
                         <div class="sliderOption" id="divTransition">
@@ -272,8 +285,10 @@
                         </div>
                         
                     </div>
-
-                    <img class="arrowsSlider" src="/images/chevron_right.svg" alt="" onclick="rightSlider()">
+                    <div class="containerImg" onclick="rightSlider()">
+                        <img class="arrowsSlider" src="/images/chevron_right.svg" alt="">
+                    </div>
+                    
                 </div>
             </div>
 

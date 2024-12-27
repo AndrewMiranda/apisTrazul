@@ -34,9 +34,9 @@ function updateVideoSource() {
     video.load();
 }
 
-updateVideoSource();
+// updateVideoSource();
 // Llama a la función cuando se cambia el tamaño de la pantalla
-window.onresize = updateVideoSource;
+// window.onresize = updateVideoSource;
 
 // Animaciones
 document.addEventListener("DOMContentLoaded", () => {
@@ -110,8 +110,8 @@ function firstAnimationFunction(){
         }else if ( scrollPercentage <= 100) {
             leftTrazul.style.transform = `translateX(${transformValueLeft}%)`;
             rightTrazul.style.transform = `translateX(${transformValueRight}%)`;
-            const scaleValue = 2 - ((scrollPercentage - 10) / 90);
-            const opacityValue = (scrollPercentage - 10) / 90;
+            const scaleValue = 2 - ((scrollPercentage - 10) / 100);
+            const opacityValue = (scrollPercentage - 10) / 100;
             centerTrazul.style.transform = `scale(${scaleValue})`;
             centerTrazul.style.opacity = `${opacityValue}`;
             titleSection.style.transform = `scale(${scaleValue})`;
@@ -230,11 +230,16 @@ function validadeInputs(nameInput){
         let calculateform = document.getElementById("calculateform");
 
         calculateform.setAttribute("onclick", "calculatePrecio()");
-        calculateform.style.backgroundColor = "#3194d2";
+        calculateform.style.backgroundColor = "#FFFFFF";
+        calculateform.style.color = "#3194D2";
+        calculateform.style.border = "1px solid #3194d2";
+        calculateform.style.fontWeight = "bold";
         calculateform.style.cursor = "pointer";
     }else{
         calculateform.setAttribute("onclick", "");
         calculateform.style.backgroundColor = "#A2A2A2";
+        calculateform.style.color = "#FFFFFF";
+        calculateform.style.border = "none";
         calculateform.style.cursor = "auto";
     }
 }
@@ -253,7 +258,6 @@ function calculatePrecio(){
     let priceUsuarios = document.getElementById("priceUsuarios");
     let priceUnidad = document.getElementById("priceUnidad");
     let totalPlan = document.getElementById("totalPlan");
-    let priceFormCalculator = document.getElementById("priceFormCalculator");
     let cardPerfectPlan = document.getElementsByClassName("cardPerfectPlan")[0]; //
 
     let overlay = document.getElementById("overlay");
@@ -314,7 +318,6 @@ function calculatePrecio(){
     priceUnidad.innerHTML = `${formateadorMoneda.format(adicionalesUnidadesPrice)}`;
 
     totalPlan.innerHTML = `${ formateadorMoneda.format(totalPerfectPlan) }`;
-    priceFormCalculator.innerHTML = `Precio: <b>${ formateadorMoneda.format(totalPerfectPlan)} </b> mensuales.`;
 
     if(mejorOpcion.plan === 'Básico'){
         cardPerfectPlan.style.backgroundColor = '#e4e2e2';
@@ -353,13 +356,16 @@ let actualSlider = 1;
 let percentage = 0;
 function leftSlider() {
     let divTransition = document.getElementById('divTransition');
+    let subtitleTransition = document.getElementById('subtitleTransition');
     if(percentage >= 100){
         percentage = percentage - 100;
         divTransition.style.marginLeft = `-${percentage}%`;
+        subtitleTransition.style.marginLeft = `-${percentage}%`;
         actualSlider = actualSlider - 1;
     }else{
         percentage = (numberSliders - 1) * 100;
         divTransition.style.marginLeft = `-${percentage}%`;
+        subtitleTransition.style.marginLeft = `-${percentage}%`;
         actualSlider = numberSliders - 1;
     }
 
@@ -368,19 +374,21 @@ function leftSlider() {
 
 function rightSlider() {
     let divTransition = document.getElementById('divTransition');
-
+    let subtitleTransition = document.getElementById('subtitleTransition');
     if(numberSliders > actualSlider) {
         
         percentage = actualSlider * 100;
         divTransition.style.marginLeft = `-${percentage}%`;
+        subtitleTransition.style.marginLeft = `-${percentage}%`;
         actualSlider = actualSlider + 1;
     }else{
         
         actualSlider = 1;
         percentage = 0;
         divTransition.style.marginLeft = `0%`;
+        subtitleTransition.style.marginLeft = `0%`;
     }
-    changueTitle();
+    // changueTitle();
 }
 
 
@@ -388,10 +396,13 @@ function changueTitle() {
     let subtitleSlider = document.getElementById('subtitleSlider');
     if(actualSlider == 1){
         subtitleSlider.innerHTML = "Puedes ver los lotes que has creado, registrar la <b class='bSubtitleEslider'>mortalidad</b> de tus lotes, <b class='bSubtitleEslider'>insumos</b>, <b class='bSubtitleEslider'>biomasa</b>, <b class='bSubtitleEslider'>alimento</b>, <b class='bSubtitleEslider'>medicamentos</b>, entre otros."
+        subtitleSlider.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
     }else if(actualSlider == 2){
         subtitleSlider.innerHTML = "Puedes vincular a tus <b class='bSubtitleEslider'> trabajadores </b> en la unidad productiva para que registren sus actividades diarias, además de llevar un registro diario de los <b class='bSubtitleEslider'> ingresos y egresos </b>."
+        subtitleSlider.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
     }else{
         subtitleSlider.innerHTML = "Puedes registrar tus <b class='bSubtitleEslider'> insumos  </b> y <b class='bSubtitleEslider'> vincularlos </b> a los lotes correspondientes diariamente conforme los utilices."
+        subtitleSlider.style.backgroundColor = "rgba(0, 0, 0, 0.1)";
     }
 }
 
@@ -426,3 +437,33 @@ function sendContactFunction(event){
         console.log(err)
     });
 }
+
+
+
+window.onresize = onresizeFunctions;
+    window.onload = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        window.scrollTo(0, 0);
+        updateVideoSource();
+        loader();
+    }
+window.addEventListener('resize', function(){
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    
+    loader();
+}, true)
+
+function onresizeFunctions(){
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    
+    // loader();
+
+}
+// let contenedor = document.getElementById('containerLoad');
+// function loader(){
+//     contenedor.remove();
+
+// }
