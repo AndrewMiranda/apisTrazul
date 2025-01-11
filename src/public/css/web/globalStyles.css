@@ -122,6 +122,11 @@ hr.custom-hr {
     margin: auto;
 }
 
+.maxWidthPage {
+    width: 90%;
+    margin: auto;
+}
+
 @media screen and (max-width: 680px){
     .titleBlue, .titleWhite{
         font-size: 25px;

@@ -19,7 +19,7 @@ body{
 
 .divVideo{
     width: 100%;
-    height: calc((var(--vh, 1vh) * 100) - 70px);
+    height: calc((var(--vh, 1vh) * 100) - 104px);
     overflow: hidden;
 }
 
@@ -93,8 +93,7 @@ body{
 /* Seccion de trazul */
 
 #containerSectionTrazul{
-    height: calc((100vh - 70px)* 2);
-
+    height: calc((100vh - 104px)* 2);
 }
 
 .sectionTrazul{
@@ -104,7 +103,7 @@ body{
     flex-direction: column;
     row-gap: 40px;
     position: sticky;
-    top: 70px;
+    top: 104px;
     overflow: hidden;
     width: 100%;
     margin-bottom: 40px;

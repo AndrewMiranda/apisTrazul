@@ -1,74 +1,216 @@
-<style>
-    
-.generalShadowHeader {
-    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-}
-
-header{
-    background-color: #FFFFFF;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 100000;
-    height: 70px;
-    padding: 5px 5%;
-    display: flex;
-    align-items: center ;
-}
-
-.containerOptionsHeader{
-    width: 100%;
-    max-width: 1200px;
-    column-gap: 15px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background .1s,border .1s,border-radius .1s,box-shadow .1s,min-height .1s ease-in-out; 
-}
-
-.logoRedAzul{
-    height: 100%;
-    max-width: 200px;
-    object-fit: contain;
-}
-
-.optionsHeader{
-    width: 100%;
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.buttomUneteHeader{
-    background-color: #2fb8c0;
-    padding: 8px 10px;
-    color: #FFFFFF;
-    font-size: "Nunito-bold";
-    border-radius: 8px;
-    text-align: center;
-}
-
-.heightHeader{
-    height: 70px;
-}
-
-@media screen and (max-width: 400px){
-    .logoRedAzul{
-        max-width: 150px;
+<style>    
+    header{
+        width: 100%;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        /* background-color: #FFFFFF; */
     }
-}
+    .backgroundTopHeader{
+        background-color: #29ABE2;
+        width: 100%;
+    }
+    .topHeader{
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .contactSectionHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 20px;
+    }
+
+    .contact{
+        display: flex;
+        column-gap: 15px;
+        align-items: center;
+
+        img{
+            width: 16px;
+            height: 16px;
+        }
+
+        .text{
+            color: #FFFFFF;
+        }
+    }
+
+    .socialMedia{
+        display: flex;
+        align-items: center;
+        column-gap: 30px;
+
+        img{
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .bottomHeader{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;    
+        width: 100%;
+        padding: 10px calc(5% - 13px);
+        margin: 0 auto;
+        transition: background-color .5s ease;
+    }
+
+    .imgLogo{
+        height: 40px;
+
+        img{
+            height: 100%;
+        }
+    }
+
+    .optionsHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+        min-width: 45%;
+        justify-content: space-between;
+        a{
+            font-weight: bold;
+            font-size: 14px;
+            color: #29ABE2;
+        }
+    }
+
+    .marginHeader{
+        height: 104px;
+    }
+
+    .menuHeader{
+        display: none;
+    }
+
+    @media screen and (max-width: 700px){
+        .bottomHeader{
+            background-color: #FFFFFF !important;
+            padding: 10px 5%;
+        }
+        .optionsHeader{
+            margin-right: -100vw;
+            border-top: 1px solid #A2A2;
+            position: absolute;
+            top: 104px;
+            width: 100%;
+            background-color: #FFF;
+            right: 0;
+            flex-direction: column;
+            row-gap: 20px;
+            padding: 30px 20px;
+            -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            
+            transition: margin-right 1s ease;
+            a{
+                color: #29ABE2;
+            }
+        }
+        .menuHeader{
+            display: flex;
+        }
+    }
+
+    @media screen and (max-width: 600px){
+        .contact{
+
+            .text{
+            display: none;
+            }
+        }
+    }
 
 </style>
 
-<!-- Estilo en el archivo header.css -->
-<header class="generalShadowHeader">
-    <div class="containerOptionsHeader" id="containerHeader">
-        <a href="/"><img class="logoRedAzul" src="/images/logo-RedAzul-Horizontal.png" alt=""></a>
-        <!-- <a href="/login" class="buttomUneteHeader">Iniciar sesión</a> -->
-        <a href="https://redazul.co/login" class="buttomUneteHeader">Iniciar sesión</a>
+<header>
+    <div class="backgroundTopHeader">
+        <div class="topHeader maxWidthPage">
+            <div class="contactSectionHeader">
+                <a href="mailto:" class="contact">
+                    <img src="/images/mail.svg" alt="">
+                    <p class="text">contacto@redazul.co</p>
+                </a>
+                <div class="contact">
+                    <img src="/images/phone.svg" alt="">
+                    <p class="text">+57 3115858284</p>
+                </div>
+            </div>
+            <div class="socialMedia">
+                <a href="https://www.linkedin.com/company/redazul/"  target="_blank"><img src="/images/icons8-linkedin.svg" alt=""></a>
+                <a href="https://www.facebook.com/share/tWzA2T53Y692YwCB/" target="_blank" ><img src="/images/facebook.svg" alt=""></a>
+                <a href="https://www.instagram.com/redazul.co/profilecard/?igsh=MWZtb3F5emo2YjQwbQ==" target="_blank"><img src="/images/instagram.svg" alt=""></a>
+            </div>
+        </div>
+    </div>
+    <div class="bottomHeader maxWidthPage">
+        <a href="/" class="imgLogo">
+            <img src="/images/logo-RedAzul-Horizontal-Bg-Black.svg" alt="">
+        </a>
+        <div class="optionsHeader">
+            <a class="optionHeader" href="/">INICIO</a>
+            <a class="optionHeader" href="">SERVICIOS</a>
+            <a class="optionHeader" href="/contactanos">CONTACTO</a>
+            <a class="optionHeader" href="">DESCARGA</a>
+            <!-- <a class="optionHeader" href="">BLOG</a> -->
+            <!-- <a class="optionHeader" href="">REGISTRO</a> -->
+            <!-- <a class="optionHeader" href="">ACCEDER</a> -->
+        </div>
+        <div class="menuHeader" open-menu="false" onclick="openMenu()">
+            <img class="imgMenu" src="/images/menuBlue.svg" alt="">
+        </div>
     </div>
 </header>
-<div class="heightHeader"></div>
+<div class="marginHeader"></div>
+
+<script>
+    function openMenu(){
+        let menuHeader = document.getElementsByClassName("menuHeader")[0];
+        let optionsHeader = document.getElementsByClassName("optionsHeader")[0];
+        let openMenu = menuHeader.getAttribute('open-menu');
+        let imgMenu = document.getElementsByClassName("imgMenu")[0];
+        if(openMenu == "false"){
+            optionsHeader.style.marginRight = "0";
+            imgMenu.src = "/images/menuOpenBlue.svg";
+            menuHeader.setAttribute('open-menu','true');
+        }else{
+            imgMenu.src = "/images/menuBlue.svg";
+            optionsHeader.style.marginRight = "-100vw";
+            menuHeader.setAttribute('open-menu','false');
+        }
+    }
+
+    function changeHeader(){
+        const windowWidth = window.innerWidth;
+
+        if(windowWidth > 700){
+            let scrollPosition = window.scrollY;
+            let bottomHeader = document.getElementsByClassName("bottomHeader")[0];
+            let optionHeader = document.querySelectorAll(".optionHeader");
+            if(scrollPosition > 5){
+                bottomHeader.style.backgroundColor = "#FFFFFF";
+                bottomHeader.classList.add("generalShadow");
+
+                optionHeader.forEach(option => {
+                    option.style.color = "#29ABE2";
+                });
+            }else{
+                bottomHeader.style.backgroundColor = "transparent";
+                bottomHeader.classList.remove("generalShadow");
+                optionHeader.forEach(option => {
+                    option.style.color = "#FFFFFF";
+                });
+            }
+        }
+    }
+
+    window.addEventListener("scroll", changeHeader);
+</script>

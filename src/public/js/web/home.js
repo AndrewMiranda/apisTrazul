@@ -27,9 +27,9 @@ function updateVideoSource() {
     const source = document.getElementById('videoSource');
     
     if (window.innerWidth <= 600) {
-        source.setAttribute('src', '/images/heroeRedAzul-movil1.mp4');
+        source.setAttribute('src', '/images/heroeRedAzul2.mp4');
     } else {
-        source.setAttribute('src', '/images/heroeRedAzul.mp4');
+        source.setAttribute('src', '/images/heroeRedAzul2.mp4');
     }
     video.load();
 }
@@ -52,14 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(heightfirst);
             // console.log(rectfirstAnimation.top);
             // console.log(rectfirstAnimation.bottom);
-            if (rectfirstAnimation.top <= window.innerHeight * 0.9  || rectfirstAnimation.top === 70) {
+            if (rectfirstAnimation.top <= window.innerHeight * 0.9  || rectfirstAnimation.top === 104) {
                 firstAnimationFunction();
             }
 
             // Segunda animación
             let sectionSolution = document.getElementById("sectionSolution");
             const rectsectionSolution = sectionSolution.getBoundingClientRect();
-            if (rectsectionSolution.top <= window.innerHeight * 0.9 || rectsectionSolution.top === 70) {
+            if (rectsectionSolution.top <= window.innerHeight * 0.9 || rectsectionSolution.top === 104) {
                 sectionSolutionFunction();
             }
         }
@@ -106,7 +106,7 @@ function firstAnimationFunction(){
             centerTrazul.style.transform = `scale(2)`;
             centerTrazul.style.opacity = `0`;
             sectionTrazul.style.position = `sticky`;
-            containerSectionTrazul.style.height = `calc((100vh - 70px)* 2)`;
+            containerSectionTrazul.style.height = `calc((100vh - 104px)* 2)`;
         }else if ( scrollPercentage <= 100) {
             leftTrazul.style.transform = `translateX(${transformValueLeft}%)`;
             rightTrazul.style.transform = `translateX(${transformValueRight}%)`;
@@ -119,7 +119,7 @@ function firstAnimationFunction(){
             leftTrazul.style.opacity = `${opacityValue}`;
             rightTrazul.style.opacity = `${opacityValue}`;
             sectionTrazul.style.position = `sticky`;
-            containerSectionTrazul.style.height = `calc((100vh - 70px)* 2)`;
+            containerSectionTrazul.style.height = `calc((100vh - 104px)* 2)`;
         }
     }else{
         leftTrazul.style.transform = `translateX(0)`;
@@ -444,7 +444,7 @@ window.onresize = onresizeFunctions;
     window.onload = () => {
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
-        window.scrollTo(0, 0);
+        
         updateVideoSource();
         loader();
     }
