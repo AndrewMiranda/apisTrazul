@@ -59,6 +59,7 @@
         padding: 10px calc(5% - 13px);
         margin: 0 auto;
         transition: background-color .5s ease;
+        background-color: #FFFFFF;
     }
 
     .imgLogo{
@@ -75,12 +76,56 @@
         column-gap: 10px;
         min-width: 45%;
         justify-content: space-between;
+        background-color: transparent;
+        border: none;
         a{
             font-weight: bold;
             font-size: 14px;
             color: #29ABE2;
         }
+
+        .optionHeader{
+            background-color: transparent;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            color: #29ABE2;
+            position: relative;
+        }
     }
+
+    .selectHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 5px;
+        cursor: pointer;
+
+        img{
+            width: 20px;
+            height: 20px;
+        }
+
+        .allOptions{
+            position: absolute;
+            top: calc(100% + 12px);
+            background-color: #FFF;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            row-gap: 15px;
+            border-radius: 10px;
+            display: none;
+            z-index: 10000;
+            
+            a{
+                color: #29ABE2;
+                font-size: 16px;
+                text-align: center;
+            }
+
+        }
+    }
+
 
     .marginHeader{
         height: 104px;
@@ -151,14 +196,23 @@
             </div>
         </div>
     </div>
-    <div class="bottomHeader maxWidthPage">
-        <a href="/" class="imgLogo">
+    <div class="bottomHeader maxWidthPage generalShadow">
+        <a href="https://redazul.co/" class="imgLogo">
             <img src="/images/logo-RedAzul-Horizontal-Bg-Black.svg" alt="">
         </a>
         <div class="optionsHeader">
-            <a class="optionHeader" href="/">INICIO</a>
-            <a class="optionHeader" href="">SERVICIOS</a>
-            <a class="optionHeader" href="/contactanos">CONTACTO</a>
+            <a class="optionHeader" href="https://redazul.co/">INICIO</a>
+            <div class="optionHeader selectHeader" onclick="optionServices()">
+                SERVICIOS
+                <img class="icoSelectHeader" src="/images/arrow_down.svg" alt="">
+
+                <div class="allOptions generalShadow" open-select="false">
+                    <a href="/">TRAZUL</a>
+                    <a href="https://mipescao.com/">miPescao</a>
+                </div>
+            </div>
+
+            <a class="optionHeader" href="https://redazul.co/contactanos">CONTACTO</a>
             <a class="optionHeader" href="">DESCARGA</a>
             <!-- <a class="optionHeader" href="">BLOG</a> -->
             <!-- <a class="optionHeader" href="">REGISTRO</a> -->
@@ -188,29 +242,48 @@
         }
     }
 
-    function changeHeader(){
-        const windowWidth = window.innerWidth;
 
-        if(windowWidth > 700){
-            let scrollPosition = window.scrollY;
-            let bottomHeader = document.getElementsByClassName("bottomHeader")[0];
-            let optionHeader = document.querySelectorAll(".optionHeader");
-            if(scrollPosition > 5){
-                bottomHeader.style.backgroundColor = "#FFFFFF";
-                bottomHeader.classList.add("generalShadow");
+    function optionServices(){
+        let selectHeader = document.getElementsByClassName("selectHeader")[0];
+        let open = selectHeader.getAttribute('open-menu');
+        let allOptions = document.getElementsByClassName("allOptions")[0];
+        let icoSelectHeader = document.getElementsByClassName("icoSelectHeader")[0];
 
-                optionHeader.forEach(option => {
-                    option.style.color = "#29ABE2";
-                });
-            }else{
-                bottomHeader.style.backgroundColor = "transparent";
-                bottomHeader.classList.remove("generalShadow");
-                optionHeader.forEach(option => {
-                    option.style.color = "#FFFFFF";
-                });
-            }
+        if(open == "false"){
+            allOptions.style.display = "none";
+            icoSelectHeader.style.transform = "rotate(0)";
+            selectHeader.setAttribute('open-menu','true');
+        }else{
+            allOptions.style.display = "flex";
+            icoSelectHeader.style.transform = "rotate(180deg)";
+            selectHeader.setAttribute('open-menu','false');
         }
+
     }
 
-    window.addEventListener("scroll", changeHeader);
+    // function changeHeader(){
+    //     const windowWidth = window.innerWidth;
+
+    //     if(windowWidth > 700){
+    //         let scrollPosition = window.scrollY;
+    //         let bottomHeader = document.getElementsByClassName("bottomHeader")[0];
+    //         let optionHeader = document.querySelectorAll(".optionHeader");
+    //         if(scrollPosition > 5){
+    //             bottomHeader.style.backgroundColor = "#FFFFFF";
+    //             bottomHeader.classList.add("generalShadow");
+
+    //             optionHeader.forEach(option => {
+    //                 option.style.color = "#29ABE2";
+    //             });
+    //         }else{
+    //             bottomHeader.style.backgroundColor = "transparent";
+    //             bottomHeader.classList.remove("generalShadow");
+    //             optionHeader.forEach(option => {
+    //                 option.style.color = "#29ABE2";
+    //             });
+    //         }
+    //     }
+    // }
+
+    // window.addEventListener("scroll", changeHeader);
 </script>

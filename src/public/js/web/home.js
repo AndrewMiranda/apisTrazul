@@ -52,14 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // console.log(heightfirst);
             // console.log(rectfirstAnimation.top);
             // console.log(rectfirstAnimation.bottom);
-            if (rectfirstAnimation.top <= window.innerHeight * 0.9  || rectfirstAnimation.top === 104) {
+            if (rectfirstAnimation.top <= window.innerHeight * 0.9  || rectfirstAnimation.top === 70) {
                 firstAnimationFunction();
             }
 
             // Segunda animación
             let sectionSolution = document.getElementById("sectionSolution");
             const rectsectionSolution = sectionSolution.getBoundingClientRect();
-            if (rectsectionSolution.top <= window.innerHeight * 0.9 || rectsectionSolution.top === 104) {
+            if (rectsectionSolution.top <= window.innerHeight * 0.9 || rectsectionSolution.top === 70) {
                 sectionSolutionFunction();
             }
         }
@@ -106,12 +106,12 @@ function firstAnimationFunction(){
             centerTrazul.style.transform = `scale(2)`;
             centerTrazul.style.opacity = `0`;
             sectionTrazul.style.position = `sticky`;
-            containerSectionTrazul.style.height = `calc((100vh - 104px)* 2)`;
+            containerSectionTrazul.style.height = `calc((100vh - 70px)* 2)`;
         }else if ( scrollPercentage <= 100) {
             leftTrazul.style.transform = `translateX(${transformValueLeft}%)`;
             rightTrazul.style.transform = `translateX(${transformValueRight}%)`;
-            const scaleValue = 2 - ((scrollPercentage - 10) / 100);
-            const opacityValue = (scrollPercentage - 10) / 100;
+            const scaleValue = 2 - ((scrollPercentage - 10) / 90);
+            const opacityValue = (scrollPercentage - 10) / 90;
             centerTrazul.style.transform = `scale(${scaleValue})`;
             centerTrazul.style.opacity = `${opacityValue}`;
             titleSection.style.transform = `scale(${scaleValue})`;
@@ -119,7 +119,7 @@ function firstAnimationFunction(){
             leftTrazul.style.opacity = `${opacityValue}`;
             rightTrazul.style.opacity = `${opacityValue}`;
             sectionTrazul.style.position = `sticky`;
-            containerSectionTrazul.style.height = `calc((100vh - 104px)* 2)`;
+            containerSectionTrazul.style.height = `calc((100vh - 70px)* 2)`;
         }
     }else{
         leftTrazul.style.transform = `translateX(0)`;
