@@ -21,7 +21,7 @@ router.get("/acuacode", (req, res) => {
     const apisVersion = req.query.v || process.env.ACTUALAPIVERSION || "dev";
 
     // Se obtiene el host
-    const host = process.env.URLAPI || "http://localhost:3001";
+    const host = process.env.URLAPI || "http://localhost:3000";
 
     const urlApi = host+"/apis/"+apisVersion;
 
@@ -30,6 +30,21 @@ router.get("/acuacode", (req, res) => {
 
     res.render("update/acuacode.ejs", { urlApi, code });
 });
+
+router.get("/acuacode/:code", (req, res) => {
+    const { code }  = req.params; // Obtiene el valor dinámico de la URL2
+
+    // Se obtiene la versión actual de las API's
+    const apisVersion = req.query.v || process.env.ACTUALAPIVERSION || "dev";
+
+    // Se obtiene el host
+    const host = process.env.URLAPI || "http://localhost:3000";
+
+    const urlApi = host+"/apis/"+apisVersion;
+
+    res.render("update/acuacodeDescription.ejs", { urlApi, code });
+});
+
 
 // Favicon
 router.get("/favicon.ico", (req, res) => { 
