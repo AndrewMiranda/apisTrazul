@@ -9,8 +9,9 @@
     <title>Acuacode</title>
 </head>
 <body>
+    <%- include('../partials/loader .ejs') %>
     <div id="containerDescription" class=" borderRadius">
-        <h1 class="titleAcuacode">Trazabilidad del lote: TB-2-4-EMI089-2409281207</h1>
+        <h1 class="titleAcuacode"></h1>
         <div id="map">
 
         </div>
@@ -138,4 +139,6 @@
 </body>
 </html>
 
+<script src="https://unpkg.com/leaflet-polylinedecorator"></script>
 <script src="/js/acuacodeDescription.js"></script>
+<script type="module" src="/js/MODULES/trazul.mjs"></script>

@@ -235,7 +235,7 @@ export function createComponent(){
                 <div class="modalContent">
                     <div class="modal">
                         <div class="modalMain">
-                            <img src="/IMAGES/${this.img}" alt="${this.altImg}">
+                            <img src="/images/${this.img}" alt="${this.altImg}">
                             <div class="modalMainText">
                                 <div class="modalMainTextH">${this.primermensaje}</div>
                                 <div class="modalMainTextP">${this.segundomensaje}</div>
