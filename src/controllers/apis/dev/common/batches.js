@@ -104,7 +104,7 @@ async function basicHatchery(token, body) {
     body.biomassValue = body.biomass;
 
     // Se obtienen los registros de biomasa
-    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_samples AS samples bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
+    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_samples AS samples, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
     biomass = JSON.parse(JSON.stringify(biomass));
 
     body.biomass = biomass;
@@ -333,7 +333,7 @@ async function basicFishFarming(token, body) {
     body.biomassValue = body.biomass;
     
     // Se obtienen los registros de biomasa
-    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
+    let biomass = await pool.query('SELECT bb.batches_biomass_minSize AS minSize, bb.batches_biomass_maxSize AS maxSize, bb.batches_biomass_minWeight AS minWeight, bb.batches_biomass_maxWeight AS maxWeight, batches_biomass_value AS value, bb.batches_biomass_samples AS samples, bb.batches_biomass_date AS date FROM `batches_biomass` AS bb LEFT JOIN batches AS b ON b.batches_id = bb.batches_id WHERE b.batches_token = ?', [ token ]);
     biomass = JSON.parse(JSON.stringify(biomass));
     body.biomass = biomass;
     

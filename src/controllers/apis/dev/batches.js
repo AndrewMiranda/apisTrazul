@@ -80,7 +80,7 @@ controller.createBatchAlevinera = [verifyToken(config), body("initialState").not
         // Se verifica que haya vinculado más de un estanque
         if (ponds.length < 1) throw "Es obligatorio asociar un estanque";
 
-        // Se verifica que los estanques sean válidos y que el último no esté en uso
+        // Se verifica que los estanques sean válidos y que el último no esté en uso por la misma especie
         for (let index = 0; index < ponds.length; index++) {
             const element = ponds[index];
             

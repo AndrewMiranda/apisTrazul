@@ -13,7 +13,7 @@ const { validProductiveUnitType, getUserId, userOwnerProductiveUnit, productiveU
 const controller = {};
 
 // Obtene estanques de una unidad productiva
-controller.getPonds = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("used").optional().isBoolean(), query("all").optional().isBoolean(), handleValidationErrors, async(req, res) => {
+controller.getPonds = [verifyToken(config), query("productiveUnitId").notEmpty().isInt(), query("used").optional().isBoolean(), query("all").optional().isBoolean(), query("specie").optional(), handleValidationErrors, async(req, res) => {
     try {   
         // ID de la unidad productiva
         const productiveUnitId = req.query.productiveUnitId;
