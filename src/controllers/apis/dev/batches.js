@@ -989,10 +989,11 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
         // Lotes que no han sido despachados
         let batches = await pool.query('SELECT batches_token AS token, batches_date AS date, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ?'+filter+" ORDER BY batches_date DESC;", [ productiveUnitId, state ]);
         batches = JSON.parse(JSON.stringify(batches));
-        // console.log(batches);
         
         for (const iterator of batches) {
             if (iterator.type == 1 || iterator.type == 4) {
+                iterator.quantityFishIterator = JSON.parse(iterator.body)['quantityFishIterator'];
+                iterator.weightIterator = JSON.parse(iterator.body)['weightIterator'];
 
                 // Se obtienen los datos de los estanques asociados al lote
                 let ponds = await pool.query('SELECT pp.productiveUnits_ponds_id AS id, pp.productiveUnits_ponds_name AS name FROM `batches_ponds` AS p LEFT JOIN batches AS b ON p.batches_id = b.batches_id LEFT JOIN productiveUnits_ponds AS pp ON pp.productiveUnits_ponds_id = p.productiveUnits_ponds_id WHERE b.batches_token = ?;', [ iterator.token ]);
@@ -1020,6 +1021,10 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                 iterator.body = undefined;
                 iterator.prevToken = undefined;
             }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
+                iterator.quantityFishIterator = JSON.parse(iterator.body)['quantityFishIterator'];
+                iterator.weightIterator = JSON.parse(iterator.body)['weightIterator'];
+
+
                 let prevTokenBatch = JSON.parse(iterator.prevToken);
 
                 // Se obtienen los datos de los estanques asociados al lote
@@ -1027,7 +1032,6 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                 ponds = JSON.parse(JSON.stringify(ponds));
 
                 // Se obtienen el estanque en uso
-                console.log(ponds);
                 let namePonds =  ponds.length > 0 ? ponds.at(-1)?.name ?? 'No definido' : 'No definido';
                 iterator.pond = namePonds;
 
