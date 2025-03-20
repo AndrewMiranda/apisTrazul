@@ -94,7 +94,7 @@ router.get('/incomes', controller.incomes);
 // Asociar costo a lote
 router.post('/expenses', controller.associateExpenses);
 
-// router.get('/incomes', controller.incomes);
+router.get('/expense', controller.expenses);
 
 // Asociar egreso a lote
 // router.post('/expenses', controller.aquacode);
