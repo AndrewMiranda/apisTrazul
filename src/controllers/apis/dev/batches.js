@@ -2294,6 +2294,48 @@ controller.associateIncomes = [verifyToken(config), body("batch").notEmpty(), bo
     }
 }];
 
+// Asociar gastos a lote
+controller.associateExpenses = [verifyToken(config), body("batch").notEmpty(), body("expense").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let expense = req.body.expense;
+        let batch = req.body.batch
+
+        let expenseInfo = await pool.query('SELECT productiveUnits_id AS productiveUnit FROM `productiveUnits_expenses` WHERE productiveUnits_expenses_id = ?;', [ expense ]);
+        expenseInfo = JSON.parse(JSON.stringify(expenseInfo));
+
+        if(!expenseInfo.length > 0) throw "El costo no existe";
+
+        let batchInfo = await pool.query('SELECT batches_productiveUnit AS productiveUnit, batches_id AS id FROM `batches` WHERE batches_token = ?;', [ batch ]);
+        batchInfo = JSON.parse(JSON.stringify(batchInfo));
+
+        if(!batchInfo.length > 0) throw "El lote no existe";
+
+        if (expenseInfo[0].productiveUnits_id == expenseInfo[0].productiveUnits_id) {
+            await pool.query('UPDATE `productiveUnits_expenses` SET `batches_id`= ? WHERE `productiveUnits_expenses_id` = ?', [ batchInfo[0].id, expense ]);
+
+            res.status(200).json({});
+        }else{
+            throw "El lote no pertenece a la unidad productiva del costo"
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
 // Asociar ingreso a lote
 controller.incomes = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("batch").notEmpty(), handleValidationErrors, async(req, res) => {
     try {
