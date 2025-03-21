@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/acuacodeDescription.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <title>Acuacode</title>
+</head>
+<body>
+    <%- include('../partials/loader .ejs') %>
+    <div id="containerDescription" class=" borderRadius">
+        <h1 class="titleAcuacode"></h1>
+        <div id="map">
+
+        </div>
+        <div class="timeLineOptions">
+            <!-- <div class="iconsTimeLine">
+                <div class="containerIcon">
+                    <img class="imgTimeLine" src="/images/TrAzul-ICOs-Alevinera.png" alt="">
+                    <div class="cardTimeLine">
+                        <div class="infoCard generalShadow">
+                            <h3>Lote de alevinos 3</h3>
+                            <p><b>Especie:</b> Trucha</p>
+                            <p><b>Decripción:</b></p>
+                            <div  class="seeMore" onclick="modalDetailsAlevinos()">Ver mas.</div>
+                        </div>
+                        <img src="/images/poligono.svg" alt="">
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
+            <div class="iconsTimeLine">
+                <div class="containerIcon">
+                    <img class="imgTimeLine" src="/images/TrAzul-ICOs-Alevinera.png" alt="">
+                    <div class="cardTimeLine">
+                        <div class="infoCard generalShadow">
+                            <h3>Lote de alevinos 3</h3>
+                            <p><b>Especie:</b> Trucha</p>
+                            <p><b>Decripción:</b> Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, sint.</p>
+                            <div class="seeMore" onclick="modalDetails()">Ver mas.</div>
+                        </div>
+                        <img src="/images/poligono.svg" alt="">
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div>
+            <div class="iconsTimeLine">
+                <div class="containerIcon">
+                    <img class="imgTimeLine" src="/images/TrAzul-ICOs-Alevinera.png" alt="">
+                    <div class="cardTimeLine">
+                        <div class="infoCard generalShadow">
+                            <h3>Lote de alevinos 3</h3>
+                            <p><b>Especie:</b> Trucha</p>
+                            <p><b>Decripción:</b> Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, sint.</p>
+                            <div class="seeMore" onclick="modalDetails()">Ver mas.</div>
+                        </div>
+                        <img src="/images/poligono.svg" alt="">
+                    </div>
+                </div>
+                <div class="line"></div>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- <div class="modalDetails">
+        <div class="containerModal">
+            <div class="closeModal"><p>X</p></div>
+            <div class="infoModal">
+                <h1 class="titleModal">Lote de alevinos: 3</h1>
+
+                <h3 class="subtitleModal">Información principal</h3>
+                <div class="principalInformation">
+                    <p><b>Especie:</b> Trucha</p>
+                    <p><b>Fecha de siembra:</b> 12/12/2024</p>
+                    <p><b>Cantidad:</b> 4000 alevinos</p>
+                    <p><b>Edad:</b> 10 dias</p>
+                    <p><b>Talla minima:</b> 10 </p>
+                    <p><b>Talla maxima:</b> 10 </p>
+                    <p><b>Precio estimado de venta:</b> 1000000</p>
+                    <p><b>Descripción:</b> Lorem ipsum dolor sit amet.</p>
+                </div>
+                <hr>
+                <h3 class="subtitleModal">Insumos</h3>
+                <p class="textBold"><b>Medicinas</b></p>
+                <div class="insumos">
+                    <ul>
+                        <li><p>Medicina 1</p></li>
+                        <li><p>Medicina 1</p></li>
+                        <li><p>Medicina 1</p></li>
+                    </ul>
+                </div>
+                <p class="textBold"><b>Alimentos</b></p>
+                <div class="insumos">
+                    <ul>
+                        <li><p>Medicina 1</p></li>
+                        <li><p>Medicina 1</p></li>
+                        <li><p>Medicina 1</p></li>
+                    </ul>
+                </div>
+                <hr>
+                <h3 class="subtitleModal">Moratilidad</h3>
+                <p class="textBold"><b>Numero de peces muertos</b></p>
+                <div class="insumos">
+                    <ul>
+                        <li><p>13/12/2024  -  959 peces</p></li>
+                        <li><p>13/12/2024  -  959 peces</p></li>
+                        <li><p>13/12/2024  -  959 peces</p></li>
+                        <li><p>13/12/2024  -  959 peces</p></li>
+                    </ul>
+                </div>
+                <hr>
+                <h3 class="subtitleModal">Biomasa del estanque</h3>
+                <p class="textBold"><b>Peso promedio</b></p>
+                <div class="insumos">
+                    <ul>
+                        <li><p>13/12/2024  -  4.4 kg</p></li>
+                        <li><p>13/12/2024  -  9.59 kg</p></li>
+                        <li><p>13/12/2024  -  9.59 kg</p></li>
+                        <li><p>13/12/2024  -  9.59 kg</p></li>
+                    </ul>
+                </div>
+                <hr>
+                <h3 class="subtitleModal">Estanques</h3>
+                <div class="insumos marginleftShort">
+                    <ul class="marginleftShort">
+                        <li><p>Estanque 1</p></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <script>
+        const urlApi = "<%= urlApi %>";
+        const codeGet = "<%= code %>";
+    </script>
+</body>
+</html>
+
+<script src="https://unpkg.com/leaflet-polylinedecorator"></script>
+<script src="/js/acuacodeDescription.js"></script>
+<script type="module" src="/js/MODULES/trazul.mjs"></script>

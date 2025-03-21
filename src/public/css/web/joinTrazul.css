@@ -1,0 +1,401 @@
+html{
+    scroll-behavior: smooth;
+}
+
+header {
+    padding: 10px 5%;
+    width: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    .red{
+        color: #0071BC;
+    }
+
+    .azul{
+        color: #29ABE2;
+    }
+    
+    h1{
+        text-align: center;
+        font-size: 30px;
+        font-family: "Quicksand-bold";
+    }
+}
+
+
+
+.allInfo{
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh - 70px);
+    padding-top:90px;
+    padding-bottom: 30px;
+}
+
+
+.formSection{
+    width: 30%;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+}
+
+.formSection form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between ;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 5%;
+    row-gap: 15px;
+}
+
+
+.headerForm{
+    width: 100%;
+    display: flex;
+    column-gap: 5%;
+    justify-content: space-between;
+    align-items: center;
+
+    img{
+        width: 25%;
+        display: none;
+    }
+
+    p{
+        width: 100%;
+        text-align: center;
+        /* font-weight: bold; */
+        color: #0185d5;
+        font-family: "Quicksand-bold";
+    }
+}
+
+
+
+.inputFormRegister{
+    background-color: #eeeeee;
+    color: #707070;
+    border: none;
+    padding: 8px 20px;
+    width: 100%;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    outline: none;
+    appearance: textfield;
+    -webkit-appearance: textfield;
+    font-size: 15px;
+    height: 36px;
+    text-align: center;
+
+    input{
+        outline: none;
+        width: 100%;
+        background-color: transparent !important;
+        border: none;
+        font-size: 16px;
+        text-align: center;
+        margin-left: 24px;
+    }
+
+    img{
+        cursor: pointer;
+    }
+}
+
+#textProfile{
+    display: none;
+    background-color: transparent !important;
+    /* background-color: #f8f8f8 !important; */
+    color: #0071BC !important;
+    cursor: not-allowed !important;
+    border: 1px solid #0071BC;
+}
+
+#textProfile::placeholder{
+    color: #0071BC !important;
+}
+
+.textPassword{
+    color: #939393;
+    text-align: center;
+    font-size: 15px;
+}
+
+.buttomRegisterForm{
+    width: max-content;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background-color: #0071BC;
+    font-size: 17px;
+    font-weight: bold;
+    color: #FFFFFF;
+    border: 0;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.textIngresa{
+    color: #707070;
+    font-family: "Quicksand-bold";
+    font-size: 17px;
+    a{
+        color: #0071BC;
+        border-bottom: 1px solid #0071BC;
+        font-family: "Quicksand-bold";
+        margin-left: 8px;
+    }
+}
+
+.errorPasswords{
+    color: #4D4D4D;
+    font-size: 16px;
+}
+
+#errorConfirmPassw{
+    display: none;
+}
+
+#errorPassw{
+    display: none;
+}
+
+.typeProfileDisabled{
+    opacity: 0.54 ;
+}
+
+option[disabled] {
+    opacity: 0.54;
+}
+
+.containerTerms{
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    
+    img{
+        cursor: pointer;
+    }
+}
+
+.labelTerms{
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+
+}
+
+.relativeDiv{
+    position: relative;
+}
+
+.erroModal{
+    position: absolute;
+    top: 40px;
+    right: 0px;
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+
+    img{
+        transform: rotate(180deg);
+        left: 20%;
+        position: relative;
+        width: 19px;
+        /* width: 40px; */
+    }
+
+    .textModal{
+        background-color: #FFED00;
+        position: relative;
+        top: -7px;
+        border-radius: 5px;
+        padding: 10px;
+        font-family: "quicksand-bold";
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 1200px){
+
+    header{
+        h1{
+            font-size: 25px;
+        }
+    }
+
+    .cardsSection{
+        column-gap: 1%;
+    }
+    .card{
+        max-width: 31%;
+        
+        img{
+            max-height: 20vh;
+            min-height: 130px;
+        }
+    }
+
+    .sectionJoin {
+        width: 95% !important;
+    }
+
+    .cardsSection{
+        width: 68%;
+    }
+
+    .headerForm p{
+        font-size: 14px;
+    }
+
+    .textPassword{
+        font-size: 14px;
+    }
+
+    .buttomRegisterForm{
+        padding: 8px 10px;
+    }
+}
+
+@media screen and (max-width: 900px){
+
+
+    .sectionJoin{
+        flex-direction: column;
+        row-gap: 40px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .cardsSection{
+        width: 100%;
+    }
+
+    .titleCardPhone{
+        display: flex;
+        justify-content: center;
+        font-size: 20px;
+        color: #0071BC;
+    }
+
+    .formSection{
+        width: 50%;
+        min-width: 400px;
+        margin: auto;
+    }
+
+    .formSection form{
+        row-gap: 20px;
+    }
+
+    .headerForm p{
+        font-size: 16px;
+    }
+
+    .textPassword{
+        font-size: 16px;
+    }
+
+    .inputFormRegister{
+        height: 40px;
+    }
+
+    #textProfile{
+        display: flex;
+    }
+}
+
+@media screen and (max-width: 480px){
+    .formSection{
+        width: 90%;
+        min-width: 90%;
+    }
+
+    .card{
+        width: 45%;
+        max-width: 45%;
+
+        img{
+            min-height: 80px;
+            max-height: 18vh;
+        }
+
+        p{
+            font-size: 14px;
+        }
+    }
+
+    header{
+        h1{
+            font-size: 23px;
+        }
+    }
+    .sectionJoin{
+        margin-top: 30px;
+        margin-bottom: 40px;
+    }
+}
+
+
+/* Ventana modal */
+
+#containerModal{
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(46, 50, 147, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000000000000;
+}
+
+.contentModal{
+    width: 90%;
+    max-width: 569px;
+    /* max-height: 80vh; */
+    background-color: #fff;
+    position: relative;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.closeModal{
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    padding: 20px;
+    background-color: #0185d5;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 50%;
+    line-height: 10px;
+    cursor: pointer;
+}
+
+.infoModal{
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    h3{
+        color: #0071BC;
+        text-align: center;
+        font-size: 25px;
+    }
+
+    p{
+        line-height: 1.5;
+        font-size: 18px;
+    }
+}

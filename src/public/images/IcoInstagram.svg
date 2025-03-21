@@ -1,0 +1,23 @@
+<svg id="IcoInstagram-09" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #005fae;
+      }
+
+      .cls-1 {
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <g id="Layer_5" data-name="Layer 5">
+    <rect id="Rectángulo_84" data-name="Rectángulo 84" class="cls-1" width="35" height="35"/>
+  </g>
+  <g id="Layer_6" data-name="Layer 6" transform="translate(2.917 2.917)">
+    <g id="Grupo_121" data-name="Grupo 121">
+      <path id="Trazado_211" data-name="Trazado 211" class="cls-2" d="M23.16,2H10.035A8.006,8.006,0,0,0,2,10.006V23.131a8.006,8.006,0,0,0,8.006,8.035H23.131a8.006,8.006,0,0,0,8.035-8.006V10.035A8.006,8.006,0,0,0,23.16,2Zm5.5,20.956a5.7,5.7,0,0,1-5.7,5.7H10.21a5.7,5.7,0,0,1-5.7-5.7V10.21a5.7,5.7,0,0,1,5.7-5.7H22.956a5.7,5.7,0,0,1,5.7,5.7Z" transform="translate(-2 -2)"/>
+      <path id="Trazado_212" data-name="Trazado 212" class="cls-2" d="M14.41,6.91a7.5,7.5,0,1,0,5.315,2.2A7.51,7.51,0,0,0,14.41,6.91Zm0,12.512a5,5,0,1,1,4.987-5,5,5,0,0,1-4.987,5Z" transform="translate(0.246 0.25)"/>
+      <path id="Trazado_213" data-name="Trazado 213" class="cls-2" d="M17.915,5.45a1.735,1.735,0,1,0,1.735,1.735A1.735,1.735,0,0,0,17.915,5.45Z" transform="translate(4.499 -0.419)"/>
+    </g>
+  </g>
+</svg>

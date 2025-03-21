@@ -1,0 +1,80 @@
+<style>
+    #containerLoad{
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100%;
+        top:0;
+        position: fixed;
+        z-index: 100000000;
+        background-color: #fff;
+    }
+
+    .loader {
+        border: 7px solid #f3f3f3; 
+        border-top: 7px solid #005FAE; 
+        border-radius: 50%;
+        height: 130px;
+        width: 130px;
+        padding: 20px;
+        animation: spin 2s linear infinite;
+        z-index: 10000;
+    }
+
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .title {
+        margin-top: -80px;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        font-family: 'Quicksand-regular';
+        color: #707070;
+    }
+
+    .logo{
+        height: 89px;
+        top: -110px;
+        position: relative;
+    }
+
+</style>
+
+<div id="containerLoad">
+    <div class="loader"></div>
+    <img src="/images/logoRedAzul1.jpg" alt="" class="logo">
+    <h1 class="title">Cargando...</h1>
+</div>
+
+
+<script>
+
+    // document.addEventListener('DOMContentLoaded', function() {
+
+    //     setTimeout(function() {
+    //         loader();
+    //     }, 1000);
+        
+    // })
+
+    window.onload = function() {
+        
+        loader();
+    }
+
+    let contenedor = document.getElementById('containerLoad');
+
+    function loader(){
+        contenedor.remove();
+
+    }
+
+</script>

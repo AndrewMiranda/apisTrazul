@@ -3,7 +3,7 @@
 /* Estilos generales */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #e0f2f1; /* Color de fondo similar al agua */
+    background-color:rgba(0, 95, 174, 0.1); /* Color de fondo similar al agua */
     color: #37474f; /* Color de texto principal */
     display: flex;
     justify-content: center;
@@ -23,6 +23,7 @@ body {
 
 .postContainer {
     width: 75%;
+    max-width: 1200px;
     padding: 20px;
     margin-top: 40px;
     margin-bottom: 40px; 
@@ -32,7 +33,7 @@ body {
 }
 
 h1, h2, h3 {
-    color: #009688; /* Color de texto de encabezados */
+    color: #005fae; /* Color de texto de encabezados */
     text-align: center;
 }
 
@@ -60,13 +61,13 @@ input::placeholder {
 }
 
 #formButton{
-    background-color: #009688; /* Color de fondo del botón */
+    background-color: #005fae; /* Color de fondo del botón */
     color: white; /* Color del texto del botón */
-    padding: 12px 20px;
+    padding: 10px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    max-width: 50%;
+    font-size: 15px;
 }
 
 #containerFormButton{

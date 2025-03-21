@@ -1,0 +1,134 @@
+@charset "utf-8";
+
+@font-face {
+    font-family: "Quicksand-bold";
+    src: url("../../fonts/Quicksand/static/Quicksand-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Quicksand-regular";
+    src: url("../../fonts/Quicksand/static/Quicksand-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Quicksand-semiBold";
+    src: url("../../fonts/Quicksand/static/Quicksand-SemiBold.ttf");
+}
+
+@font-face {
+    font-family: "Nunito-regular";
+    src: url("../../fonts/Nunito/Nunito-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Nunito-bold";
+    src: url("../../fonts/Nunito/Nunito-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Nunito-semiBold";
+    src: url("../../fonts/Nunito/Nunito-SemiBold.ttf");
+}
+
+:root {
+    --gray1: #707070;
+    --blue1: #005fae;
+    --blue2: #3194D2;
+    --blue3: #0071BC;
+    --blue4: #29ABE2;
+    --blue5: #0095CD;
+    --orange: #fbb040;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Quicksand-regular', sans-serif;
+    text-decoration: none;
+    color: var(--gray1);
+}
+
+
+.borderRadius {
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+}
+
+.borderRadiusInput {
+    border-radius: 21px;
+    -moz-border-radius: 21px;   
+    -webkit-border-radius: 21px;
+}
+
+.generalShadow {
+    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    background-color: #F8F8F8;
+    background-size: auto 100vh;
+}
+
+.titleBlue{
+    text-align: center;
+    padding-top: 30px;
+    color: var(--blue2);
+    font-size: 34px;
+    font-family: "Quicksand-bold";
+}
+
+.titleWhite{
+    text-align: center;
+    padding-top: 30px;
+    color: var(--white);
+    font-size: 34px;
+    font-family: "Quicksand-bold";
+}
+
+.subtitleSection{
+    color: #0071BC;
+    font-family: "Quicksand-regular";
+    font-size: 25px;
+    text-align: center;
+}
+
+hr.custom-hr {
+    height: 1px; /* Altura de la línea */
+    background-color: #a2a2a2; /* Color de la línea */
+    border: none; /* Sin borde */
+    margin: 20px 0; /* Margen superior e inferior */
+}
+
+.displayNone{
+    display: none;
+}
+
+.invalidInput{
+    font-size: 14px;
+    color: rgb(240, 77, 40);
+    display: none;
+}
+
+.container{
+    max-width: 1200px;
+    width: 90%;
+    margin: auto;
+}
+
+.maxWidthPage {
+    width: 90%;
+    margin: auto;
+}
+
+@media screen and (max-width: 680px){
+    .titleBlue, .titleWhite{
+        font-size: 25px;
+    }
+}

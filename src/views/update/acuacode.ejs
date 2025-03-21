@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acuacode</title>
-    <link rel="stylesheet" href="css/acuacode.css">
+    <link rel="stylesheet" href="/css/acuacode.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
@@ -30,7 +30,7 @@
                 <input type="text" id="batchCodeSection5" name="codigoLote" placeholder="2404061724" required>
             </div>
             <div id="containerFormButton">
-                <input type="button" id="formButton" value="Consultar" onclick="getTraceability()">
+                <input type="button" id="formButton" value="Consultar" onclick="goDecription()">
             </div>
         </form>
         <div id="map" class="data-hidden"></div>
@@ -40,6 +40,6 @@
         const urlApi = "<%= urlApi %>";
         const codeGet = "<%= code %>";
     </script>
-    <script src="js/acuacode.js"></script>
+    <script src="/js/acuacode.js"></script>
 </body>
 </html>

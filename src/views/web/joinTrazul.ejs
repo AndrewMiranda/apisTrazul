@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Los estilos compartidos con los demas archvios en el archivo global.css -->
+    <link rel="stylesheet" href="/css/web/globalStyles.css">
+    <link rel="stylesheet" href="/css/web/joinTrazul.css">
+    
+    <meta name="description" content="Ayudamos a los pescadores y acuicultores a desarrollarse y comercializar su producción en el mercado mayorista con nuestra plataforma tecnológica basada en la confianza, la sostenibilidad y el comercio justo">
+    <meta name="keywords" content="Gestion de granjas acuícolas, acuicultura, piscicultura, colombia, cultivo de peces, vender pescado, venta al por mayor de pescado, compra al por mayor de pescado, aplicación de gestión acuícola, aplicación de trazabilidad acuícola.">
+    <%- include('../partials/metas.ejs') %>
+    <title>Unete - redAzul</title>
+</head> 
+<body>
+    <header class="generalShadow" id="goTop">
+        <h1>Gracias por se parte de <span class="azul" style="font-weight: bold; font-family: 'Quicksand-bold';">TRAZUL</span></h1>
+    </header>
+    <div class="allInfo">
+        
+            <div class="formSection generalShadow" id="formRegister">
+                <form id="formRegisterUser" onsubmit="sendformRegister(event)">
+                    <div class="headerForm">
+                        <img id="imgHeader" src="" alt="">
+                        <p id="textHeader">Completa este formulario para continuar.</p>
+                    </div>
+                    <select class="selectProfile inputFormRegister generalShadow" name="profileType" id="" onchange="selectTypeUser()">
+                        <option selected disabled >Tipo de perfil</option>
+                        <option value="1">Persona natural</option>
+                        <option value="2">Empresa privada</option>
+                        <option value="3">Entidad pública</option>
+                        <option value="4">Organización social</option>
+                    </select>   
+                    <input class="inputFormRegister generalShadow" type="text" name="name" placeholder="Nombre" required>
+                    <input class="inputFormRegister generalShadow" type="text" name="firstSurname" placeholder="Apellido" required>
+
+                    <select class="selectProfile inputFormRegister generalShadow" name="profileType" id="typeDocument" onchange="selectTypeDocument()">
+                        <option selected disabled >Tipo de documento</option>
+                    </select>
+                    <div id="inputDocument" style="display: none;">
+                        
+                    </div>
+                    <input class="inputFormRegister generalShadow" type="number" name="phone" placeholder="Número celular" required>
+                    <input class="inputFormRegister generalShadow" type="email" name="email" placeholder="Correo electrónico" required>
+                    <div class="inputFormRegister relativeDiv generalShadow">
+                        <input class="" type="password" name="password" placeholder="Contraseña" required onkeyup="verifyPasswords()">
+                        <img src="/images/visibility_off-24px.svg" class="imgPassword" viewPassw="0" onclick="viewPassword1('password', 'imgPassword')" alt="Ver contraseña">
+                        
+                        <div class="erroModal" id="errorPassw">
+                            <img src="/images/icoSelect.svg" alt="">    
+                            <p class="errorPasswords textModal generalShadow">Ingresa un contraseña valida.</p>
+                        </div>
+                    </div>
+                    <!-- <p class="errorPasswords" id="errorPassw">Ingresa un contraseña valida</p> -->
+                    <div class="inputFormRegister relativeDiv generalShadow">
+                        <input class="" type="password" name="confirmPassword" placeholder="Confirmar contraseña" required onkeyup="verifyPasswords()">
+                        <img src="/images/visibility_off-24px.svg" class="imgConfirmPassword" viewPassw="0" onclick="viewPassword1('confirmPassword', 'imgConfirmPassword')" alt="Ver contraseña"> 
+                        <div class="erroModal" id="errorConfirmPassw">
+                            <img src="/images/icoSelect.svg" alt="">
+                            <p class="errorPasswords textModal generalShadow">Las contraseñas no coinciden.</p>
+                        </div>
+                    </div>
+                    
+    
+                    <p class="textPassword">Usa 8 o más caracteres con una combinación de letras, números y símbolos.</p>
+
+                    <div class="containerTerms">
+                        <label for="terms" class="labelTerms">
+                            <input type="checkbox" id="terms" name="terms">
+                            <p>Aceptas términos y condiciones</p>
+                        </label>
+                        
+                        <div class="" onclick="viewTerms()">
+                            <img src="/images/terms.svg" alt="">
+                        </div>
+                    </div>
+                    <input type="submit" value="Regístrate" id="buttonSubmitForm" class="buttomRegisterForm generalShadow">
+                    
+                </form>
+            </div>
+    
+        </div>
+    </div>
+    
+    <div id="containerModal"></div>
+</body>
+</html>
+<script src="/js/web/global.js"></script>
+<script src="/js/web/joinRedAzul.js"></script>
+<script type="module" src="/js/modules/trazul.mjs"></script>

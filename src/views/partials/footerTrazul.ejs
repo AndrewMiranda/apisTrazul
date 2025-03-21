@@ -1,0 +1,117 @@
+<style>
+
+    footer {
+        background-color: #FFFFFF;
+        padding: 30px 5%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .containerFooter{
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        flex-direction: column;        
+    }
+
+    .optionsFooter{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .optionsFooter img{
+        height: 100%;
+        width: 145px;
+        object-fit: contain;
+    }
+
+    .optionsF{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        row-gap: 20px;
+    }
+
+    .optionsF a{
+        color: #005fae;
+        font-size: 20px;
+        font-family: "Nunito-bold";
+        border-bottom: 1px solid #005fae;
+    }
+
+    .socialMedia{
+        display: flex;
+        justify-content: center;
+        column-gap: 30px;
+    }
+
+    .socialMedia img{
+        width: 32px;
+        height: 32px;
+    }
+
+    .hrFooter{
+        width: 100%;
+    }
+
+    .bottomFooter{
+        margin-top: 10px;
+        text-align: center;
+        color: #005fae;
+        font-family: "Nunito-bold";
+        font-size: 20px;
+        
+        b{
+            color: #005fae;
+            font-family: "Nunito-bold";
+        }
+    }
+
+    hr{
+        border: none;
+        height: 0.5px; 
+        background-color: #a2a2a2;
+        width: 100%;
+        margin: 20px auto;
+    }
+    
+    @media screen and (max-width:  580px){
+        .optionsFooter{
+            flex-direction: column;
+            row-gap: 20px;
+        }
+
+        .optionsF{
+            text-align: center;
+            align-items: center;
+        }
+    }
+</style>
+
+<footer>
+    <div class="containerFooter">
+        <div class="optionsFooter">
+            <img src="/images/logo-TrazAzul.png" alt="">
+            <div class="optionsF">
+                <a href="#">Inicio</a>
+                <a href="#">Trazul</a>
+            </div>
+            <div class="optionsF">
+                <!-- <a href="#">Descargar aplicación</a> -->
+                <a href="">Planes</a>                
+            </div>
+            <div class="option"></div>
+        </div>
+        <div class="socialMedia">
+            <img src="/images/IcoFacebook.svg" alt="">
+            <img src="/images/IcoYoutube.svg" alt="">
+            <img src="/images/IcoInstagram.svg" alt="">
+        </div>
+        <hr class="hrFooter">
+        <div class="bottomFooter">
+            © 2024 miPescao, creado por <b>redazul.co   </b>
+        </div>
+    </div>
+</footer>

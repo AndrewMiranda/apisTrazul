@@ -132,3 +132,4 @@ package-lock.json
 
 src/public/apks
 src/public/content
+.codegpt

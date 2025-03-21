@@ -70,7 +70,7 @@ async function getTraceability() {
         } else {
             alert(await response.json())
         }
-    }).catch(err => {
+    }).catch(err => {   
         console.log(err);
         alert(err);
     }).finally(function () {
@@ -106,13 +106,13 @@ async function getTraceability() {
     // Agregar iconos de marcadores personalizados
     var iconAlevinos = L.icon({
         iconUrl: '/images/TrAzul-ICOs-Alevinera.png',
-        iconSize: [32, 32],
+        iconSize: [24, 24],
         iconAnchor: [16, 16]
     });
 
     var iconEngorde = L.icon({
         iconUrl: '/images/TrAzul-ICOs-Engorde.png',
-        iconSize: [32, 32],
+        iconSize: [24, 24],
         iconAnchor: [16, 16]
     });
 
@@ -228,7 +228,7 @@ async function getTraceability() {
 
         text.textContent = item;
 
-        // Primer Div para icono y titulo y Segundo div para subContenido
+        // Primer Div para icono y titulo y Segundo div para subContenidox
         const mainDiv = document.createElement('div');
         mainDiv.classList.add("mainDiv");
         const subDiv = document.createElement('div');
@@ -284,5 +284,26 @@ function openItem(item) {
     }else{
         subItem.classList.remove("data-hidden");
         subItem.dataset.toogle = 1;
+    }
+}
+
+// TB-2-4-EMI089-2409281207
+
+// TB-13-1-e1EdCv-2409280008
+
+
+function goDecription(){
+    const codigoLote1 = document.getElementById('batchCodeSection1').value;
+    const codigoLote2 = document.getElementById('batchCodeSection2').value;
+    const codigoLote3 = document.getElementById('batchCodeSection3').value;
+    const codigoLote4 = document.getElementById('batchCodeSection4').value;
+    const codigoLote5 = document.getElementById('batchCodeSection5').value;
+
+    if(codigoLote1 != "" && codigoLote2 != "" && codigoLote3 != "" && codigoLote4 != "" && codigoLote5 != ""){
+        let codigoLoteCompleto = codigoLote1+"-"+codigoLote2+"-"+codigoLote3+"-"+codigoLote4+"-"+codigoLote5;
+
+        console.log(codigoLoteCompleto);
+
+        window.location.href = `/acuacode/${codigoLoteCompleto}`;
     }
 }

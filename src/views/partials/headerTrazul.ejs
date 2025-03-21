@@ -1,0 +1,289 @@
+<style>    
+    header{
+        width: 100%;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        /* background-color: #FFFFFF; */
+    }
+    .backgroundTopHeader{
+        background-color: #29ABE2;
+        width: 100%;
+    }
+    .topHeader{
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .contactSectionHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 20px;
+    }
+
+    .contact{
+        display: flex;
+        column-gap: 15px;
+        align-items: center;
+
+        img{
+            width: 16px;
+            height: 16px;
+        }
+
+        .text{
+            color: #FFFFFF;
+        }
+    }
+
+    .socialMedia{
+        display: flex;
+        align-items: center;
+        column-gap: 30px;
+
+        img{
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .bottomHeader{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;    
+        width: 100%;
+        padding: 10px calc(5% - 13px);
+        margin: 0 auto;
+        transition: background-color .5s ease;
+        background-color: #FFFFFF;
+    }
+
+    .imgLogo{
+        height: 40px;
+
+        img{
+            height: 100%;
+        }
+    }
+
+    .optionsHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+        min-width: 45%;
+        justify-content: space-between;
+        background-color: transparent;
+        border: none;
+        a{
+            font-weight: bold;
+            font-size: 14px;
+            color: #29ABE2;
+        }
+
+        .optionHeader{
+            background-color: transparent;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            color: #29ABE2;
+            position: relative;
+        }
+    }
+
+    .selectHeader{
+        display: flex;
+        align-items: center;
+        column-gap: 5px;
+        cursor: pointer;
+
+        img{
+            width: 20px;
+            height: 20px;
+        }
+
+        .allOptions{
+            position: absolute;
+            top: calc(100% + 12px);
+            background-color: #FFF;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            row-gap: 15px;
+            border-radius: 10px;
+            display: none;
+            z-index: 10000;
+            
+            a{
+                color: #29ABE2;
+                font-size: 16px;
+                text-align: center;
+            }
+
+        }
+    }
+
+
+    .marginHeader{
+        height: 104px;
+    }
+
+    .menuHeader{
+        display: none;
+    }
+
+    @media screen and (max-width: 700px){
+        .bottomHeader{
+            background-color: #FFFFFF !important;
+            padding: 10px 5%;
+        }
+        .optionsHeader{
+            margin-right: -100vw;
+            border-top: 1px solid #A2A2;
+            position: absolute;
+            top: 104px;
+            width: 100%;
+            background-color: #FFF;
+            right: 0;
+            flex-direction: column;
+            row-gap: 20px;
+            padding: 30px 20px;
+            -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+            
+            transition: margin-right 1s ease;
+            a{
+                color: #29ABE2;
+            }
+        }
+        .menuHeader{
+            display: flex;
+        }
+    }
+
+    @media screen and (max-width: 600px){
+        .contact{
+
+            .text{
+            display: none;
+            }
+        }
+    }
+
+</style>
+
+<header>
+    <div class="backgroundTopHeader">
+        <div class="topHeader maxWidthPage">
+            <div class="contactSectionHeader">
+                <a href="mailto:" class="contact">
+                    <img src="/images/mail.svg" alt="">
+                    <p class="text">contacto@redazul.co</p>
+                </a>
+                <div class="contact">
+                    <img src="/images/phone.svg" alt="">
+                    <p class="text">+57 3115858284</p>
+                </div>
+            </div>
+            <div class="socialMedia">
+                <a href="https://www.linkedin.com/company/redazul/"  target="_blank"><img src="/images/icons8-linkedin.svg" alt=""></a>
+                <a href="https://www.facebook.com/share/tWzA2T53Y692YwCB/" target="_blank" ><img src="/images/facebook.svg" alt=""></a>
+                <a href="https://www.instagram.com/redazul.co/profilecard/?igsh=MWZtb3F5emo2YjQwbQ==" target="_blank"><img src="/images/instagram.svg" alt=""></a>
+            </div>
+        </div>
+    </div>
+    <div class="bottomHeader maxWidthPage generalShadow">
+        <a href="https://redazul.co/" class="imgLogo">
+            <img src="/images/logo-RedAzul-Horizontal-Bg-Black.svg" alt="">
+        </a>
+        <div class="optionsHeader">
+            <a class="optionHeader" href="https://redazul.co/">INICIO</a>
+            <div class="optionHeader selectHeader" onclick="optionServices()">
+                SERVICIOS
+                <img class="icoSelectHeader" src="/images/arrow_down.svg" alt="">
+
+                <div class="allOptions generalShadow" open-select="false">
+                    <a href="/">TRAZUL</a>
+                    <a href="https://mipescao.com/">miPescao</a>
+                </div>
+            </div>
+
+            <a class="optionHeader" href="https://redazul.co/contactanos">CONTACTO</a>
+            <a class="optionHeader" href="">DESCARGA</a>
+            <!-- <a class="optionHeader" href="">BLOG</a> -->
+            <!-- <a class="optionHeader" href="">REGISTRO</a> -->
+            <!-- <a class="optionHeader" href="">ACCEDER</a> -->
+        </div>
+        <div class="menuHeader" open-menu="false" onclick="openMenu()">
+            <img class="imgMenu" src="/images/menuBlue.svg" alt="">
+        </div>
+    </div>
+</header>
+<div class="marginHeader"></div>
+
+<script>
+    function openMenu(){
+        let menuHeader = document.getElementsByClassName("menuHeader")[0];
+        let optionsHeader = document.getElementsByClassName("optionsHeader")[0];
+        let openMenu = menuHeader.getAttribute('open-menu');
+        let imgMenu = document.getElementsByClassName("imgMenu")[0];
+        if(openMenu == "false"){
+            optionsHeader.style.marginRight = "0";
+            imgMenu.src = "/images/menuOpenBlue.svg";
+            menuHeader.setAttribute('open-menu','true');
+        }else{
+            imgMenu.src = "/images/menuBlue.svg";
+            optionsHeader.style.marginRight = "-100vw";
+            menuHeader.setAttribute('open-menu','false');
+        }
+    }
+
+
+    function optionServices(){
+        let selectHeader = document.getElementsByClassName("selectHeader")[0];
+        let open = selectHeader.getAttribute('open-menu');
+        let allOptions = document.getElementsByClassName("allOptions")[0];
+        let icoSelectHeader = document.getElementsByClassName("icoSelectHeader")[0];
+
+        if(open == "false"){
+            allOptions.style.display = "none";
+            icoSelectHeader.style.transform = "rotate(0)";
+            selectHeader.setAttribute('open-menu','true');
+        }else{
+            allOptions.style.display = "flex";
+            icoSelectHeader.style.transform = "rotate(180deg)";
+            selectHeader.setAttribute('open-menu','false');
+        }
+
+    }
+
+    // function changeHeader(){
+    //     const windowWidth = window.innerWidth;
+
+    //     if(windowWidth > 700){
+    //         let scrollPosition = window.scrollY;
+    //         let bottomHeader = document.getElementsByClassName("bottomHeader")[0];
+    //         let optionHeader = document.querySelectorAll(".optionHeader");
+    //         if(scrollPosition > 5){
+    //             bottomHeader.style.backgroundColor = "#FFFFFF";
+    //             bottomHeader.classList.add("generalShadow");
+
+    //             optionHeader.forEach(option => {
+    //                 option.style.color = "#29ABE2";
+    //             });
+    //         }else{
+    //             bottomHeader.style.backgroundColor = "transparent";
+    //             bottomHeader.classList.remove("generalShadow");
+    //             optionHeader.forEach(option => {
+    //                 option.style.color = "#29ABE2";
+    //             });
+    //         }
+    //     }
+    // }
+
+    // window.addEventListener("scroll", changeHeader);
+</script>
