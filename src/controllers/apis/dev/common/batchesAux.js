@@ -104,7 +104,7 @@ async function dispatchData(id){
 
 // Función para consultar datos de un alevino
 async function fingerlingsData(id){
-    dispatchData = await pool.query('SELECT specie_id AS specie, JSON_EXTRACT(productiveUnits_fingerlings_body, "$.harvestDate") AS date, batches_token AS token, productiveUnits_fingerlings_id AS id FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ id ]);
+dispatchData = await pool.query('SELECT specie_id AS specie, JSON_EXTRACT(productiveUnits_fingerlings_body, "$.harvestDate") AS date, JSON_EXTRACT(productiveUnits_fingerlings_body, "$.price") AS price,  batches_token AS token, productiveUnits_fingerlings_id AS id FROM `productiveUnits_fingerlings` WHERE productiveUnits_fingerlings_id = ?', [ id ]);
     dispatchData = JSON.parse(JSON.stringify(dispatchData));
 
     dispatchData[0].specie = await specieName(dispatchData[0].specie);
