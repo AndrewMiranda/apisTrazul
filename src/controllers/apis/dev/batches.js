@@ -989,9 +989,20 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
         // Lotes que no han sido despachados
         let batches = await pool.query('SELECT batches_token AS token, batches_date AS date, batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_productiveUnit = ?'+filter+" ORDER BY batches_date DESC;", [ productiveUnitId, state ]);
         batches = JSON.parse(JSON.stringify(batches));
-
+        
         for (const iterator of batches) {
             if (iterator.type == 1 || iterator.type == 4) {
+                iterator.quantityFishIterator = JSON.parse(iterator.body)['quantityFishIterator'];
+                iterator.weightIterator = JSON.parse(iterator.body)['weightIterator'];
+
+                // Se obtienen los datos de los estanques asociados al lote
+                let ponds = await pool.query('SELECT pp.productiveUnits_ponds_id AS id, pp.productiveUnits_ponds_name AS name FROM `batches_ponds` AS p LEFT JOIN batches AS b ON p.batches_id = b.batches_id LEFT JOIN productiveUnits_ponds AS pp ON pp.productiveUnits_ponds_id = p.productiveUnits_ponds_id WHERE b.batches_token = ?;', [ iterator.token ]);
+                ponds = JSON.parse(JSON.stringify(ponds));
+
+                // Se obtienen el estanque en uso
+                let namePonds = ponds.at(-1)["name"] ?? 'No definido';
+                iterator.pond = namePonds;
+
                 let body = JSON.parse(iterator.body);
 
                 if (iterator.type == 4) {
@@ -1010,9 +1021,22 @@ controller.getBatches = [verifyToken(config), query("productiveUnitId").notEmpty
                 iterator.body = undefined;
                 iterator.prevToken = undefined;
             }else if(iterator.type == 2 || iterator.type == 3 || iterator.type == 5 || iterator.type == 6){
+                iterator.quantityFishIterator = JSON.parse(iterator.body)['quantityFishIterator'];
+                iterator.weightIterator = JSON.parse(iterator.body)['weightIterator'];
+
+
                 let prevTokenBatch = JSON.parse(iterator.prevToken);
 
+                // Se obtienen los datos de los estanques asociados al lote
+                let ponds = await pool.query('SELECT pp.productiveUnits_ponds_id AS id, pp.productiveUnits_ponds_name AS name FROM `batches_ponds` AS p LEFT JOIN batches AS b ON p.batches_id = b.batches_id LEFT JOIN productiveUnits_ponds AS pp ON pp.productiveUnits_ponds_id = p.productiveUnits_ponds_id WHERE b.batches_token = ?;', [ iterator.token ]);
+                ponds = JSON.parse(JSON.stringify(ponds));
+
+                // Se obtienen el estanque en uso
+                let namePonds =  ponds.length > 0 ? ponds.at(-1)?.name ?? 'No definido' : 'No definido';
+                iterator.pond = namePonds;
+
                 while (true) {
+                    
                     let batch = await pool.query('SELECT batchesTypes_id AS type, batches_body AS body, batches_prevToken AS prevToken FROM `batches` WHERE batches_token = ?', [ prevTokenBatch[0] ]);
                     batch = JSON.parse(JSON.stringify(batch));
 
@@ -2270,6 +2294,7 @@ controller.associateIncomes = [verifyToken(config), body("batch").notEmpty(), bo
     }
 }];
 
+
 // Asociar ingreso a lote
 controller.incomes = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("batch").notEmpty(), handleValidationErrors, async(req, res) => {
     try {
@@ -2295,6 +2320,79 @@ controller.incomes = [verifyToken(config), query("productiveUnit").notEmpty().is
         incomes = JSON.parse(JSON.stringify(incomes));
 
         res.status(200).json({incomes});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// Asociar gastos a lote
+controller.associateExpenses = [verifyToken(config), body("batch").notEmpty(), body("expense").notEmpty().isInt(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.body.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let expense = req.body.expense;
+        let batch = req.body.batch
+
+        let expenseInfo = await pool.query('SELECT productiveUnits_id AS productiveUnit FROM `productiveUnits_expenses` WHERE productiveUnits_expenses_id = ?;', [ expense ]);
+        expenseInfo = JSON.parse(JSON.stringify(expenseInfo));
+
+        if(!expenseInfo.length > 0) throw "El costo no existe";
+
+        let batchInfo = await pool.query('SELECT batches_productiveUnit AS productiveUnit, batches_id AS id FROM `batches` WHERE batches_token = ?;', [ batch ]);
+        batchInfo = JSON.parse(JSON.stringify(batchInfo));
+
+        if(!batchInfo.length > 0) throw "El lote no existe";
+
+        if (expenseInfo[0].productiveUnits_id == expenseInfo[0].productiveUnits_id) {
+            await pool.query('UPDATE `productiveUnits_expenses` SET `batches_id`= ? WHERE `productiveUnits_expenses_id` = ?', [ batchInfo[0].id, expense ]);
+
+            res.status(200).json({});
+        }else{
+            throw "El lote no pertenece a la unidad productiva del costo"
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({error});
+    }
+}];
+
+// obtener costo asociado al lote
+controller.expenses = [verifyToken(config), query("productiveUnit").notEmpty().isInt(), query("batch").notEmpty(), handleValidationErrors, async(req, res) => {
+    try {
+        // ID de la unidad productiva
+        const productiveUnitId = req.query.productiveUnit;
+
+        // ID del usuario
+        const userId = await getUserId(req);
+
+        // se verifica que la unidad productiva pertenezca al usuario
+        if (!await userOwnerProductiveUnit(productiveUnitId, userId, ["skip"])) throw `Esta unidad productiva no pertenece a este usuario.`;
+
+        // se verifica que la unidad productiva se encuentre activa
+        if (!await productiveUnitActive(productiveUnitId)) throw `Esta unidad productiva no se encuentra activa.`;
+
+        // Datos POST
+        let batch = req.query.batch;
+
+        let batchInfo = await pool.query('SELECT batches_id AS id FROM `batches` WHERE batches_token = ?', [ batch ]);
+        batchInfo = JSON.parse(JSON.stringify(batchInfo));
+
+        let expense = await pool.query('SELECT `productiveUnits_expenses_id` AS id, `productiveUnits_expenses_name` AS name, `productiveUnits_expenses_price` AS price, `productiveUnits_expenses_description` AS description, `productiveUnits_expenses_initDate` AS initDate, `productiveUnits_expenses_endDate` AS endDate FROM `productiveUnits_expenses` WHERE batches_id = ?', [ batchInfo[0].id ]);
+        expense = JSON.parse(JSON.stringify(expense));
+
+        res.status(200).json({expense});
     } catch (error) {
         console.log(error);
         res.status(400).json({error});
